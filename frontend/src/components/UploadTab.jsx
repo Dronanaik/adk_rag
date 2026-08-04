@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { uploadDocument } from '../api.js'
+import { UploadCloud, FileIcon, X, Upload, CheckCircle2, Loader2, AlertTriangle, FileText, FileSpreadsheet, FileJson, Globe } from 'lucide-react'
 import styles from './UploadTab.module.css'
 
 const SUPPORTED_TYPES = [
@@ -33,11 +33,9 @@ function formatBytes(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
-export default function UploadTab({ userId }) {
+export default function UploadTab({ userId, onStartUpload }) {
   const [dragOver, setDragOver] = useState(false)
   const [selectedFile, setSelectedFile] = useState(null)
-  const [status, setStatus] = useState(null) // null | 'uploading' | 'success' | 'error'
-  const [result, setResult] = useState(null)
   const [errorMsg, setErrorMsg] = useState('')
   const inputRef = useRef(null)
 
@@ -49,8 +47,6 @@ export default function UploadTab({ userId }) {
     }
     setErrorMsg('')
     setSelectedFile(file)
-    setStatus(null)
-    setResult(null)
   }
 
   function handleDrop(e) {
@@ -67,26 +63,17 @@ export default function UploadTab({ userId }) {
 
   async function handleUpload() {
     if (!selectedFile) return
-    setStatus('uploading')
-    setResult(null)
     setErrorMsg('')
 
-    try {
-      const data = await uploadDocument(selectedFile, userId)
-      setResult(data.result)
-      setStatus('success')
+    if (onStartUpload) {
+      onStartUpload(selectedFile)
       setSelectedFile(null)
       if (inputRef.current) inputRef.current.value = ''
-    } catch (err) {
-      setStatus('error')
-      setErrorMsg(err.message)
     }
   }
 
   function handleClear() {
     setSelectedFile(null)
-    setStatus(null)
-    setResult(null)
     setErrorMsg('')
     if (inputRef.current) inputRef.current.value = ''
   }
@@ -123,7 +110,7 @@ export default function UploadTab({ userId }) {
 
         {selectedFile ? (
           <div className={styles.filePreview}>
-            <span className={styles.fileIcon}>{getFileIcon(selectedFile.name)}</span>
+            <span className={styles.fileIconWrap}>{getFileIcon(selectedFile.name)}</span>
             <div className={styles.fileMeta}>
               <span className={styles.fileName}>{selectedFile.name}</span>
               <span className={styles.fileSize}>{formatBytes(selectedFile.size)}</span>
@@ -132,12 +119,14 @@ export default function UploadTab({ userId }) {
               className="btn btn-secondary btn-sm"
               onClick={(e) => { e.stopPropagation(); handleClear() }}
             >
-              ✕ Remove
+              <X size={14} style={{ marginRight: '4px' }} /> Remove
             </button>
           </div>
         ) : (
           <div className={styles.dropContent}>
-            <span className={styles.dropIcon}>☁️</span>
+            <div className={styles.dropIconWrap}>
+              <UploadCloud size={32} />
+            </div>
             <p className={styles.dropTitle}>
               {dragOver ? 'Drop it here!' : 'Drag & drop your file here'}
             </p>
@@ -156,7 +145,7 @@ export default function UploadTab({ userId }) {
       {/* Error */}
       {errorMsg && (
         <div className="alert alert-error">
-          <span>⚠️</span>
+          <AlertTriangle size={18} />
           <span style={{ whiteSpace: 'pre-line' }}>{errorMsg}</span>
         </div>
       )}
@@ -166,47 +155,11 @@ export default function UploadTab({ userId }) {
         <button
           className="btn btn-primary btn-lg"
           onClick={handleUpload}
-          disabled={status === 'uploading'}
-          style={{ width: '100%' }}
+          style={{ width: '100%', justifyContent: 'center' }}
           id="upload-btn"
         >
-          {status === 'uploading' ? (
-            <><span className="spinner" /> Ingesting…</>
-          ) : (
-            <><span>📤</span> Ingest Document</>
-          )}
+          <Upload size={18} /> Ingest Document
         </button>
-      )}
-
-      {/* Pipeline progress (while uploading) */}
-      {status === 'uploading' && (
-        <div className="glass-card" style={{ padding: '20px' }}>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '14px', fontWeight: 600 }}>
-            Running ingestion pipeline…
-          </p>
-          {['Extracting text', 'Chunking text', 'Generating embeddings (Gemini)', 'Storing in ChromaDB'].map((step, i) => (
-            <div key={i} className={styles.pipelineStep}>
-              <span className="spinner" style={{ width: '14px', height: '14px' }} />
-              <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>{step}</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Success result */}
-      {status === 'success' && result && (
-        <div className={`glass-card ${styles.resultCard} fade-in`}>
-          <div className={styles.resultHeader}>
-            <span className={styles.successIcon}>✅</span>
-            <h3>Document Ingested Successfully</h3>
-          </div>
-          <div className={styles.resultGrid}>
-            <ResultRow label="Document ID" value={result.document_id} mono />
-            <ResultRow label="Filename" value={result.filename} />
-            <ResultRow label="Chunks Created" value={result.chunks_created} />
-            <ResultRow label="Characters Extracted" value={result.characters_extracted?.toLocaleString()} />
-          </div>
-        </div>
       )}
     </div>
   )
@@ -214,11 +167,11 @@ export default function UploadTab({ userId }) {
 
 function ResultRow({ label, value, mono = false }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
       <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.05em' }}>
         {label}
       </span>
-      <span style={{ fontSize: '0.88rem', color: 'var(--text-primary)', fontFamily: mono ? 'monospace' : undefined, wordBreak: 'break-all' }}>
+      <span style={{ fontSize: '0.88rem', color: 'var(--text-primary)', fontFamily: mono ? 'var(--font-mono)' : undefined, wordBreak: 'break-all' }}>
         {value}
       </span>
     </div>
@@ -227,10 +180,11 @@ function ResultRow({ label, value, mono = false }) {
 
 function getFileIcon(name) {
   const ext = name.split('.').pop().toLowerCase()
-  const icons = {
-    pdf: '📄', docx: '📝', doc: '📝', xlsx: '📊', xls: '📊',
-    pptx: '📑', ppt: '📑', txt: '📃', md: '📃', csv: '📊',
-    json: '🔧', xml: '🔧', html: '🌐', htm: '🌐', log: '📋',
-  }
-  return icons[ext] || '📁'
+  if (['pdf'].includes(ext)) return <FileText size={28} color="#ef4444" />
+  if (['docx', 'doc'].includes(ext)) return <FileText size={28} color="#3b82f6" />
+  if (['xlsx', 'xls', 'csv'].includes(ext)) return <FileSpreadsheet size={28} color="#22c55e" />
+  if (['pptx', 'ppt'].includes(ext)) return <FileText size={28} color="#f97316" />
+  if (['json', 'xml'].includes(ext)) return <FileJson size={28} color="#eab308" />
+  if (['html', 'htm'].includes(ext)) return <Globe size={28} color="#0ea5e9" />
+  return <FileIcon size={28} color="#94a3b8" />
 }

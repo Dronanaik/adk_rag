@@ -7,10 +7,12 @@ import DocumentsTab from './components/DocumentsTab.jsx'
 import IngestionTab from './components/IngestionTab.jsx'
 import ChatTab from './components/ChatTab.jsx'
 import styles from './App.module.css'
+import { uploadDocument } from './api.js'
 
 export default function App() {
   const [userId, setUserId] = useState(null)
   const [activeTab, setActiveTab] = useState('upload')
+  const [uploadState, setUploadState] = useState({ status: 'idle', result: null, error: null })
 
   // Show the User ID gate until a user logs in
   if (!userId) {
@@ -26,10 +28,21 @@ export default function App() {
     setActiveTab('upload')
   }
 
+  async function handleStartUpload(file) {
+    setActiveTab('ingestion')
+    setUploadState({ status: 'uploading', result: null, error: null })
+    try {
+      const data = await uploadDocument(file, userId)
+      setUploadState({ status: 'success', result: data.result, error: null })
+    } catch (err) {
+      setUploadState({ status: 'error', result: null, error: err.message })
+    }
+  }
+
   const tabContent = {
-    upload:    <UploadTab   userId={userId} />,
+    upload:    <UploadTab   userId={userId} onStartUpload={handleStartUpload} />,
     documents: <DocumentsTab userId={userId} />,
-    ingestion: <IngestionTab />,
+    ingestion: <IngestionTab uploadState={uploadState} />,
     chat:      <ChatTab     userId={userId} />,
   }
 

@@ -1,3 +1,4 @@
+import { Brain, AlertCircle, User } from 'lucide-react'
 import styles from './ChatMessage.module.css'
 
 export default function ChatMessage({ message }) {
@@ -8,7 +9,7 @@ export default function ChatMessage({ message }) {
     return (
       <div className={`${styles.row} ${styles.rowError}`}>
         <div className={`${styles.bubble} ${styles.bubbleError}`}>
-          <span>⚠️</span> {message.content}
+          <AlertCircle size={18} /> {message.content}
         </div>
       </div>
     )
@@ -17,7 +18,9 @@ export default function ChatMessage({ message }) {
   return (
     <div className={`${styles.row} ${isUser ? styles.rowUser : styles.rowAssistant}`}>
       {!isUser && (
-        <div className={styles.avatar}>🧠</div>
+        <div className={styles.avatarWrap}>
+          <Brain size={18} />
+        </div>
       )}
 
       <div className={`${styles.bubble} ${isUser ? styles.bubbleUser : styles.bubbleAssistant}`}>
@@ -33,8 +36,8 @@ export default function ChatMessage({ message }) {
       </div>
 
       {isUser && (
-        <div className={`${styles.avatar} ${styles.avatarUser}`}>
-          {message.userId ? message.userId.charAt(0).toUpperCase() : 'U'}
+        <div className={`${styles.avatarWrap} ${styles.avatarUser}`}>
+          {message.userId ? message.userId.charAt(0).toUpperCase() : <User size={18} />}
         </div>
       )}
     </div>

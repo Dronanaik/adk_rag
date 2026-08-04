@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Send, Link as LinkIcon, RefreshCw, MessageSquare, Brain, Lock } from 'lucide-react'
 import { sendMessage } from '../api.js'
 import ChatMessage from './ChatMessage.jsx'
 import styles from './ChatTab.module.css'
@@ -96,7 +97,7 @@ export default function ChatTab({ userId }) {
         <div className={styles.headerActions}>
           {sessionId && (
             <span className="badge badge-teal" title={`Session: ${sessionId}`}>
-              🔗 Session active
+              <LinkIcon size={12} style={{ marginRight: '4px' }}/> Session active
             </span>
           )}
           {messages.length > 0 && (
@@ -105,7 +106,7 @@ export default function ChatTab({ userId }) {
               onClick={handleNewSession}
               id="new-session-btn"
             >
-              🔄 New session
+              <RefreshCw size={14} style={{ marginRight: '4px' }}/> New session
             </button>
           )}
         </div>
@@ -115,7 +116,9 @@ export default function ChatTab({ userId }) {
       <div className={`glass-card ${styles.chatArea}`}>
         {messages.length === 0 ? (
           <div className={styles.emptyChat}>
-            <span className={styles.emptyChatIcon}>💬</span>
+            <div className={styles.emptyChatIconWrap}>
+              <MessageSquare size={32} />
+            </div>
             <h3>Ask a question</h3>
             <p>Your answers are grounded in your uploaded documents only.</p>
 
@@ -141,7 +144,9 @@ export default function ChatTab({ userId }) {
             {/* Typing indicator */}
             {loading && (
               <div className={styles.typingIndicator}>
-                <div className={styles.typingAvatar}>🧠</div>
+                <div className={styles.typingAvatar}>
+                  <Brain size={18} />
+                </div>
                 <div className={styles.typingBubble}>
                   <span className={styles.dot} />
                   <span className={styles.dot} />
@@ -173,15 +178,19 @@ export default function ChatTab({ userId }) {
           disabled={loading || !input.trim()}
           id="send-btn"
         >
-          {loading ? <span className="spinner" /> : <span>Send ↑</span>}
+          {loading ? <span className="spinner" /> : (
+            <><span>Send</span> <Send size={16} /></>
+          )}
         </button>
       </div>
 
       {/* Info footer */}
-      <p className={styles.infoFooter}>
-        🔒 Answers are user-scoped — only your documents are searched (user: <strong>{userId}</strong>).
-        Citations appear as <code>[Source: filename, chunk N]</code>.
-      </p>
+      <div className={styles.infoFooterWrap}>
+        <Lock size={14} color="var(--text-muted)" />
+        <p className={styles.infoFooter}>
+          Answers are user-scoped — only your documents are searched (user: <strong>{userId}</strong>). Citations appear as <code>[Source: filename, chunk N]</code>.
+        </p>
+      </div>
     </div>
   )
 }

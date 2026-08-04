@@ -1,11 +1,11 @@
 .wrap { display: flex; flex-direction: column; gap: 28px; }
 
-.sectionHeader { display: flex; flex-direction: column; gap: 6px; }
+.sectionHeader { display: flex; flex-direction: column; gap: 8px; }
 
 .title {
   font-size: 1.4rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #fff, #c4c0ff);
+  background: linear-gradient(135deg, #fff, #c4bdff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -13,7 +13,7 @@
 
 .sub { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
 
-/* Stats row */
+/* ── Stats row ── */
 .statsRow {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -27,7 +27,36 @@
   padding: 20px;
 }
 
-.statIcon { font-size: 1.8rem; flex-shrink: 0; }
+.statIconWrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.statIconWrap.teal {
+  background: rgba(34, 211, 238, 0.12);
+  border: 1px solid rgba(34, 211, 238, 0.2);
+  color: var(--accent-secondary);
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.15);
+}
+
+.statIconWrap.purple {
+  background: rgba(124, 108, 255, 0.12);
+  border: 1px solid rgba(124, 108, 255, 0.2);
+  color: var(--accent-primary-light);
+  box-shadow: 0 0 16px rgba(124, 108, 255, 0.15);
+}
+
+.statIconWrap.red {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: var(--accent-danger);
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.15);
+}
 
 .statLabel {
   font-size: 0.72rem;
@@ -38,28 +67,29 @@
 }
 
 .statValue {
-  font-size: 1.5rem;
+  font-size: 1.45rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  margin-top: 2px;
+  margin-top: 4px;
   display: flex;
   align-items: center;
 }
 
-.valuePurple { color: var(--accent-primary); }
+.valuePurple { color: var(--accent-primary-light); }
 .valueTeal   { color: var(--accent-secondary); }
+.valueRed    { color: var(--accent-danger); }
 
-/* Section titles */
+/* ── Section titles ── */
 .sectionTitle {
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
-/* Pipeline diagram */
+/* ── Pipeline diagram ── */
 .pipeline { display: flex; flex-direction: column; }
 
 .pipelineStep {
@@ -72,72 +102,84 @@
   flex-direction: column;
   align-items: center;
   flex-shrink: 0;
-  width: 40px;
+  width: 44px;
 }
 
 .stepNumber {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: rgba(108, 99, 255, 0.15);
-  border: 2px solid rgba(108, 99, 255, 0.4);
-  color: var(--accent-primary);
-  font-size: 0.9rem;
+  background: rgba(124, 108, 255, 0.15);
+  border: 2px solid rgba(124, 108, 255, 0.3);
+  color: var(--accent-primary-light);
+  font-size: 0.95rem;
   font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 0 16px rgba(124, 108, 255, 0.15);
 }
 
 .connector {
   flex: 1;
   width: 2px;
-  background: linear-gradient(to bottom, rgba(108, 99, 255, 0.4), rgba(0, 212, 170, 0.2));
-  margin: 4px 0;
-  min-height: 20px;
+  background: linear-gradient(to bottom, rgba(124, 108, 255, 0.4), rgba(34, 211, 238, 0.2));
+  margin: 6px 0;
+  min-height: 24px;
 }
 
 .stepCard {
   flex: 1;
-  padding: 20px;
-  margin-bottom: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
 }
 
 .stepHeader {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 12px;
+  margin-bottom: 12px;
   flex-wrap: wrap;
 }
 
-.stepIcon { font-size: 1.3rem; }
+.stepIconWrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+}
 
 .stepName {
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 700;
   flex: 1;
 }
 
 .stepDesc {
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   color: var(--text-secondary);
   line-height: 1.6;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
 }
 
 .stepDetail {
   display: block;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
-  background: rgba(0,0,0,0.2);
-  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px 14px;
   border-radius: var(--radius-sm);
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  font-family: var(--font-mono);
 }
 
-/* File types table */
+/* ── File types table ── */
 .tableWrap {
   padding: 0;
   overflow: hidden;
@@ -151,23 +193,31 @@
 }
 
 .table th {
-  background: rgba(108, 99, 255, 0.08);
+  background: rgba(124, 108, 255, 0.1);
   color: var(--text-secondary);
   font-weight: 600;
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 12px 20px;
+  padding: 14px 24px;
   text-align: left;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1px solid rgba(124, 108, 255, 0.2);
 }
 
 .table td {
-  padding: 12px 20px;
+  padding: 14px 24px;
   border-bottom: 1px solid var(--border-subtle);
   vertical-align: middle;
 }
 
 .table tr:last-child td { border-bottom: none; }
 
-.table tr:hover td { background: rgba(255,255,255,0.02); }
+.table tr:hover td { background: rgba(255, 255, 255, 0.03); }
+
+.codeExt {
+  font-family: var(--font-mono);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.82rem;
+}

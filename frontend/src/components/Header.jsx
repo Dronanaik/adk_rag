@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
+import { Wifi, WifiOff, Loader2, ChevronRight, LogOut, Brain } from 'lucide-react'
 import { checkHealth } from '../api.js'
 import styles from './Header.module.css'
 
 export default function Header({ userId, onChangeUser }) {
-  const [backendStatus, setBackendStatus] = useState('loading') // 'loading' | 'online' | 'offline'
+  const [backendStatus, setBackendStatus] = useState('loading')
 
   useEffect(() => {
     checkHealth()
@@ -11,63 +12,83 @@ export default function Header({ userId, onChangeUser }) {
       .catch(() => setBackendStatus('offline'))
   }, [])
 
+  const statusIcon = {
+    loading: <Loader2 size={13} className={styles.spinIcon} />,
+    online:  <Wifi size={13} />,
+    offline: <WifiOff size={13} />,
+  }[backendStatus]
+
+  const statusLabel = {
+    loading: 'Checking…',
+    online:  'API Online',
+    offline: 'API Offline',
+  }[backendStatus]
+
   return (
     <header className={styles.header}>
       <div className={`container ${styles.inner}`}>
+
         {/* Brand */}
         <div className={styles.brand}>
-          <span className={styles.logo}>🧠</span>
+          <div className={styles.logoWrap}>
+            <Brain size={22} strokeWidth={1.8} className={styles.logoIcon} />
+          </div>
           <div className={styles.brandText}>
             <h1 className={styles.appName}>ADK RAG</h1>
             <p className={styles.tagline}>Document Intelligence Platform</p>
           </div>
         </div>
 
-        {/* Status + user */}
+        {/* Right side */}
         <div className={styles.right}>
-          {/* Backend status indicator */}
-          <div className={styles.statusChip}>
-            <span className={`status-dot ${backendStatus}`} />
-            <span className={styles.statusLabel}>
-              {backendStatus === 'loading' ? 'Checking…'
-                : backendStatus === 'online' ? 'API Online'
-                : 'API Offline'}
-            </span>
+
+          {/* Status chip */}
+          <div className={`${styles.statusChip} ${styles[backendStatus]}`}>
+            {statusIcon}
+            <span className={styles.statusLabel}>{statusLabel}</span>
           </div>
 
-          {/* Divider */}
-          <div className={styles.divider} />
+          <div className={styles.sep} />
 
           {/* User badge */}
           <div className={styles.userBadge}>
-            <span className={styles.userAvatar}>
+            <div className={styles.userAvatar}>
               {userId.charAt(0).toUpperCase()}
-            </span>
+            </div>
             <div className={styles.userInfo}>
-              <span className={styles.userLabel}>Active User</span>
+              <span className={styles.userLabel}>Signed in as</span>
               <span className={styles.userId}>{userId}</span>
             </div>
             <button
-              className={`btn btn-secondary btn-sm ${styles.changeBtn}`}
+              className={`btn btn-ghost btn-sm ${styles.switchBtn}`}
               onClick={onChangeUser}
               title="Switch user"
+              id="switch-user-btn"
             >
-              Switch
+              <LogOut size={14} />
+              <span>Switch</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Sub-header strip */}
+      {/* Sub-header */}
       <div className={styles.subHeader}>
         <div className="container">
           <div className={styles.subInner}>
-            <span className="badge badge-purple">Google ADK</span>
-            <span className="badge badge-teal">Gemini Embeddings</span>
-            <span className="badge badge-purple">ChromaDB</span>
-            <span className={styles.poweredBy}>
-              Powered by <strong>gemini-2.5-pro</strong> + <strong>gemini-embedding-001</strong>
-            </span>
+            <div className={styles.techBadges}>
+              <span className={`badge badge-purple ${styles.techBadge}`}>Google ADK</span>
+              <span className={`badge badge-teal ${styles.techBadge}`}>ChromaDB</span>
+              <span className={`badge badge-purple ${styles.techBadge}`}>FastAPI</span>
+            </div>
+            <div className={styles.modelInfo}>
+              <ChevronRight size={12} className={styles.chevron} />
+              <span>gemini-2.5-pro</span>
+              <span className={styles.modelSep}>·</span>
+              <span>gemini-embedding-001</span>
+              <span className={styles.modelSep}>·</span>
+              <span>768 dims</span>
+            </div>
           </div>
         </div>
       </div>

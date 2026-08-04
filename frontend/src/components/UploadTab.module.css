@@ -1,15 +1,15 @@
 .wrap {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
-.sectionHeader { display: flex; flex-direction: column; gap: 6px; }
+.sectionHeader { display: flex; flex-direction: column; gap: 8px; }
 
 .title {
   font-size: 1.4rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #fff, #c4c0ff);
+  background: linear-gradient(135deg, #fff, #c4bdff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -17,33 +17,35 @@
 
 .sub { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
 
-/* Drop Zone */
+/* ── Drop Zone ── */
 .dropZone {
   padding: 48px 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  border: 2px dashed var(--border-subtle) !important;
+  border: 2px dashed rgba(124, 108, 255, 0.3) !important;
+  border-radius: var(--radius-xl);
   transition: all var(--transition-med);
-  min-height: 200px;
+  min-height: 220px;
+  background: rgba(255, 255, 255, 0.02) !important;
 }
 
 .dropZone:hover:not(.hasFile) {
-  border-color: rgba(108, 99, 255, 0.4) !important;
-  background: rgba(108, 99, 255, 0.05) !important;
+  border-color: rgba(124, 108, 255, 0.6) !important;
+  background: rgba(124, 108, 255, 0.05) !important;
 }
 
 .dragOver {
   border-color: var(--accent-primary) !important;
-  background: rgba(108, 99, 255, 0.08) !important;
-  box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.15) !important;
+  background: rgba(124, 108, 255, 0.08) !important;
+  box-shadow: 0 0 0 4px rgba(124, 108, 255, 0.15) !important;
 }
 
 .hasFile {
   cursor: default;
-  border-color: rgba(0, 212, 170, 0.35) !important;
-  background: rgba(0, 212, 170, 0.05) !important;
+  border-color: rgba(34, 211, 238, 0.4) !important;
+  background: rgba(34, 211, 238, 0.05) !important;
 }
 
 .hiddenInput { display: none; }
@@ -52,17 +54,26 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   pointer-events: none;
 }
 
-.dropIcon {
-  font-size: 3rem;
-  filter: drop-shadow(0 0 12px rgba(108,99,255,0.5));
+.dropIconWrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(124, 108, 255, 0.2), rgba(34, 211, 238, 0.15));
+  border: 1px solid rgba(124, 108, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-primary-light);
+  margin-bottom: 8px;
+  box-shadow: 0 0 20px rgba(124, 108, 255, 0.15);
 }
 
 .dropTitle {
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -73,12 +84,14 @@
 }
 
 .browseLink {
-  color: var(--accent-primary);
+  color: var(--accent-primary-light);
   font-weight: 600;
   text-decoration: underline;
+  text-decoration-color: rgba(124, 108, 255, 0.4);
+  text-underline-offset: 4px;
 }
 
-/* File preview */
+/* ── File preview ── */
 .filePreview {
   display: flex;
   align-items: center;
@@ -86,7 +99,17 @@
   width: 100%;
 }
 
-.fileIcon { font-size: 2.5rem; }
+.fileIconWrap {
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+}
 
 .fileMeta {
   display: flex;
@@ -107,48 +130,60 @@
 .fileSize {
   font-size: 0.78rem;
   color: var(--text-muted);
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
-/* Formats row */
+/* ── Formats row ── */
 .formatsRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
 }
 
-/* Pipeline steps */
+/* ── Pipeline steps ── */
 .pipelineStep {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 7px 0;
+  gap: 12px;
+  padding: 10px 0;
   border-bottom: 1px solid var(--border-subtle);
 }
 
 .pipelineStep:last-child { border-bottom: none; }
 
-/* Result card */
+.stepIcon { color: var(--accent-primary-light); }
+
+/* ── Result card ── */
 .resultCard { padding: 24px; }
 
 .resultHeader {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .resultHeader h3 {
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
 }
 
-.successIcon { font-size: 1.5rem; }
+.successIconWrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(52, 211, 153, 0.15);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-success);
+}
 
 .resultGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 20px;
 }
 
 @media (max-width: 500px) {

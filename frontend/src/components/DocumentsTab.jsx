@@ -1,15 +1,17 @@
 import { useCallback, useEffect, useState } from 'react'
+import { FileIcon, FileText, FileSpreadsheet, FileJson, Globe, Trash2, RefreshCw, AlertCircle } from 'lucide-react'
 import { deleteDocument, listDocuments } from '../api.js'
 import styles from './DocumentsTab.module.css'
 
 function getFileIcon(name = '') {
   const ext = name.split('.').pop().toLowerCase()
-  const icons = {
-    pdf: '📄', docx: '📝', doc: '📝', xlsx: '📊', xls: '📊',
-    pptx: '📑', ppt: '📑', txt: '📃', md: '📃', csv: '📊',
-    json: '🔧', xml: '🔧', html: '🌐', htm: '🌐', log: '📋',
-  }
-  return icons[ext] || '📁'
+  if (['pdf'].includes(ext)) return <FileText size={22} color="#ef4444" />
+  if (['docx', 'doc'].includes(ext)) return <FileText size={22} color="#3b82f6" />
+  if (['xlsx', 'xls', 'csv'].includes(ext)) return <FileSpreadsheet size={22} color="#22c55e" />
+  if (['pptx', 'ppt'].includes(ext)) return <FileText size={22} color="#f97316" />
+  if (['json', 'xml'].includes(ext)) return <FileJson size={22} color="#eab308" />
+  if (['html', 'htm'].includes(ext)) return <Globe size={22} color="#0ea5e9" />
+  return <FileIcon size={22} color="#94a3b8" />
 }
 
 export default function DocumentsTab({ userId }) {
@@ -64,19 +66,21 @@ export default function DocumentsTab({ userId }) {
           disabled={loading}
           id="refresh-docs-btn"
         >
-          {loading ? <span className="spinner" /> : '🔄'} Refresh
+          <RefreshCw size={16} className={loading ? 'spinner' : ''} /> Refresh
         </button>
       </div>
 
       {error && (
         <div className="alert alert-error">
-          <span>⚠️</span> {error}
+          <AlertCircle size={18} /> {error}
         </div>
       )}
 
       {!loading && documents.length === 0 && !error && (
         <div className="empty-state glass-card">
-          <span className="empty-state-icon">📭</span>
+          <span className="empty-state-icon">
+            <FileIcon size={48} strokeWidth={1} color="rgba(124, 108, 255, 0.4)" />
+          </span>
           <p style={{ fontWeight: 600 }}>No documents yet</p>
           <p style={{ fontSize: '0.85rem' }}>Upload a document in the Upload tab to get started.</p>
         </div>
@@ -86,7 +90,9 @@ export default function DocumentsTab({ userId }) {
         <div className={styles.docList}>
           {documents.map(doc => (
             <div key={doc.document_id} className={`glass-card ${styles.docCard}`}>
-              <span className={styles.docIcon}>{getFileIcon(doc.filename)}</span>
+              <div className={styles.docIconWrap}>
+                {getFileIcon(doc.filename)}
+              </div>
 
               <div className={styles.docInfo}>
                 <span className={styles.docName} title={doc.filename}>
@@ -109,7 +115,7 @@ export default function DocumentsTab({ userId }) {
                     disabled={deletingId === doc.document_id}
                     id={`confirm-delete-${doc.document_id}`}
                   >
-                    {deletingId === doc.document_id ? <span className="spinner" /> : 'Yes, delete'}
+                    {deletingId === doc.document_id ? <RefreshCw size={14} className="spinner" /> : 'Yes, delete'}
                   </button>
                   <button
                     className="btn btn-secondary btn-sm"
@@ -120,12 +126,12 @@ export default function DocumentsTab({ userId }) {
                 </div>
               ) : (
                 <button
-                  className="btn btn-danger btn-sm"
+                  className={`btn btn-danger btn-sm ${styles.deleteBtn}`}
                   onClick={() => setConfirmId(doc.document_id)}
                   disabled={!!deletingId}
                   id={`delete-${doc.document_id}`}
                 >
-                  🗑 Delete
+                  <Trash2 size={14} /> Delete
                 </button>
               )}
             </div>
