@@ -1,0 +1,115 @@
+name: CodeQL Security Analysis
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+  schedule:
+    # Run every Monday at 06:00 UTC
+    - cron: '0 6 * * 1'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    permissions:
+      # Required for CodeQL to read source code
+      contents: read
+      # Required to upload CodeQL results
+      security-events: write
+      # Required for private repos; harmless on public repos
+      actions: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Python — backend (FastAPI, ADK agent, ingestion pipeline)
+          - language: python
+            build-mode: none
+
+          # JavaScript — React frontend (Vite, JSX components)
+          - language: javascript-typescript
+            build-mode: none
+
+    steps:
+      # ------------------------------------------------------------------ #
+      # 1. Check out source
+      # ------------------------------------------------------------------ #
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ------------------------------------------------------------------ #
+      # 2. Set up Python (required for CodeQL to resolve imports correctly)
+      # ------------------------------------------------------------------ #
+      - name: Set up Python 3.11
+        if: matrix.language == 'python'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        if: matrix.language == 'python'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # ------------------------------------------------------------------ #
+      # 3. Set up Node.js (required for CodeQL to resolve JS imports)
+      # ------------------------------------------------------------------ #
+      - name: Set up Node.js 20
+        if: matrix.language == 'javascript-typescript'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Node.js dependencies
+        if: matrix.language == 'javascript-typescript'
+        run: |
+          cd frontend
+          npm ci
+
+      # ------------------------------------------------------------------ #
+      # 4. Initialise CodeQL
+      # ------------------------------------------------------------------ #
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+          # Enable all default security and quality queries
+          queries: security-and-quality
+          # Paths to scan (exclude chromadb data and build artifacts)
+          config: |
+            paths:
+              - app
+              - frontend/src
+            paths-ignore:
+              - data
+              - uploads
+              - frontend/dist
+              - frontend/node_modules
+              - '**/*.min.js'
+              - '**/__pycache__'
+
+      # ------------------------------------------------------------------ #
+      # 5. Perform CodeQL analysis
+      # ------------------------------------------------------------------ #
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: '/language:${{ matrix.language }}'
+          # Upload results to GitHub Security tab
+          upload: always

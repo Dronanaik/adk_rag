@@ -1,0 +1,191 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.sectionHeader { display: flex; flex-direction: column; gap: 8px; }
+
+.title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #fff, #c4bdff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.sub { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
+
+/* ── Drop Zone ── */
+.dropZone {
+  padding: 48px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px dashed rgba(124, 108, 255, 0.3) !important;
+  border-radius: var(--radius-xl);
+  transition: all var(--transition-med);
+  min-height: 220px;
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+.dropZone:hover:not(.hasFile) {
+  border-color: rgba(124, 108, 255, 0.6) !important;
+  background: rgba(124, 108, 255, 0.05) !important;
+}
+
+.dragOver {
+  border-color: var(--accent-primary) !important;
+  background: rgba(124, 108, 255, 0.08) !important;
+  box-shadow: 0 0 0 4px rgba(124, 108, 255, 0.15) !important;
+}
+
+.hasFile {
+  cursor: default;
+  border-color: rgba(34, 211, 238, 0.4) !important;
+  background: rgba(34, 211, 238, 0.05) !important;
+}
+
+.hiddenInput { display: none; }
+
+.dropContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.dropIconWrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(124, 108, 255, 0.2), rgba(34, 211, 238, 0.15));
+  border: 1px solid rgba(124, 108, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-primary-light);
+  margin-bottom: 8px;
+  box-shadow: 0 0 20px rgba(124, 108, 255, 0.15);
+}
+
+.dropTitle {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.dropSub {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.browseLink {
+  color: var(--accent-primary-light);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(124, 108, 255, 0.4);
+  text-underline-offset: 4px;
+}
+
+/* ── File preview ── */
+.filePreview {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.fileIconWrap {
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+}
+
+.fileMeta {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.fileName {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fileSize {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ── Formats row ── */
+.formatsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ── Pipeline steps ── */
+.pipelineStep {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.pipelineStep:last-child { border-bottom: none; }
+
+.stepIcon { color: var(--accent-primary-light); }
+
+/* ── Result card ── */
+.resultCard { padding: 24px; }
+
+.resultHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.resultHeader h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.successIconWrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(52, 211, 153, 0.15);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-success);
+}
+
+.resultGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 500px) {
+  .resultGrid { grid-template-columns: 1fr; }
+}

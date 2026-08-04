@@ -1,571 +1,283 @@
 # ADK RAG
 
-A document-based Retrieval-Augmented Generation (RAG) system built with:
+> **Document Intelligence Platform** — Upload, ingest, and chat with your documents using Google ADK, Gemini, and ChromaDB.
 
-- Google ADK for the AI agent
-- Gemini for embeddings and answer generation
-- ChromaDB as the vector database
-- FastAPI for document upload APIs
-- PyMuPDF for PDF text extraction
-- `python-docx` for DOCX text extraction
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Google ADK](https://img.shields.io/badge/Google%20ADK-latest-4285F4?logo=google&logoColor=white)](https://developers.google.com/adk)
+[![ChromaDB](https://img.shields.io/badge/ChromaDB-latest-orange)](https://www.trychroma.com)
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev)
 
-The system allows users to upload documents, convert them into searchable vector embeddings, and ask questions about their uploaded content.
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Quick Start](#quick-start)
+- [Project Structure](#project-structure)
+- [Supported File Types](#supported-file-types)
+- [API Endpoints](#api-endpoints)
+- [Documentation](#documentation)
+- [Production Recommendations](#production-recommendations)
+
+---
+
+## Overview
+
+ADK RAG is a **Retrieval-Augmented Generation** system that lets users upload documents, converts them into searchable vector embeddings, and answers natural language questions using only the user's uploaded content.
+
+Each user has an **isolated document workspace** — one user cannot access another user's documents.
 
 ---
 
 ## Features
 
-- Upload PDF, DOCX, TXT, Markdown, CSV, JSON, XML, and HTML files
-- Extract text from uploaded documents
-- Split documents into overlapping chunks
-- Generate Gemini embeddings
-- Store chunks and embeddings in ChromaDB
-- Search relevant document chunks using semantic similarity
-- Use Google ADK to answer questions based on retrieved chunks
-- Support user-specific document filtering
-- Return source filename and chunk metadata
+| Feature | Details |
+|---------|---------|
+| **Document Upload** | PDF, DOCX, XLSX, XLS, PPTX, TXT, MD, CSV, JSON, XML, HTML, LOG |
+| **Text Extraction** | Format-specific parsers (PyMuPDF, python-docx, openpyxl, python-pptx) |
+| **Chunking** | Overlapping 1200-character chunks, 200-character overlap |
+| **Embeddings** | Gemini `gemini-embedding-001`, 768 dimensions |
+| **Vector Store** | ChromaDB persistent local collection |
+| **AI Agent** | Google ADK `LlmAgent` powered by `gemini-2.5-pro` |
+| **Source Citations** | `[Source: filename, chunk N]` in every answer |
+| **React UI** | Dark glassmorphism theme, drag-and-drop upload, chat interface |
+| **User Isolation** | All ChromaDB queries are filtered by `user_id` |
 
 ---
 
 ## Architecture
 
-### Document ingestion
+```
+┌─────────────────────────────────────────────────────┐
+│                     React UI                         │
+│  (Upload · Documents · Ingestion Pipeline · Chat)    │
+└─────────────────┬───────────────────────────────────┘
+                  │ HTTP (Vite proxy → localhost:8000)
+┌─────────────────▼───────────────────────────────────┐
+│              FastAPI Backend                         │
+│  POST /documents/upload   GET /documents             │
+│  DELETE /documents/{id}   POST /chat                 │
+│  GET /ingest/status       GET /health                │
+└──────┬──────────────────────────────┬───────────────┘
+       │                              │
+┌──────▼──────────┐        ┌──────────▼────────────────┐
+│  Ingestion       │        │    Google ADK Runner       │
+│  Pipeline        │        │    (LlmAgent)              │
+│                  │        │    gemini-2.5-pro           │
+│  1. Extract text │        └──────────┬────────────────┘
+│  2. Chunk        │                   │ search_user_documents tool
+│  3. Embed        │        ┌──────────▼────────────────┐
+│     (Gemini)     │        │    ChromaDB Query          │
+│  4. Store        │        │    (user_id filter)        │
+└──────┬──────────┘        └───────────────────────────┘
+       │
+┌──────▼──────────┐
+│   ChromaDB       │
+│  (./data/chroma) │
+│  collection:     │
+│    documents     │
+└─────────────────┘
+```
 
-```text
-User uploads a document
-        ↓
-FastAPI upload endpoint
-        ↓
-Text extraction
-        ↓
-Text chunking
-        ↓
-Gemini embeddings
-        ↓
-ChromaDB
-Question answering
-User asks a question
-        ↓
-Google ADK agent
-        ↓
-Search document tool
-        ↓
-Question embedding
-        ↓
-ChromaDB similarity search
-        ↓
-Relevant chunks
-        ↓
-Gemini-generated answer
-Project structure
-adk_rag/
-├── app/
-│   ├── __init__.py
-│   ├── agent.py
-│   ├── api.py
-│   ├── chunking.py
-│   ├── config.py
-│   ├── database.py
-│   ├── embeddings.py
-│   ├── ingest.py
-│   ├── parsers.py
-│   ├── rag_store.py
-│   └── run_agent.py
-├── data/
-│   └── chroma/
-├── uploads/
-├── .env
-├── .gitignore
-└── requirements.txt
-Requirements
-Python 3.10 or later
-A Google API key
-Internet connection for Gemini API requests
-Linux, macOS, or Windows
-Check your Python version:
+### Ingestion pipeline (step by step)
 
-python --version
-Installation
-1. Clone the repository
+```
+File uploaded
+    ↓
+parsers.py      — extract raw text by file type
+    ↓
+chunking.py     — normalize whitespace, split into 1200-char overlapping chunks
+    ↓
+embeddings.py   — Gemini gemini-embedding-001 → 768-dim vectors
+    ↓
+rag_store.py    — store chunks + embeddings + metadata in ChromaDB
+```
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+- Python 3.10 or later
+- Node.js 18 or later (for the React UI)
+- A [Google API key](https://aistudio.google.com/app/apikey)
+
+### 1 — Clone and enter the project
+
+```bash
 git clone <YOUR_REPOSITORY_URL>
 cd adk_rag
-2. Create a virtual environment
-Linux/macOS:
+```
 
+### 2 — Set up the Python environment
+
+```bash
 python3 -m venv .venv
-source .venv/bin/activate
-Windows:
-
-python -m venv .venv
-.venv\Scripts\activate
-3. Install dependencies
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-Required packages
-The requirements.txt file should contain:
+```
 
-google-adk
-google-genai
-chromadb
-fastapi
-uvicorn
-python-multipart
-python-dotenv
-pymupdf
-python-docx
-Install them manually if required:
+### 3 — Configure environment variables
 
-pip install google-adk google-genai chromadb fastapi uvicorn python-multipart python-dotenv pymupdf python-docx
-Environment configuration
-Create a .env file in the project root:
+```bash
+cp .env.example .env
+# Edit .env and add your Google API key
+```
 
-GOOGLE_API_KEY=your_google_api_key
-
+```env
+GOOGLE_API_KEY=your_google_api_key_here
 CHROMA_PATH=./data/chroma
 COLLECTION_NAME=documents
 TOP_K=5
-Replace:
+```
 
-your_google_api_key
-with your actual Google API key.
+### 4 — Start the backend API
 
-Do not commit .env to Git.
-
-Create a .gitignore file:
-
-.venv/
-.env
-__pycache__/
-*.pyc
-data/
-uploads/
-How the vector database works
-The project uses ChromaDB's persistent client:
-
-import chromadb
-
-client = chromadb.PersistentClient(
-    path="./data/chroma"
-)
-The database is stored locally in:
-
-./data/chroma
-A collection is created automatically:
-
-collection = client.get_or_create_collection(
-    name="documents",
-    metadata={
-        "hnsw:space": "cosine"
-    }
-)
-Each document chunk contains:
-
-A unique chunk ID
-The chunk text
-An embedding vector
-User metadata
-Document metadata
-Filename
-Chunk index
-Example metadata:
-
-{
-  "user_id": "user_123",
-  "document_id": "document_001",
-  "filename": "resume.pdf",
-  "chunk_index": 2
-}
-Start the FastAPI server
-From the project root, run:
-
+```bash
 uvicorn app.api:app --reload
-The API will be available at:
-
-http://localhost:8000
-Swagger API documentation:
-
-http://localhost:8000/docs
-ReDoc documentation:
-
-http://localhost:8000/redoc
-Check the API health
-Run:
-
-curl http://localhost:8000/health
-Expected response:
-
-{
-  "status": "ok"
-}
-Upload a document
-The upload endpoint is:
-
-POST /documents/upload
-Example:
-
-curl -X POST \
-  -H "x-user-id: user_123" \
-  -F "file=@/absolute/path/to/Drona_Resume.pdf" \
-  http://localhost:8000/documents/upload
-Example using a file in the current directory:
-
-curl -X POST \
-  -H "x-user-id: user_123" \
-  -F "file=@./Drona_Resume.pdf" \
-  http://localhost:8000/documents/upload
-Example using a file in the Downloads directory:
-
-curl -X POST \
-  -H "x-user-id: user_123" \
-  -F "file=@$HOME/Downloads/Drona_Resume.pdf" \
-  http://localhost:8000/documents/upload
-Example response:
-
-{
-  "success": true,
-  "message": "Document ingested successfully.",
-  "result": {
-    "document_id": "a9be0a7c-1ef9-43a1-bb2a-1208cf2ba7b5",
-    "filename": "Drona_Resume.pdf",
-    "chunks_created": 8,
-    "characters_extracted": 8400
-  }
-}
-Troubleshooting upload errors
-If you receive:
-
-curl: (26) Failed to open/read local data from file/application
-curl cannot find or read the local file.
-
-Check the current directory:
-
-pwd
-ls -lh
-Check whether the file exists:
-
-ls -lh ./Drona_Resume.pdf
-Search for the file:
-
-find ~ -iname "*resume*.pdf"
-Then use the full path:
-
-curl -X POST \
-  -H "x-user-id: user_123" \
-  -F "file=@/home/your-user/Downloads/Drona_Resume.pdf" \
-  http://localhost:8000/documents/upload
-Linux filenames are case-sensitive. These filenames are different:
-
-Drona_Resume.pdf
-drona_resume.pdf
-Drona_resume.pdf
-If the filename contains spaces, quote the complete file path:
-
-curl -X POST \
-  -H "x-user-id: user_123" \
-  -F 'file=@/home/your-user/Downloads/Drona Resume.pdf' \
-  http://localhost:8000/documents/upload
-Document ingestion process
-When a document is uploaded, the following steps occur:
-
-text = extract_text(file_path)
-chunks = chunk_text(text)
-embeddings = embed_texts(chunks)
-add_document_chunks(
-    user_id=user_id,
-    document_id=document_id,
-    filename=filename,
-    chunks=chunks,
-)
-Text extraction
-The parser identifies the file type and extracts readable text.
-
-Supported formats include:
-
-.pdf
-.docx
-.txt
-.md
-.csv
-.json
-.xml
-.html
-.htm
-.log
-Scanned PDFs and images require OCR. Text extraction alone will not work for image-only documents.
-
-Chunking
-Documents are divided into smaller overlapping sections.
-
-Example configuration:
-
-chunks = chunk_text(
-    text,
-    chunk_size=1200,
-    overlap=200,
-)
-Where:
-
-chunk_size is the maximum chunk size
-overlap prevents information from being lost between chunks
-The overlap is useful when a sentence or concept crosses two chunk boundaries.
-
-Embeddings
-The system uses the Gemini embedding model:
-
-EMBEDDING_MODEL = "gemini-embedding-001"
-The same embedding model must be used for:
-
-Document chunks
-User questions
-Example:
-
-response = client.models.embed_content(
-    model="gemini-embedding-001",
-    contents=text,
-    config=EmbedContentConfig(
-        output_dimensionality=768,
-    ),
-)
-Do not change the embedding model or embedding dimension for an existing collection without re-indexing the documents.
-
-Search ChromaDB directly
-You can search the vector database from Python:
-
-from app.rag_store import search_documents
-
-matches = search_documents(
-    user_id="user_123",
-    query="What are the user's technical skills?",
-    top_k=5,
-)
-
-for match in matches:
-    print(match["text"])
-    print(match["metadata"])
-    print(match["distance"])
-The search uses the user_id filter:
-
-where={
-    "user_id": user_id,
-}
-This prevents a user from retrieving another user's documents.
-
-Google ADK integration
-The ADK agent uses a tool called:
-
-search_user_documents
-The tool performs the following operations:
-
-Receive the user query
-        ↓
-Read the authenticated user ID
-        ↓
-Generate a query embedding
-        ↓
-Search ChromaDB
-        ↓
-Return relevant chunks
-The agent is configured to:
-
-Search uploaded documents
-Answer using retrieved chunks
-Avoid inventing information
-Tell the user when information is not found
-Include source citations
-Example answer:
-
-The candidate has experience with Python, FastAPI, and Google ADK.
-
-[Source: Drona_Resume.pdf, chunk 2]
-Run the ADK agent manually
-If app/run_agent.py is available, run:
-
-python -m app.run_agent
-The agent should:
-
-Create an ADK session
-Receive a question
-Call the document search tool
-Retrieve relevant chunks from ChromaDB
-Generate an answer
-Example question:
-
-What programming languages are mentioned in my resume?
-ChromaDB operations
-Check the number of stored chunks
-from app.database import collection
-
-print(collection.count())
-View stored records
-records = collection.get(
-    limit=10,
-    include=[
-        "documents",
-        "metadatas",
-    ],
-)
-
-print(records)
-Delete a document
-from app.database import collection
-
-collection.delete(
-    where={
-        "$and": [
-            {"user_id": "user_123"},
-            {"document_id": "document_001"},
-        ]
-    }
-)
-Delete the entire collection
-from app.database import client
-
-client.delete_collection(
-    name="documents"
-)
-Warning: deleting a collection permanently removes all document chunks and embeddings.
-
-Security
-The example uses:
-
-x-user-id: user_123
-This is only suitable for local testing.
-
-For production, use a real authentication system, such as:
-
-Firebase Authentication
-Google Identity Platform
-OAuth
-JWT
-Session-based authentication
-Google Cloud IAM
-The server should determine the user ID from a validated authentication token.
-
-Do not allow the language model to choose the user ID.
-
-Always apply user filtering during retrieval:
-
-where={
-    "user_id": authenticated_user_id,
-}
-Supported document types
-The basic parser supports:
-
-File type	Parser
-PDF	PyMuPDF
-DOCX	python-docx
-TXT	Python file reader
-Markdown	Python file reader
-CSV	Python file reader
-JSON	Python file reader
-XML	Python file reader
-HTML	Python file reader
-For additional formats, consider:
-
-openpyxl for Excel files
-python-pptx for PowerPoint files
-Tesseract OCR for images and scanned PDFs
-Google Document AI for enterprise document processing
-Unstructured for multi-format document extraction
-Common issues
-ChromaDB contains no records
-Check that:
-
-The upload completed successfully.
-Text was extracted from the document.
-Chunks were created.
-Embeddings were generated.
-The data/chroma directory exists.
-Check the collection count:
-
-from app.database import collection
-
-print(collection.count())
-No text extracted from the PDF
-The PDF may be scanned or image-based.
-
-Use OCR, such as:
-
-Tesseract
-Google Document AI
-Cloud Vision API
-Search returns irrelevant chunks
-Try:
-
-Improving the chunk size
-Increasing overlap
-Using more specific queries
-Adding metadata filters
-Adding a similarity threshold
-Using hybrid keyword and vector search
-Adding a reranking step
-API connection error
-If you receive:
-
-curl: (7) Failed to connect to localhost port 8000
-Start the API:
-
-uvicorn app.api:app --reload
-Gemini API authentication error
-Check that:
-
-echo $GOOGLE_API_KEY
-returns a value.
-
-Also check that the .env file exists in the project root:
-
-ls -la .env
-Production recommendations
+# API available at http://localhost:8000
+# Swagger UI at http://localhost:8000/docs
+```
+
+### 5 — Start the React UI
+
+```bash
+cd frontend
+npm install
+npm run dev
+# UI available at http://localhost:5173
+```
+
+### 6 — Open the app
+
+Navigate to **http://localhost:5173**, enter your User ID, and start uploading documents.
+
+---
+
+## Project Structure
+
+```
+adk_rag/
+├── app/
+│   ├── __init__.py
+│   ├── agent.py          # Google ADK LlmAgent + search tool
+│   ├── api.py            # FastAPI endpoints (upload, chat, delete, status)
+│   ├── chunking.py       # Text normalization and overlapping chunker
+│   ├── config.py         # Environment variable loading
+│   ├── database.py       # ChromaDB persistent client
+│   ├── embeddings.py     # Gemini embedding-001 wrapper
+│   ├── ingest.py         # Orchestrates extract → chunk → embed → store
+│   ├── parsers.py        # Format-specific text extractors
+│   ├── rag_store.py      # ChromaDB CRUD operations
+│   └── run_agent.py      # Standalone CLI agent runner
+├── frontend/
+│   ├── src/
+│   │   ├── components/   # React components
+│   │   │   ├── UserIdModal.jsx    # User ID gate
+│   │   │   ├── Header.jsx         # App header + sub-header
+│   │   │   ├── Tabs.jsx           # Tab navigation
+│   │   │   ├── UploadTab.jsx      # Drag-and-drop upload
+│   │   │   ├── DocumentsTab.jsx   # Document list + delete
+│   │   │   ├── IngestionTab.jsx   # Pipeline status + file types
+│   │   │   ├── ChatTab.jsx        # RAG chat interface
+│   │   │   └── ChatMessage.jsx    # Message bubble component
+│   │   ├── api.js         # API utility functions
+│   │   ├── App.jsx        # Root component
+│   │   └── index.css      # Design system (dark glassmorphism)
+│   ├── index.html
+│   ├── package.json
+│   └── vite.config.js
+├── data/
+│   └── chroma/           # ChromaDB persistent storage
+├── docs/
+│   ├── ARCHITECTURE.md   # System architecture deep-dive
+│   ├── API.md            # All API endpoints with examples
+│   ├── CHAT.md           # ADK agent and chat system
+│   ├── FRONTEND.md       # React UI guide
+│   ├── INGESTION.md      # Ingestion pipeline walkthrough
+│   ├── INSTALLATION.md   # Step-by-step installation
+│   └── TROUBLESHOOTING.md # Common errors and fixes
+├── uploads/              # Temporary file storage (auto-cleaned)
+├── .env                  # Your local environment (do not commit)
+├── .env.example          # Environment variable template
+├── requirements.txt      # Python dependencies
+└── README.md
+```
+
+---
+
+## Supported File Types
+
+| Extension | Parser | Notes |
+|-----------|--------|-------|
+| `.pdf` | PyMuPDF | Text-based PDFs only. Scanned PDFs require OCR. |
+| `.docx` | python-docx | Full paragraph extraction. |
+| `.xlsx` | openpyxl | All sheets extracted row by row. |
+| `.xls` | openpyxl | Legacy Excel format. |
+| `.pptx` | python-pptx | Slide-by-slide text extraction. |
+| `.txt` | Plain reader | UTF-8 with error-ignore fallback. |
+| `.md` | Plain reader | Markdown treated as plain text. |
+| `.csv` | Plain reader | Raw CSV values. |
+| `.json` | Plain reader | Raw JSON text. |
+| `.xml` | Plain reader | Raw XML markup. |
+| `.html` / `.htm` | Plain reader | HTML tags included. |
+| `.log` | Plain reader | Log files as plain text. |
+
+---
+
+## API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/health` | Health check |
+| `GET` | `/ingest/status` | Pipeline status + chunk count |
+| `POST` | `/documents/upload` | Upload and ingest a document |
+| `GET` | `/documents` | List user's documents |
+| `DELETE` | `/documents/{id}` | Delete a document and its chunks |
+| `POST` | `/chat` | Chat with the ADK agent |
+
+All document endpoints require the `x-user-id` header.
+
+See [docs/API.md](docs/API.md) for full examples.
+
+---
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [INSTALLATION.md](docs/INSTALLATION.md) | Step-by-step environment setup |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design and data flow |
+| [INGESTION.md](docs/INGESTION.md) | Ingestion pipeline walkthrough |
+| [API.md](docs/API.md) | All API endpoints with curl examples |
+| [CHAT.md](docs/CHAT.md) | ADK agent and session lifecycle |
+| [FRONTEND.md](docs/FRONTEND.md) | React UI setup and component guide |
+| [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Common errors and fixes |
+
+---
+
+## Production Recommendations
+
 For production deployments, consider:
 
-Persistent hosted vector storage
-PostgreSQL with pgvector
-Vertex AI Vector Search
-AlloyDB with vector search
-Cloud Storage for original documents
-Pub/Sub for asynchronous ingestion
-Cloud Run for API and worker services
-OCR for scanned documents
-Authentication and authorization
-File size restrictions
-Virus scanning
-Rate limiting
-Monitoring and logging
-Document deletion and retention policies
-Retrieval evaluation
-A production architecture may look like this:
+- **Authentication**: Replace `x-user-id` header with Firebase Auth, Google Identity Platform, or JWT
+- **Vector storage**: PostgreSQL with pgvector, Vertex AI Vector Search, or AlloyDB
+- **Document storage**: Google Cloud Storage for original files
+- **Async ingestion**: Cloud Pub/Sub + worker service for large file processing
+- **OCR**: Tesseract, Google Document AI, or Cloud Vision API for scanned PDFs
+- **Rate limiting**: API Gateway or FastAPI middleware
+- **Security**: File size limits, virus scanning, content validation
 
-Cloud Storage
-        ↓
-Upload API
-        ↓
-Pub/Sub
-        ↓
-Ingestion Worker
-        ↓
-Document Parser / OCR
-        ↓
-Gemini Embeddings
-        ↓
-Vertex AI Vector Search or AlloyDB
-        ↓
-Google ADK Agent
-        ↓
-User Answer
-License
-Add your project license here.
+---
 
-Example:
+## Author
+
+Created by **Drona**.
+
+## License
 
 MIT License
-Author
-Created by Drona.
-
-
-Save the file using the exact filename:
-
-```text
-README.md
-The standard filename is README.md, not README.md. Then add and commit it:
-
-git add README.md
-git commit -m "Add ADK RAG documentation"
