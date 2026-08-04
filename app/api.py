@@ -7,6 +7,10 @@ from pydantic import BaseModel
 
 from app.agent import root_agent
 from app.ingest import ingest_document
+from app.rag_store import (
+    delete_document_chunks,
+    list_user_documents,
+)
 
 app = FastAPI(
     title="Google ADK RAG API"
@@ -80,3 +84,39 @@ async def health():
     return {
         "status": "ok"
     }
+
+
+@app.get("/documents")
+def get_documents(
+    x_user_id: str = Header(..., alias="x-user-id"),
+):
+    documents = list_user_documents(x_user_id)
+
+    return {
+        "success": True,
+        "documents": documents,
+    }
+
+@app.delete("/documents/{document_id}")
+def delete_document(
+    document_id: str,
+    x_user_id: str = Header(..., alias="x-user-id"),
+):
+    deleted_chunks = delete_document_chunks(
+        user_id=x_user_id,
+        document_id=document_id,
+    )
+
+    if deleted_chunks == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="Document not found.",
+        )
+
+    return {
+        "success": True,
+        "document_id": document_id,
+        "deleted_chunks": deleted_chunks,
+    }
+
+
