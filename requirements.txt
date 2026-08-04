@@ -7,3 +7,5 @@ python-multipart
 python-dotenv
 pymupdf
 python-docx
+openpyxl
+python-pptx
