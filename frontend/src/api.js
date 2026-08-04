@@ -3,7 +3,7 @@
    Base URL is proxied through Vite (/api → http://localhost:8000)
    ============================================================ */
 
-const BASE_URL = '/api'
+const BASE_URL = import.meta.env.VITE_API_URL || '/api'
 
 /**
  * Shared fetch wrapper with user-id header injection.

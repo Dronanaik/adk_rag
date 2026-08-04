@@ -72,7 +72,7 @@ export default function App() {
             ADK RAG &mdash; Built with{' '}
             <span style={{ color: 'var(--accent-primary)' }}>Google ADK</span>,{' '}
             <span style={{ color: 'var(--accent-secondary)' }}>Gemini</span>, and{' '}
-            <span style={{ color: 'var(--accent-primary)' }}>ChromaDB</span>
+            <span style={{ color: 'var(--accent-primary)' }}>Pinecone DB</span>
           </p>
         </div>
       </footer>

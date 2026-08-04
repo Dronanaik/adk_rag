@@ -83,7 +83,7 @@ export default function UploadTab({ userId, onStartUpload }) {
       <div className={styles.sectionHeader}>
         <h2 className={styles.title}>Upload Document</h2>
         <p className={styles.sub}>
-          Upload a document to your workspace. It will be extracted, chunked, embedded, and stored in ChromaDB automatically.
+          Upload a document to your workspace. It will be extracted, chunked, embedded, and stored in Pinecone DB automatically.
         </p>
       </div>
 

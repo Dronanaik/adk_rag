@@ -9,28 +9,28 @@ const PIPELINE_STEPS = [
     name: 'Text Extraction',
     description: 'Reads the uploaded file and extracts raw text using format-specific parsers.',
     icon: BookOpen,
-    detail: 'parsers.py — PyMuPDF, python-docx, openpyxl, python-pptx, plain reader',
+    detail: 'PyMuPDF, python-docx, openpyxl, python-pptx, plain reader',
   },
   {
     step: 2,
     name: 'Text Normalization & Chunking',
     description: 'Normalizes whitespace and splits text into overlapping 1200-character chunks with 200-character overlap.',
     icon: Scissors,
-    detail: 'chunking.py — chunk_size=1200, overlap=200',
+    detail: 'chunk_size=1200, overlap=200',
   },
   {
     step: 3,
     name: 'Gemini Embedding Generation',
     description: 'Each chunk is embedded using Gemini embedding-001 model, producing a 768-dimensional vector.',
     icon: Cpu,
-    detail: 'embeddings.py — gemini-embedding-001, dimensionality=768',
+    detail: 'gemini-embedding-001, dimensionality=768',
   },
   {
     step: 4,
-    name: 'ChromaDB Vector Storage',
-    description: 'Embeddings, text chunks, and metadata (user_id, document_id, filename, chunk_index) are stored in ChromaDB.',
+    name: 'Pinecone Vector Storage',
+    description: 'Embeddings, text chunks, and metadata (user_id, document_id, filename, chunk_index) are stored in Pinecone DB.',
     icon: Database,
-    detail: 'rag_store.py — persistent ChromaDB collection',
+    detail: 'persistent Pinecone DB collection',
   },
 ]
 
@@ -87,7 +87,7 @@ export default function IngestionTab({ uploadState }) {
             <h3 style={{ margin: 0, color: 'var(--text-primary)' }}>Ingestion Pipeline is Running...</h3>
           </div>
           <p style={{ marginTop: '8px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Processing document. This involves Text Extraction, Normalization & Chunking, Gemini Embedding Generation, and ChromaDB Vector Storage.
+            Processing document. This involves Text Extraction, Normalization & Chunking, Gemini Embedding Generation, and Pinecone Vector Storage.
           </p>
         </div>
       )}

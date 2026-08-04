@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: adk-rag-backend
+    env: python
+    buildCommand: "bash build.sh"
+    startCommand: "uvicorn app.api:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: PINECONE_API_KEY
+        sync: false
+      - key: PINECONE_INDEX_NAME
+        value: "documents"
+      - key: ALLOWED_ORIGINS
+        sync: false # Set this in Render dashboard to your Netlify URL (e.g., https://my-app.netlify.app)

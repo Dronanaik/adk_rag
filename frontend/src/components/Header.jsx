@@ -72,26 +72,6 @@ export default function Header({ userId, onChangeUser }) {
         </div>
       </div>
 
-      {/* Sub-header */}
-      <div className={styles.subHeader}>
-        <div className="container">
-          <div className={styles.subInner}>
-            <div className={styles.techBadges}>
-              <span className={`badge badge-purple ${styles.techBadge}`}>Google ADK</span>
-              <span className={`badge badge-teal ${styles.techBadge}`}>ChromaDB</span>
-              <span className={`badge badge-purple ${styles.techBadge}`}>FastAPI</span>
-            </div>
-            <div className={styles.modelInfo}>
-              <ChevronRight size={12} className={styles.chevron} />
-              <span>gemini-2.5-pro</span>
-              <span className={styles.modelSep}>·</span>
-              <span>gemini-embedding-001</span>
-              <span className={styles.modelSep}>·</span>
-              <span>768 dims</span>
-            </div>
-          </div>
-        </div>
-      </div>
     </header>
   )
 }

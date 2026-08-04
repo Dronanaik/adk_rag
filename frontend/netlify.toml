@@ -1,0 +1,10 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Redirects for Single Page Applications (SPA)
+# This routes all non-file requests to index.html so React Router handles them
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
