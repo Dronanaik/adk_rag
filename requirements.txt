@@ -1,6 +1,6 @@
 google-adk
 google-genai
-chromadb
+pinecone
 fastapi
 uvicorn
 python-multipart

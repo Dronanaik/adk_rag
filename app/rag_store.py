@@ -1,7 +1,7 @@
 import uuid
 from typing import Any
 
-from app.database import collection
+from app.database import index as pc_index
 from app.embeddings import embed_text, embed_texts
 
 def add_document_chunks(
@@ -11,7 +11,7 @@ def add_document_chunks(
     chunks: list[str],
 ) -> int:
     """
-    Embed and store document chunks in ChromaDB.
+    Embed and store document chunks in Pinecone.
     """
 
     if not chunks:
@@ -19,29 +19,24 @@ def add_document_chunks(
 
     embeddings = embed_texts(chunks)
 
-    ids = []
-    metadatas = []
-
-    for index, chunk in enumerate(chunks):
-        chunk_id = f"{document_id}_{index}_{uuid.uuid4().hex[:8]}"
-
-        ids.append(chunk_id)
-
-        metadatas.append(
-            {
+    vectors = []
+    for i, chunk in enumerate(chunks):
+        # Format: user_id#document_id#index#uuid
+        chunk_id = f"{user_id}#{document_id}#{i}#{uuid.uuid4().hex[:8]}"
+        
+        vectors.append({
+            "id": chunk_id,
+            "values": embeddings[i],
+            "metadata": {
                 "user_id": user_id,
                 "document_id": document_id,
                 "filename": filename,
-                "chunk_index": index,
+                "chunk_index": i,
+                "text": chunk
             }
-        )
+        })
 
-    collection.add(
-        ids=ids,
-        documents=chunks,
-        embeddings=embeddings,
-        metadatas=metadatas,
-    )
+    pc_index.upsert(vectors=vectors)
 
     return len(chunks)
 
@@ -51,29 +46,24 @@ def delete_document_chunks(
     document_id: str,
 ) -> int:
     """
-    Delete all ChromaDB chunks belonging to a document and user.
-    Returns the number of deleted chunks.
+    Delete all Pinecone chunks belonging to a document and user.
     """
-
-    records = collection.get(
-        where={
-            "$and": [
-                {"user_id": user_id},
-                {"document_id": document_id},
-            ]
-        },
-        include=[],
-    )
-
-    chunk_ids = records.get("ids", [])
-
+    
+    # Pinecone Serverless supports deleting by filter
+    # Alternatively we can list IDs with prefix and delete
+    chunk_ids = []
+    for ids in pc_index.list(prefix=f"{user_id}#{document_id}#"):
+        chunk_ids.extend([i if isinstance(i, str) else getattr(i, 'id', str(i)) for i in ids])
+        
     if not chunk_ids:
         return 0
-
-    collection.delete(ids=chunk_ids)
+        
+    # Delete in batches of 1000
+    for i in range(0, len(chunk_ids), 1000):
+        batch = chunk_ids[i:i+1000]
+        pc_index.delete(ids=batch)
 
     return len(chunk_ids)
-
 
 
 def search_documents(
@@ -87,35 +77,26 @@ def search_documents(
 
     query_embedding = embed_text(query)
 
-    result = collection.query(
-        query_embeddings=[query_embedding],
-        n_results=top_k,
-        where={
+    result = pc_index.query(
+        vector=query_embedding,
+        top_k=top_k,
+        filter={
             "user_id": user_id,
         },
-        include=[
-            "documents",
-            "metadatas",
-            "distances",
-        ],
+        include_metadata=True,
     )
-
-    documents = result.get("documents", [[]])[0]
-    metadatas = result.get("metadatas", [[]])[0]
-    distances = result.get("distances", [[]])[0]
 
     matches = []
 
-    for document, metadata, distance in zip(
-        documents,
-        metadatas,
-        distances,
-    ):
+    for match in result.get("matches", []):
+        metadata = match.get("metadata", {})
+        text = metadata.pop("text", "")
         matches.append(
             {
-                "text": document,
+                "text": text,
                 "metadata": metadata,
-                "distance": distance,
+                # convert similarity score to a distance metric to be compatible
+                "distance": 1.0 - match.get("score", 1.0),
             }
         )
 
@@ -123,45 +104,37 @@ def search_documents(
 
 
 def list_user_documents(user_id: str) -> list[dict[str, Any]]:
-    records = collection.get(
-        where={"user_id": user_id},
-        include=["metadatas"],
-    )
-
+    """
+    List all documents for a user using Pinecone prefix listing.
+    """
     documents = {}
+    doc_first_chunk_ids = []
 
-    ids = records.get("ids", [])
-    metadatas = records.get("metadatas", [])
+    for ids in pc_index.list(prefix=f"{user_id}#"):
+        for chunk_item in ids:
+            chunk_id = chunk_item if isinstance(chunk_item, str) else getattr(chunk_item, 'id', str(chunk_item))
+            parts = chunk_id.split("#")
+            if len(parts) >= 3:
+                doc_id = parts[1]
+                if doc_id not in documents:
+                    documents[doc_id] = {
+                        "document_id": doc_id,
+                        "filename": f"Unknown ({doc_id})",
+                        "chunks": 0,
+                    }
+                    doc_first_chunk_ids.append(chunk_id)
+                documents[doc_id]["chunks"] += 1
 
-    for chunk_id, metadata in zip(ids, metadatas):
-        metadata = metadata or {}
-
-        document_id = metadata.get("document_id")
-        filename = metadata.get("filename")
-        chunk_index = metadata.get("chunk_index", 0)
-
-        if not document_id:
-            continue
-
-        if document_id not in documents:
-            documents[document_id] = {
-                "document_id": document_id,
-                "filename": filename,
-                "chunks": 0,
-                "chunk_ids": [],
-            }
-
-        documents[document_id]["chunks"] += 1
-        documents[document_id]["chunk_ids"].append(chunk_id)
-
-        # Optional: use the smallest chunk index to identify ordering
-        documents[document_id]["first_chunk_index"] = min(
-            documents[document_id].get("first_chunk_index", chunk_index),
-            chunk_index,
-        )
-
-    for document in documents.values():
-        document.pop("chunk_ids", None)
-        document.pop("first_chunk_index", None)
+    if doc_first_chunk_ids:
+        # Fetch metadata in batches of 1000
+        for i in range(0, len(doc_first_chunk_ids), 1000):
+            batch = doc_first_chunk_ids[i:i+1000]
+            fetch_res = pc_index.fetch(ids=batch)
+            for chunk_id, record in fetch_res.get("vectors", {}).items():
+                metadata = record.get("metadata", {})
+                doc_id = metadata.get("document_id")
+                filename = metadata.get("filename")
+                if doc_id and doc_id in documents and filename:
+                    documents[doc_id]["filename"] = filename
 
     return list(documents.values())

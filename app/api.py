@@ -18,6 +18,7 @@ from app.rag_store import (
     list_user_documents,
 )
 from app.parsers import extract_text
+from app.database import index as pc_index
 
 app = FastAPI(
     title="Google ADK RAG API",
@@ -29,9 +30,15 @@ app = FastAPI(
 # CORS — allow all origins for local development.
 # In production, replace "*" with your actual frontend domain.
 # ---------------------------------------------------------------------------
+allowed_origins_env = os.environ.get("ALLOWED_ORIGINS")
+if allowed_origins_env:
+    allow_origins = [origin.strip() for origin in allowed_origins_env.split(",")]
+else:
+    allow_origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allow_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -101,10 +108,14 @@ async def ingest_status():
     Return basic ingestion pipeline status:
     total chunks stored, supported file types, and pipeline state.
     """
-    from app.database import collection
-
     try:
-        total_chunks = collection.count()
+        stats = pc_index.describe_index_stats()
+        if hasattr(stats, 'total_vector_count'):
+            total_chunks = stats.total_vector_count
+        elif isinstance(stats, dict):
+            total_chunks = stats.get("total_vector_count", 0)
+        else:
+            total_chunks = 0
         status = "ready"
     except Exception as error:
         total_chunks = -1
@@ -118,7 +129,7 @@ async def ingest_status():
             "1. Text extraction (parser)",
             "2. Text normalization & chunking",
             "3. Gemini embedding generation (gemini-embedding-001)",
-            "4. ChromaDB vector storage",
+            "4. Pinecone vector storage",
         ],
     }
 
