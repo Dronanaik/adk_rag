@@ -1,0 +1,104 @@
+.row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  animation: fadeIn 0.2s ease;
+}
+
+.rowUser      { flex-direction: row-reverse; }
+.rowAssistant { flex-direction: row; }
+.rowError     { justify-content: center; }
+
+/* Avatar */
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(108, 99, 255, 0.15);
+  border: 1.5px solid rgba(108, 99, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+  box-shadow: 0 0 12px rgba(108, 99, 255, 0.2);
+}
+
+.avatarUser {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  box-shadow: 0 0 12px rgba(108, 99, 255, 0.35);
+}
+
+/* Bubbles */
+.bubble {
+  max-width: 72%;
+  padding: 14px 18px;
+  border-radius: var(--radius-lg);
+  position: relative;
+  line-height: 1.65;
+}
+
+.bubbleUser {
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.25), rgba(108, 99, 255, 0.15));
+  border: 1px solid rgba(108, 99, 255, 0.3);
+  border-bottom-right-radius: 4px;
+}
+
+.bubbleAssistant {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-bottom-left-radius: 4px;
+  backdrop-filter: blur(8px);
+}
+
+.bubbleError {
+  background: rgba(255, 92, 122, 0.1);
+  border: 1px solid rgba(255, 92, 122, 0.25);
+  color: var(--accent-danger);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  max-width: 90%;
+}
+
+/* Content */
+.content {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
+
+/* Source citation */
+.citation {
+  display: inline-block;
+  background: rgba(0, 212, 170, 0.12);
+  color: var(--accent-secondary);
+  border: 1px solid rgba(0, 212, 170, 0.25);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: monospace;
+  margin: 2px 2px;
+}
+
+/* Timestamp */
+.timestamp {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-align: right;
+  margin-top: 6px;
+}
+
+@media (max-width: 600px) {
+  .bubble { max-width: 88%; padding: 12px 14px; }
+}
