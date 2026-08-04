@@ -19,7 +19,7 @@ LlmAgent (gemini-2.5-pro) decides to call tool
         ↓
 search_user_documents(query, tool_context)
         ↓
-embed query → ChromaDB search (filtered by user_id)
+embed query → Pinecone DB search (filtered by user_id)
         ↓
 Top-K relevant chunks returned to agent
         ↓

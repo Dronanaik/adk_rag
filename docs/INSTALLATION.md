@@ -69,7 +69,7 @@ This installs:
 |---------|---------|
 | `google-adk` | Google Agent Development Kit |
 | `google-genai` | Gemini API client (embeddings + generation) |
-| `chromadb` | Local vector database |
+| `pinecone-client` | Cloud vector database |
 | `fastapi` | REST API framework |
 | `uvicorn` | ASGI server |
 | `python-multipart` | File upload support |
@@ -95,11 +95,11 @@ Open `.env` in your editor and fill in your values:
 # Required: your Google API key from https://aistudio.google.com/app/apikey
 GOOGLE_API_KEY=your_google_api_key_here
 
-# Optional: path to ChromaDB persistent storage
-CHROMA_PATH=./data/chroma
+# Required: Pinecone API Key
+PINECONE_API_KEY=your_pinecone_api_key
 
-# Optional: ChromaDB collection name
-COLLECTION_NAME=documents
+# Optional: Pinecone index name
+PINECONE_INDEX_NAME=adk-rag-index
 
 # Optional: number of chunks returned per search
 TOP_K=5
@@ -130,7 +130,7 @@ API key OK: True
 The directories are created automatically on first run, but you can create them manually:
 
 ```bash
-mkdir -p data/chroma uploads
+mkdir -p uploads
 ```
 
 ---

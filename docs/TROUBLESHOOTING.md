@@ -86,7 +86,7 @@ uvicorn app.api:app --reload
 
 ### `HTTP 500: Document ingestion failed`
 
-**Cause**: An unexpected error during ingestion (embedding API failure, disk full, ChromaDB error).
+**Cause**: An unexpected error during ingestion (embedding API failure, Pinecone DB error).
 
 **Check the server logs** for the full traceback:
 ```
@@ -97,7 +97,7 @@ Exception: ...
 
 Common sub-causes:
 - Gemini API quota exceeded → wait or upgrade your quota
-- `data/chroma` directory permissions → `chmod 755 data/chroma`
+- Pinecone DB connection error → check your PINECONE_API_KEY
 - Network error to Gemini API → check your internet connection
 
 ---
@@ -122,38 +122,32 @@ If this fails, get a new key from https://aistudio.google.com/app/apikey and upd
 
 ---
 
-### ChromaDB `InvalidDimensionException`
+### Pinecone Dimension Mismatch
 
-**Cause**: Existing ChromaDB collection was created with a different embedding dimensionality.
+**Cause**: Existing Pinecone index was created with a different embedding dimensionality.
 
-**Fix**: Delete the existing collection data and re-ingest:
-```bash
-rm -rf data/chroma
-mkdir -p data/chroma
-# Re-upload all documents
-```
+**Fix**: Delete the existing index in the Pinecone console and create a new one with the correct dimension (768), then re-ingest.
 
 > This permanently deletes all stored embeddings. You must re-ingest all documents.
 
 ---
 
-### `collection.count()` returns 0 after upload
+### Index stats show 0 vectors after upload
 
 **Cause**: Upload appeared to succeed but chunks were not stored.
 
 **Debug**:
 ```python
 python3 -c "
-from app.database import collection
-print('Count:', collection.count())
-records = collection.get(limit=3, include=['metadatas'])
-print(records)
+from app.database import index
+stats = index.describe_index_stats()
+print('Count:', stats.total_vector_count)
 "
 ```
 
 Check:
 - The upload returned `chunks_created > 0`
-- The `CHROMA_PATH` in `.env` matches where you're looking
+- The `PINECONE_INDEX_NAME` and `PINECONE_API_KEY` in `.env` match your Pinecone project
 - No exceptions occurred during `add_document_chunks`
 
 ---
@@ -213,7 +207,7 @@ Check:
 | Pitfall | Solution |
 |---------|----------|
 | Running `uvicorn` without activating the venv | Always activate `.venv` first |
-| Changing `GOOGLE_API_KEY` after ChromaDB is populated | The key change only affects new embeddings; existing ones are unaffected |
+| Changing `GOOGLE_API_KEY` after Pinecone DB is populated | The key change only affects new embeddings; existing ones are unaffected |
 | Uploading the same file twice | Each upload creates a new `document_id` — duplicate chunks will exist. Delete the old document first. |
 | Using `user_123` in the API but a different ID in the UI | User IDs must match exactly — they are case-sensitive |
 | Restarting the backend during a chat | The ADK session is lost. Start a new chat session. |

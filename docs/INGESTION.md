@@ -25,7 +25,7 @@ File Upload (via API or UI)
           ↓
  ┌───────────────────┐
  │  4. Store         │  rag_store.py → add_document_chunks()
- │     (ChromaDB)    │  with user_id, document_id metadata
+ │     (Pinecone DB)    │  with user_id, document_id metadata
  └───────────────────┘
 ```
 
@@ -120,7 +120,7 @@ embedding = response.embeddings[0].values  # list of 768 floats
 
 Both must match for cosine similarity to work correctly.
 
-> ⚠️ If you change the embedding model or dimensionality, you must re-ingest all documents. Old embeddings in ChromaDB will be incompatible.
+> ⚠️ If you change the embedding model or dimensionality, you must re-ingest all documents. Old embeddings in Pinecone DB will be incompatible.
 
 ---
 
@@ -129,7 +129,7 @@ Both must match for cosine similarity to work correctly.
 **File**: `app/rag_store.py`  
 **Function**: `add_document_chunks`
 
-Each chunk is stored in ChromaDB with:
+Each chunk is stored in Pinecone DB with:
 
 ```python
 collection.add(

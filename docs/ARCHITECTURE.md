@@ -42,15 +42,15 @@ A detailed walkthrough of the ADK RAG system design, data flows, and component r
 │  → Gemini embed   │     │   1. Read user_id from ToolContext       │
 │                   │     │   2. Call search_documents(user_id, q)   │
 │  rag_store.py     │     │   3. Return chunks + metadata            │
-│  → store in Chroma│     └──────────┬──────────────────────────────┘
+│  → store in Pinecone│     └──────────┬──────────────────────────────┘
 └───────────────────┘                │
         │                           │ similarity search
         └────────────────┬──────────┘
                          │
               ┌──────────▼──────────────────────────────┐
-              │            ChromaDB                      │
-              │   PersistentClient(path=./data/chroma)   │
-              │   collection: "documents"                │
+              │           Pinecone DB                    │
+              │   Pinecone(api_key=PINECONE_API_KEY)     │
+              │   index: PINECONE_INDEX_NAME             │
               │                                          │
               │   Each record:                           │
               │     id       — chunk_id (uuid)           │
@@ -71,12 +71,12 @@ A detailed walkthrough of the ADK RAG system design, data flows, and component r
 ### `app/config.py`
 Loads environment variables from `.env`. Exports:
 - `GOOGLE_API_KEY` — required
-- `CHROMA_PATH` — ChromaDB storage path (default: `./data/chroma`)
-- `COLLECTION_NAME` — collection name (default: `documents`)
+- `PINECONE_API_KEY` — Pinecone API key
+- `PINECONE_INDEX_NAME` — Pinecone index name (default: `adk-rag-index`)
 - `TOP_K` — number of chunks to retrieve per query (default: 5)
 
 ### `app/database.py`
-Creates a ChromaDB `PersistentClient` and gets-or-creates the `documents` collection. This module is imported once at startup — the same client and collection instance are shared across all requests.
+Creates a `Pinecone` client and initializes the target index. This module is imported once at startup — the same client and index instance are shared across all requests.
 
 ### `app/parsers.py`
 Maps file extensions to parser functions. Current parsers:
@@ -106,7 +106,7 @@ Wraps the Gemini embedding API:
 Both document chunks and user queries use the same model and dimensionality so that cosine similarity is meaningful.
 
 ### `app/rag_store.py`
-All ChromaDB read/write operations:
+All Pinecone read/write operations:
 - `add_document_chunks(user_id, document_id, filename, chunks)` — embeds and stores chunks
 - `delete_document_chunks(user_id, document_id)` — deletes by compound filter
 - `search_documents(user_id, query, top_k)` — embeds query, runs similarity search with `user_id` filter
@@ -137,7 +137,7 @@ Vite + React single-page application. Calls the backend via the `/api` Vite prox
 
 ---
 
-## ChromaDB Schema
+## Pinecone Schema
 
 ```json
 {
@@ -164,7 +164,7 @@ Vite + React single-page application. Calls the backend via the `/api` Vite prox
 | Model | `gemini-embedding-001` |
 | Dimensionality | 768 |
 | Provider | Google Generative AI |
-| Similarity metric | Cosine (default ChromaDB) |
+| Similarity metric | Cosine (default Pinecone) |
 
 > Do not change the embedding model or dimensionality for an existing collection without re-ingesting all documents. Mismatched dimensions will cause query errors.
 
@@ -172,6 +172,6 @@ Vite + React single-page application. Calls the backend via the `/api` Vite prox
 
 ## Security Model
 
-The system uses a simple `x-user-id` header for identity. Every ChromaDB query includes a `where: {"user_id": user_id}` filter, ensuring cross-user data isolation at the query level.
+The system uses a simple `x-user-id` header for identity. Every Pinecone query includes a `filter: {"user_id": user_id}` ensuring cross-user data isolation at the query level.
 
 For production, replace the header with a validated authentication token (JWT, Firebase ID token, etc.) and derive `user_id` server-side.
