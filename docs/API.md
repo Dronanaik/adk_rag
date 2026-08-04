@@ -55,7 +55,7 @@ Returns the current pipeline status and statistics.
     "1. Text extraction (parser)",
     "2. Text normalization & chunking",
     "3. Gemini embedding generation (gemini-embedding-001)",
-    "4. ChromaDB vector storage"
+    "4. Pinecone DB vector storage"
   ]
 }
 ```
@@ -156,7 +156,7 @@ curl -H "x-user-id: drona" http://localhost:8000/documents
 
 ### `DELETE /documents/{document_id}`
 
-Delete a document and all of its chunks from ChromaDB.
+Delete a document and all of its chunks from Pinecone DB.
 
 **Path parameters**: `document_id` — the UUID of the document to delete
 

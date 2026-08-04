@@ -67,7 +67,7 @@ Contains:
 - **Switch button** — resets user ID and returns to the modal
 
 **Sub-header strip**:
-- Technology badges: Google ADK, Gemini Embeddings, ChromaDB
+- Technology badges: Google ADK, Gemini Embeddings, Pinecone DB
 - Model info: `gemini-2.5-pro` + `gemini-embedding-001`
 
 ---
@@ -132,7 +132,7 @@ Features:
   1. Text Extraction
   2. Text Normalization & Chunking
   3. Gemini Embedding Generation
-  4. ChromaDB Vector Storage
+  4. Pinecone DB Vector Storage
 - **File type matrix** — table with extension, parser, notes, and status for all 13 supported types
 
 ---

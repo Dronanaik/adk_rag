@@ -1,11 +1,11 @@
 # ADK RAG
 
-> **Document Intelligence Platform** — Upload, ingest, and chat with your documents using Google ADK, Gemini, and ChromaDB.
+> **Document Intelligence Platform** — Upload, ingest, and chat with your documents using Google ADK, Gemini, and Pinecone DB.
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Google ADK](https://img.shields.io/badge/Google%20ADK-latest-4285F4?logo=google&logoColor=white)](https://developers.google.com/adk)
-[![ChromaDB](https://img.shields.io/badge/ChromaDB-latest-orange)](https://www.trychroma.com)
+[![Pinecone DB](https://img.shields.io/badge/Pinecone-latest-1B1B36?logo=pinecone&logoColor=white)](https://www.pinecone.io)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev)
 
 ---
@@ -16,6 +16,7 @@
 - [Features](#features)
 - [Architecture](#architecture)
 - [Quick Start](#quick-start)
+- [Deployment](#deployment)
 - [Project Structure](#project-structure)
 - [Supported File Types](#supported-file-types)
 - [API Endpoints](#api-endpoints)
@@ -40,46 +41,53 @@ Each user has an **isolated document workspace** — one user cannot access anot
 | **Text Extraction** | Format-specific parsers (PyMuPDF, python-docx, openpyxl, python-pptx) |
 | **Chunking** | Overlapping 1200-character chunks, 200-character overlap |
 | **Embeddings** | Gemini `gemini-embedding-001`, 768 dimensions |
-| **Vector Store** | ChromaDB persistent local collection |
+| **Vector Store** | Pinecone DB Serverless Index |
 | **AI Agent** | Google ADK `LlmAgent` powered by `gemini-2.5-pro` |
 | **Source Citations** | `[Source: filename, chunk N]` in every answer |
 | **React UI** | Dark glassmorphism theme, drag-and-drop upload, chat interface |
-| **User Isolation** | All ChromaDB queries are filtered by `user_id` |
+| **User Isolation** | All Pinecone DB queries are filtered by `user_id` |
 
 ---
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────┐
-│                     React UI                         │
-│  (Upload · Documents · Ingestion Pipeline · Chat)    │
-└─────────────────┬───────────────────────────────────┘
-                  │ HTTP (Vite proxy → localhost:8000)
-┌─────────────────▼───────────────────────────────────┐
-│              FastAPI Backend                         │
-│  POST /documents/upload   GET /documents             │
-│  DELETE /documents/{id}   POST /chat                 │
-│  GET /ingest/status       GET /health                │
-└──────┬──────────────────────────────┬───────────────┘
-       │                              │
-┌──────▼──────────┐        ┌──────────▼────────────────┐
-│  Ingestion       │        │    Google ADK Runner       │
-│  Pipeline        │        │    (LlmAgent)              │
-│                  │        │    gemini-2.5-pro           │
-│  1. Extract text │        └──────────┬────────────────┘
-│  2. Chunk        │                   │ search_user_documents tool
-│  3. Embed        │        ┌──────────▼────────────────┐
-│     (Gemini)     │        │    ChromaDB Query          │
-│  4. Store        │        │    (user_id filter)        │
-└──────┬──────────┘        └───────────────────────────┘
-       │
-┌──────▼──────────┐
-│   ChromaDB       │
-│  (./data/chroma) │
-│  collection:     │
-│    documents     │
-└─────────────────┘
+```mermaid
+flowchart TD
+    subgraph Frontend [React UI]
+        direction LR
+        UploadTab[Upload]
+        DocumentsTab[Documents]
+        IngestionTab[Ingestion Pipeline]
+        ChatTab[Chat]
+    end
+
+    subgraph Backend [FastAPI Backend]
+        direction TB
+        API[API Endpoints]
+        
+        subgraph Pipeline [Ingestion Pipeline]
+            direction TB
+            Extract[1. Extract Text] --> Chunk[2. Chunk & Normalize]
+            Chunk --> Embed[3. Embed Gemini]
+            Embed --> Store[4. Store Pinecone]
+        end
+        
+        Agent[Google ADK Runner\nLlmAgent: gemini-2.5-pro]
+    end
+
+    DB[(Pinecone DB)]
+
+    %% Connections
+    UploadTab -- POST /documents/upload --> API
+    DocumentsTab -- GET/DELETE /documents --> API
+    IngestionTab -- GET /ingest/status --> API
+    ChatTab -- POST /chat --> API
+
+    API -- Triggers --> Pipeline
+    Store -- Upsert Chunks --> DB
+
+    API -- Proxies Queries --> Agent
+    Agent -- search_user_documents tool --> DB
 ```
 
 ### Ingestion pipeline (step by step)
@@ -93,7 +101,7 @@ chunking.py     — normalize whitespace, split into 1200-char overlapping chunk
     ↓
 embeddings.py   — Gemini gemini-embedding-001 → 768-dim vectors
     ↓
-rag_store.py    — store chunks + embeddings + metadata in ChromaDB
+rag_store.py    — store chunks + embeddings + metadata in Pinecone DB
 ```
 
 ---
@@ -105,6 +113,7 @@ rag_store.py    — store chunks + embeddings + metadata in ChromaDB
 - Python 3.10 or later
 - Node.js 18 or later (for the React UI)
 - A [Google API key](https://aistudio.google.com/app/apikey)
+- A [Pinecone API key](https://app.pinecone.io/) and an Index with **768 dimensions** using **cosine similarity**.
 
 ### 1 — Clone and enter the project
 
@@ -125,13 +134,13 @@ pip install -r requirements.txt
 
 ```bash
 cp .env.example .env
-# Edit .env and add your Google API key
+# Edit .env and add your API keys
 ```
 
 ```env
 GOOGLE_API_KEY=your_google_api_key_here
-CHROMA_PATH=./data/chroma
-COLLECTION_NAME=documents
+PINECONE_API_KEY=your_pinecone_api_key_here
+PINECONE_INDEX_NAME=documents
 TOP_K=5
 ```
 
@@ -158,6 +167,29 @@ Navigate to **http://localhost:5173**, enter your User ID, and start uploading d
 
 ---
 
+## Deployment
+
+The application is configured to easily deploy the frontend to **Netlify** and the backend to **Render**. Both support free tier options.
+
+### Frontend Deployment (Netlify)
+The React frontend is configured for Netlify SPA deployment.
+1. Create a new site on Netlify from your Git repository.
+2. Ensure the Build command is `npm run build` and the Publish directory is `dist`.
+3. Set the `VITE_API_URL` environment variable to your Render backend URL (e.g. `https://adk-rag-backend.onrender.com`).
+4. `netlify.toml` is provided to handle standard React Router SPA redirects automatically.
+
+### Backend Deployment (Render)
+The FastAPI backend is configured for Render.
+1. Connect your repository to Render as a "Web Service".
+2. The `render.yaml` Blueprint specifies the environment. (Alternatively, set Build Command to `./build.sh` and Start Command to `uvicorn app.api:app --host 0.0.0.0 --port $PORT`).
+3. Set your environment variables in the Render dashboard:
+   - `GOOGLE_API_KEY`
+   - `PINECONE_API_KEY`
+   - `PINECONE_INDEX_NAME`
+   - `ALLOWED_ORIGINS` (Set this to your Netlify URL e.g. `https://my-rag-app.netlify.app`)
+
+---
+
 ## Project Structure
 
 ```
@@ -168,11 +200,11 @@ adk_rag/
 │   ├── api.py            # FastAPI endpoints (upload, chat, delete, status)
 │   ├── chunking.py       # Text normalization and overlapping chunker
 │   ├── config.py         # Environment variable loading
-│   ├── database.py       # ChromaDB persistent client
-│   ├── embeddings.py     # Gemini embedding-001 wrapper
+│   ├── database.py       # Pinecone DB client initialization
+│   ├── embeddings.py     # Gemini embedding wrapper
 │   ├── ingest.py         # Orchestrates extract → chunk → embed → store
 │   ├── parsers.py        # Format-specific text extractors
-│   ├── rag_store.py      # ChromaDB CRUD operations
+│   ├── rag_store.py      # Pinecone DB CRUD operations
 │   └── run_agent.py      # Standalone CLI agent runner
 ├── frontend/
 │   ├── src/
@@ -189,10 +221,9 @@ adk_rag/
 │   │   ├── App.jsx        # Root component
 │   │   └── index.css      # Design system (dark glassmorphism)
 │   ├── index.html
+│   ├── netlify.toml      # Netlify deployment configuration
 │   ├── package.json
 │   └── vite.config.js
-├── data/
-│   └── chroma/           # ChromaDB persistent storage
 ├── docs/
 │   ├── ARCHITECTURE.md   # System architecture deep-dive
 │   ├── API.md            # All API endpoints with examples
@@ -205,6 +236,8 @@ adk_rag/
 ├── .env                  # Your local environment (do not commit)
 ├── .env.example          # Environment variable template
 ├── requirements.txt      # Python dependencies
+├── build.sh              # Backend build script for Render
+├── render.yaml           # Render deployment Blueprint
 └── README.md
 ```
 
@@ -265,7 +298,7 @@ See [docs/API.md](docs/API.md) for full examples.
 For production deployments, consider:
 
 - **Authentication**: Replace `x-user-id` header with Firebase Auth, Google Identity Platform, or JWT
-- **Vector storage**: PostgreSQL with pgvector, Vertex AI Vector Search, or AlloyDB
+- **Vector storage**: PostgreSQL with pgvector, Vertex AI Vector Search, or AlloyDB (or Pinecone Serverless).
 - **Document storage**: Google Cloud Storage for original files
 - **Async ingestion**: Cloud Pub/Sub + worker service for large file processing
 - **OCR**: Tesseract, Google Document AI, or Cloud Vision API for scanned PDFs
