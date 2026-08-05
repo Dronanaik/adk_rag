@@ -8,6 +8,10 @@
 [![Pinecone DB](https://img.shields.io/badge/Pinecone-latest-1B1B36?logo=pinecone&logoColor=white)](https://www.pinecone.io)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev)
 
+<br/>
+<video src="docs/adk_rag.mp4" width="100%" controls autoplay loop></video>
+<br/>
+
 ---
 
 ## Table of Contents
