@@ -51,44 +51,7 @@ Each user has an **isolated document workspace** — one user cannot access anot
 
 ## Architecture
 
-```mermaid
-flowchart TD
-    subgraph Frontend [React UI]
-        direction LR
-        UploadTab[Upload]
-        DocumentsTab[Documents]
-        IngestionTab[Ingestion Pipeline]
-        ChatTab[Chat]
-    end
-
-    subgraph Backend [FastAPI Backend]
-        direction TB
-        API[API Endpoints]
-        
-        subgraph Pipeline [Ingestion Pipeline]
-            direction TB
-            Extract[1. Extract Text] --> Chunk[2. Chunk & Normalize]
-            Chunk --> Embed[3. Embed Gemini]
-            Embed --> Store[4. Store Pinecone]
-        end
-        
-        Agent[Google ADK Runner\nLlmAgent: gemini-2.5-pro]
-    end
-
-    DB[(Pinecone DB)]
-
-    %% Connections
-    UploadTab -- POST /documents/upload --> API
-    DocumentsTab -- GET/DELETE /documents --> API
-    IngestionTab -- GET /ingest/status --> API
-    ChatTab -- POST /chat --> API
-
-    API -- Triggers --> Pipeline
-    Store -- Upsert Chunks --> DB
-
-    API -- Proxies Queries --> Agent
-    Agent -- search_user_documents tool --> DB
-```
+![ADK RAG Architecture](docs/adk_rag.png)
 
 ### Ingestion pipeline (step by step)
 
