@@ -5,7 +5,12 @@ from app.services.gemini_service import (
     extract_deterministic_kg,
     generate_deterministic_embedding,
 )
-from app.services.hybrid_search_service import RankedCandidate, compute_reciprocal_rank_fusion
+from app.services.hybrid_search_service import (
+    HybridChunkMatch,
+    HybridSearchService,
+    RankedCandidate,
+    compute_reciprocal_rank_fusion,
+)
 from app.services.ingestion import (
     ACTIVE_INGESTION_STATUSES,
     IngestionService,
@@ -29,6 +34,8 @@ __all__ = [
     "MAX_SUBGRAPH_CONNECTED_NODES",
     "DocumentKgExtractionStats",
     "GeminiService",
+    "HybridChunkMatch",
+    "HybridSearchService",
     "IngestionService",
     "KnowledgeGraphExplorerService",
     "KnowledgeGraphExtractionService",
