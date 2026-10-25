@@ -4,10 +4,14 @@ import secrets
 from typing import Annotated
 
 from fastapi import Depends, Header, Request
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import Settings, get_settings
+from app.models.database import get_db_session
 from app.schemas.common import RoleEnum
 from app.utils.logging import get_current_request_id
+
+DbSessionDep = Annotated[AsyncSession, Depends(get_db_session)]
 
 
 class APIException(Exception):

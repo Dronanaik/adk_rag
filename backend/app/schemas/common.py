@@ -19,7 +19,7 @@ class RoleEnum(StrEnum):
 
 
 class DocumentStatusEnum(StrEnum):
-    """6-stage document ingestion lifecycle states."""
+    """Document ingestion lifecycle states (DATABASE.md & DESIGN.md)."""
 
     QUEUED = "QUEUED"
     PARSING = "PARSING"
@@ -51,9 +51,6 @@ class EntityTypeEnum(StrEnum):
     POLICY = "Policy"
     LOCATION = "Location"
     EVENT = "Event"
-    TECHNOLOGY = "Technology"
-    METRIC = "Metric"
-    DOCUMENT_TOPIC = "DocumentTopic"
 
 
 class RelationTypeEnum(StrEnum):
@@ -69,20 +66,36 @@ class RelationTypeEnum(StrEnum):
     GOVERNED_BY = "GOVERNED_BY"
     LOCATED_IN = "LOCATED_IN"
     RELATED_TO = "RELATED_TO"
-    USES = "USES"
-    DEFINES = "DEFINES"
-    AFFECTS = "AFFECTS"
-    PRECEDES = "PRECEDES"
 
 
 class MemoryTierEnum(StrEnum):
-    """Centralized memory scopes (Decision D-04)."""
+    """Centralized memory scopes (Decision D-04 & DATABASE.md)."""
 
+    SESSION = "SESSION"
     SHORT_TERM = "SHORT_TERM"
     EPISODIC = "EPISODIC"
     SEMANTIC = "SEMANTIC"
     LONG_TERM_EPISODIC = "LONG_TERM_EPISODIC"
     LONG_TERM_SEMANTIC = "LONG_TERM_SEMANTIC"
+
+
+class AgentNameEnum(StrEnum):
+    """Google ADK 5-agent hierarchy names (DATABASE.md Table 9 & API.md Section 3.2)."""
+
+    ORCHESTRATOR = "Orchestrator"
+    MEMORY_AGENT = "MemoryAgent"
+    VECTOR_RETRIEVER = "VectorRetriever"
+    KG_RETRIEVER = "KGRetriever"
+    SYNTHESIS_VERIFIER = "SynthesisVerifier"
+
+
+class TraceStatusEnum(StrEnum):
+    """Execution step status values for agent_execution_traces and SSE events."""
+
+    RUNNING = "RUNNING"
+    SUCCESS = "SUCCESS"
+    FALLBACK = "FALLBACK"
+    ERROR = "ERROR"
 
 
 class ProvenanceModalityEnum(StrEnum):
@@ -99,6 +112,15 @@ class PaginationMeta(StrictSchema):
     next_cursor: str | None = None
     has_more: bool = False
     limit: int = Field(default=20, ge=1, le=100)
+
+
+class OffsetPaginationMeta(StrictSchema):
+    """Offset pagination metadata matching API.md Section 6."""
+
+    total: int = Field(default=0, ge=0)
+    limit: int = Field(default=25, ge=1, le=100)
+    offset: int = Field(default=0, ge=0)
+    has_more: bool = False
 
 
 class ErrorDetail(StrictSchema):
@@ -146,4 +168,3 @@ class HealthResponse(StrictSchema):
 
     data: HealthData
     request_id: str
-
