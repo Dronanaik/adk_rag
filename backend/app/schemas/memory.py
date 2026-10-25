@@ -39,6 +39,22 @@ class MemoryDeleteResponse(StrictSchema):
     memory_tier: MemoryTierEnum
 
 
+class MemoryUpdateRequest(StrictSchema):
+    """Request body for PATCH /api/v1/memories/{memory_id} (Admin Only)."""
+
+    content: str = Field(min_length=5, max_length=1500)
+
+    @field_validator("content")
+    @classmethod
+    def normalize_updated_content(cls, value: str) -> str:
+        """Trim and normalize whitespace on edited memory content."""
+        cleaned = " ".join(value.split())
+        if len(cleaned) < 5:
+            raise ValueError("Memory fact content must be at least 5 non-whitespace characters.")
+        return cleaned
+
+
+
 class VerifiedFactCandidate(StrictSchema):
     """Verified fact proposed for Centralized Memory consolidation (Decision D-04)."""
 

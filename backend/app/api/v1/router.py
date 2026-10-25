@@ -5,6 +5,10 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from app import __version__
+from app.api.v1.routes_kb import router as kb_router
+from app.api.v1.routes_kg import router as kg_router
+from app.api.v1.routes_memory import router as memory_router
+from app.api.v1.routes_settings import router as settings_router
 from app.config import Settings, get_settings
 from app.dependencies import get_active_role, get_request_id, require_admin_role
 from app.schemas.common import (
@@ -16,6 +20,10 @@ from app.schemas.common import (
 )
 
 api_v1_router = APIRouter(prefix="/api/v1")
+api_v1_router.include_router(kb_router)
+api_v1_router.include_router(kg_router)
+api_v1_router.include_router(memory_router)
+api_v1_router.include_router(settings_router)
 
 
 @api_v1_router.get("/health", response_model=HealthResponse, tags=["system"])
