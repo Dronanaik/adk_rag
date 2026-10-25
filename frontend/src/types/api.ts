@@ -128,6 +128,27 @@ export interface AgentTraceStep {
   output_summary: string;
 }
 
+export interface SessionSummary {
+  id: string;
+  title: string;
+  turn_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ChatTurnMessage {
+  turn_id: string;
+  session_id: string;
+  user_query: string;
+  assistant_response: string;
+  grounding_status: GroundingStatus;
+  grounding_score: number;
+  citations: CitationItem[];
+  trace_steps: AgentTraceStep[];
+  abstention_reason: string | null;
+  created_at: string;
+}
+
 export interface DocumentSummary {
   id: string;
   title: string;
@@ -165,6 +186,21 @@ export interface GraphEdgeItem {
   source_chunk_id: string | null;
 }
 
+export interface SubgraphSupportingChunk {
+  chunk_id: string;
+  document_id: string;
+  document_title: string;
+  section_title: string | null;
+  content_snippet: string;
+}
+
+export interface SubgraphResponseData {
+  center_node: GraphNodeItem;
+  nodes: GraphNodeItem[];
+  edges: GraphEdgeItem[];
+  supporting_chunks: SubgraphSupportingChunk[];
+}
+
 export interface MemoryFactItem {
   id: string;
   memory_tier: MemoryTier;
@@ -178,34 +214,42 @@ export interface MemoryFactItem {
   updated_at: string;
 }
 
+export interface MemoryUpdatePayload {
+  content?: string;
+  confidence?: number;
+  is_verified?: boolean;
+}
+
 export type TurnSseEvent =
   | {
       event: "turn.started";
       data: { turn_id: string; session_id: string; request_id: string };
     }
   | {
-      event: "agent.step.started" | "agent.step.completed";
+      event: "agent.step.started" | "agent.step.completed" | "agent_step";
       data: AgentTraceStep;
     }
   | {
-      event: "response.delta";
-      data: { text_delta: string };
+      event: "response.delta" | "token";
+      data: { text_delta?: string; delta?: string };
     }
   | {
       event: "response.citations";
       data: { citations: CitationItem[] };
     }
   | {
-      event: "turn.completed";
+      event: "turn.completed" | "turn_complete";
       data: {
         turn_id: string;
         grounding_status: GroundingStatus;
         grounding_score: number;
         total_latency_ms: number;
+        citations?: CitationItem[];
+        trace_steps?: AgentTraceStep[];
+        abstention_reason?: string | null;
       };
     }
   | {
-      event: "turn.error";
+      event: "turn.error" | "error";
       data: ApiErrorDetail;
     };
-

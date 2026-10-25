@@ -1,3 +1,4 @@
-/** Screen 4 (Centralized Memory Inspector) feature components module. */
-export {};
-
+export {
+  MemoryEditModal,
+  type MemoryEditModalProps,
+} from "./MemoryEditModal";

@@ -1,114 +1,80 @@
+import { BrainCircuit, PlusCircle } from "lucide-react";
+import { useState } from "react";
+import { ChatComposer, ChatTurnCard } from "../components/chat";
 import {
-  AgentTraceTimeline,
-  CitationBadge,
-  GroundingStatusBanner,
-} from "../components/ui";
-import { parseInlineCitations } from "../hooks/useInlineCitations";
+  DEFAULT_SEED_CITATIONS,
+  DEFAULT_SEED_TRACE_STEPS,
+} from "../context/SessionContext";
 import { useSessionContext } from "../hooks/useSessionContext";
-import type { AgentTraceStep, CitationItem } from "../types/api";
+import { useTurnStream } from "../hooks/useTurnStream";
+import type { ChatTurnMessage, CitationItem } from "../types/api";
 
-export const SEED_CITATIONS: CitationItem[] = [
-  {
-    badge_id: "[Doc:1]",
-    modality: "Doc",
-    badge_index: 1,
-    target_id: "11111111-1111-4111-8111-111111111101",
-    title: "Agentic RAG Architecture Reference Guide",
-    excerpt:
-      "The OrchestratorAgent coordinates specialist sub-agents for hybrid document retrieval, multi-hop knowledge graph traversal, and centralized memory lookup.",
-    score: 0.94,
-    section_title: "Multi-Agent Orchestration",
-    page_number: 1,
-  },
-  {
-    badge_id: "[KG:1]",
-    modality: "KG",
-    badge_index: 1,
-    target_id: "33333333-3333-4333-8333-333333333301",
-    title: "OrchestratorAgent → SynthesisVerifierAgent",
-    excerpt:
-      "The OrchestratorAgent routes retrieved evidence to SynthesisVerifierAgent before emitting a grounded response.",
-    score: 0.95,
-    hop_depth: 1,
-  },
-  {
-    badge_id: "[Mem:1]",
-    modality: "Mem",
-    badge_index: 1,
-    target_id: "44444444-4444-4444-8444-444444444401",
-    title: "system.grounding_policy",
-    excerpt:
-      "Every synthesized claim must cite at least one verified Document chunk, Knowledge Graph edge, or Memory entry.",
-    score: 0.98,
-    memory_tier: "SEMANTIC",
-  },
-];
-
-export const SEED_TRACE_STEPS: AgentTraceStep[] = [
-  {
-    log_id: "trace-01",
-    step_order: 1,
-    agent_name: "OrchestratorAgent",
-    tool_name: "decompose_intent",
-    status: "COMPLETED",
-    latency_ms: 140,
-    input_summary: "How does the 5-agent hierarchy enforce grounding?",
-    output_summary: "Dispatched DocumentRetrieval, KnowledgeGraph, and Memory tools.",
-  },
-  {
-    log_id: "trace-02",
-    step_order: 2,
-    agent_name: "DocumentRetrievalAgent",
-    tool_name: "search_document_chunks",
-    status: "COMPLETED",
-    latency_ms: 215,
-    input_summary: "Hybrid RRF (k=60) query for OrchestratorAgent grounding",
-    output_summary: "Retrieved 1 top chunk [Doc:1] (similarity 0.94).",
-  },
-  {
-    log_id: "trace-03",
-    step_order: 3,
-    agent_name: "KnowledgeGraphAgent",
-    tool_name: "traverse_kg_subgraph",
-    status: "COMPLETED",
-    latency_ms: 180,
-    input_summary: "seed=['OrchestratorAgent'], max_hops=2",
-    output_summary: "Traversed 1 verified edge [KG:1].",
-  },
-  {
-    log_id: "trace-04",
-    step_order: 4,
-    agent_name: "MemoryAgent",
-    tool_name: "query_centralized_memory",
-    status: "COMPLETED",
-    latency_ms: 95,
-    input_summary: "scope=SEMANTIC, query='grounding policy'",
-    output_summary: "Matched verified fact [Mem:1].",
-  },
-  {
-    log_id: "trace-05",
-    step_order: 5,
-    agent_name: "SynthesisVerifierAgent",
-    tool_name: "verify_claim_grounding",
-    status: "COMPLETED",
-    latency_ms: 310,
-    input_summary: "Audit 3 inline claims against retrieved evidence",
-    output_summary: "Verdict: GROUNDED (score 0.96).",
-  },
-];
+export const SEED_CITATIONS = DEFAULT_SEED_CITATIONS;
+export const SEED_TRACE_STEPS = DEFAULT_SEED_TRACE_STEPS;
 
 const SAMPLE_SYNTHESIZED_TEXT =
   "The OrchestratorAgent decomposes incoming research queries and dispatches specialist retrieval tools [Doc:1]. Retrieved evidence is routed along verified dependency edges to the SynthesisVerifierAgent [KG:1], which enforces the system grounding policy before any response or long-term memory write occurs [Mem:1].";
 
-export function ResearchWorkspacePage() {
-  const { activeCitationId, openProvenanceForCitation } = useSessionContext();
-  const parsedSegments = parseInlineCitations(SAMPLE_SYNTHESIZED_TEXT);
+const INITIAL_TURN: ChatTurnMessage = {
+  turn_id: "turn-seed-001",
+  session_id: "session-seed-001",
+  user_query: "How does the 5-agent hierarchy enforce grounding?",
+  assistant_response: SAMPLE_SYNTHESIZED_TEXT,
+  grounding_status: "GROUNDED",
+  grounding_score: 0.96,
+  citations: SEED_CITATIONS,
+  trace_steps: SEED_TRACE_STEPS,
+  abstention_reason: null,
+  created_at: "2026-10-24T18:00:00Z",
+};
 
-  const handleCitationClick = (badgeId: string) => {
-    const match = SEED_CITATIONS.find((item) => item.badge_id === badgeId);
-    if (match) {
-      openProvenanceForCitation(match);
-    }
+export function ResearchWorkspacePage() {
+  const {
+    activeSessionId,
+    activeCitationId,
+    setActiveSessionId,
+    openProvenanceForCitation,
+    setSessionCitations,
+    setSessionTraceSteps,
+  } = useSessionContext();
+  const { isStreaming, sendTurnQuery, abortStream } = useTurnStream();
+
+  const [useSharedMemory, setUseSharedMemory] = useState<boolean>(true);
+  const [turns, setTurns] = useState<ChatTurnMessage[]>([INITIAL_TURN]);
+
+  const handleCitationSelect = (citation: CitationItem, turn: ChatTurnMessage) => {
+    setSessionCitations(turn.citations);
+    setSessionTraceSteps(turn.trace_steps);
+    openProvenanceForCitation(citation);
+  };
+
+  const handleSubmitQuery = (query: string) => {
+    void sendTurnQuery({
+      sessionId: activeSessionId,
+      query,
+      useSharedMemory,
+      onTurnUpdated: (updatedTurn) => {
+        setTurns((prev) => {
+          const exists = prev.some((t) => t.turn_id === updatedTurn.turn_id);
+          if (exists) {
+            return prev.map((t) =>
+              t.turn_id === updatedTurn.turn_id ? updatedTurn : t,
+            );
+          }
+          return [...prev, updatedTurn];
+        });
+        setSessionCitations(updatedTurn.citations);
+        setSessionTraceSteps(updatedTurn.trace_steps);
+      },
+    });
+  };
+
+  const handleNewSession = () => {
+    const nextId = `session-${String(Date.now()).slice(-6)}`;
+    setActiveSessionId(nextId);
+    setTurns([INITIAL_TURN]);
+    setSessionCitations(SEED_CITATIONS);
+    setSessionTraceSteps(SEED_TRACE_STEPS);
   };
 
   return (
@@ -119,71 +85,94 @@ export function ResearchWorkspacePage() {
         padding: "var(--space-6)",
       }}
     >
-      <div>
-        <h1
-          className="font-display"
-          style={{
-            margin: 0,
-            fontSize: "var(--text-xl)",
-            fontWeight: 700,
-            color: "var(--text-primary)",
-          }}
-        >
-          Research Workspace
-        </h1>
-        <p
-          style={{
-            margin: "var(--space-1) 0 0",
-            fontSize: "var(--text-sm)",
-            color: "var(--text-secondary)",
-          }}
-        >
-          Screen 1 — Multi-Agent Chat, Inline Tri-Pillar Citations &amp; Live ADK Trace
-        </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1
+            className="font-display"
+            style={{
+              margin: 0,
+              fontSize: "var(--text-xl)",
+              fontWeight: 700,
+              color: "var(--text-primary)",
+            }}
+          >
+            Research Workspace
+          </h1>
+          <p
+            style={{
+              margin: "var(--space-1) 0 0",
+              fontSize: "var(--text-sm)",
+              color: "var(--text-secondary)",
+            }}
+          >
+            Screen 1 — Multi-Agent Chat, Inline Tri-Pillar Citations &amp; Live ADK Trace
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <label
+            className="inline-flex items-center gap-2 cursor-pointer"
+            style={{
+              padding: "4px 10px",
+              borderRadius: "var(--radius-md)",
+              backgroundColor: useSharedMemory
+                ? "var(--provenance-mem-bg)"
+                : "var(--bg-surface-subtle)",
+              color: useSharedMemory
+                ? "var(--provenance-mem-fg)"
+                : "var(--text-secondary)",
+              border: "1px solid var(--border-subtle)",
+              fontSize: "var(--text-xs)",
+              fontWeight: 600,
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={useSharedMemory}
+              onChange={(e) => setUseSharedMemory(e.target.checked)}
+              aria-label="Include Shared Memory"
+            />
+            <BrainCircuit size={13} />
+            <span>Shared Memory</span>
+          </label>
+
+          <button
+            type="button"
+            onClick={handleNewSession}
+            aria-label="Start new research session"
+            className="inline-flex items-center gap-1 cursor-pointer"
+            style={{
+              padding: "4px 10px",
+              borderRadius: "var(--radius-md)",
+              backgroundColor: "var(--bg-surface-subtle)",
+              color: "var(--text-primary)",
+              border: "1px solid var(--border-subtle)",
+              fontSize: "var(--text-xs)",
+              fontWeight: 600,
+            }}
+          >
+            <PlusCircle size={13} />
+            <span>New Session ({activeSessionId})</span>
+          </button>
+        </div>
       </div>
 
-      <GroundingStatusBanner
-        status="GROUNDED"
-        confidenceScore={0.96}
-        citationCount={SEED_CITATIONS.length}
+      <div className="flex flex-col gap-6">
+        {turns.map((turn) => (
+          <ChatTurnCard
+            key={turn.turn_id}
+            turn={turn}
+            activeCitationId={activeCitationId}
+            onSelectCitation={(citation) => handleCitationSelect(citation, turn)}
+          />
+        ))}
+      </div>
+
+      <ChatComposer
+        isStreaming={isStreaming}
+        onSubmitQuery={handleSubmitQuery}
+        onAbortStream={abortStream}
       />
-
-      <AgentTraceTimeline steps={SEED_TRACE_STEPS} defaultExpanded />
-
-      <article
-        style={{
-          padding: "var(--space-5)",
-          borderRadius: "var(--radius-lg)",
-          backgroundColor: "var(--bg-surface)",
-          border: "1px solid var(--border-subtle)",
-          boxShadow: "var(--shadow-sm)",
-        }}
-      >
-        <p
-          style={{
-            margin: 0,
-            fontSize: "var(--text-md)",
-            lineHeight: 1.65,
-            color: "var(--text-primary)",
-          }}
-        >
-          {parsedSegments.map((seg, idx) =>
-            seg.kind === "text" ? (
-              <span key={idx}>{seg.text}</span>
-            ) : (
-              <span key={idx} style={{ margin: "0 2px" }}>
-                <CitationBadge
-                  modality={seg.modality}
-                  index={seg.badgeIndex}
-                  isActive={activeCitationId === seg.badgeId}
-                  onClick={() => handleCitationClick(seg.badgeId)}
-                />
-              </span>
-            ),
-          )}
-        </p>
-      </article>
     </div>
   );
 }
-

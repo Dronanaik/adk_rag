@@ -1,3 +1,2 @@
-/** Screen 1 (Research Workspace Chat) feature components module. */
-export {};
-
+export { ChatComposer, type ChatComposerProps } from "./ChatComposer";
+export { ChatTurnCard, type ChatTurnCardProps } from "./ChatTurnCard";

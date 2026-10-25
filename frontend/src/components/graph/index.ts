@@ -1,3 +1,5 @@
-/** Screen 3 (Interactive Knowledge Graph Explorer) feature components module. */
-export {};
-
+export {
+  GraphFilterToolbar,
+  type GraphFilterToolbarProps,
+} from "./GraphFilterToolbar";
+export { SubgraphCanvas, type SubgraphCanvasProps } from "./SubgraphCanvas";
