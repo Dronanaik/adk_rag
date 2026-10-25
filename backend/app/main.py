@@ -14,6 +14,7 @@ from app import __version__
 from app.api.v1.router import api_v1_router
 from app.config import get_settings
 from app.dependencies import APIException
+from app.models.database import dispose_async_engine
 from app.schemas.common import ErrorDetail, ErrorEnvelope
 from app.utils.logging import configure_logging, get_current_request_id, request_id_ctx_var
 
@@ -26,6 +27,7 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     logger = structlog.get_logger("app.lifespan")
     logger.info("application_starting", version=__version__, env=settings.APP_ENV)
     yield
+    await dispose_async_engine()
     logger.info("application_stopping", version=__version__)
 
 

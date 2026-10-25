@@ -1,11 +1,37 @@
-"""SQLAlchemy 2.0 ORM models package (9-table schema per DATABASE.md)."""
+"""SQLAlchemy 2.0 ORM models and database session management."""
 
-from sqlalchemy.orm import DeclarativeBase
+from app.models.database import (
+    Base,
+    dispose_async_engine,
+    get_async_engine,
+    get_db_session,
+    get_session_factory,
+)
+from app.models.entities import (
+    AgentExecutionTrace,
+    ConversationSession,
+    Document,
+    DocumentChunk,
+    KgEntity,
+    KgRelationship,
+    MemoryEntry,
+    MessageTurn,
+    SystemSetting,
+)
 
-
-class Base(DeclarativeBase):
-    """Declarative base class for all PostgreSQL / pgvector ORM models."""
-
-
-__all__ = ["Base"]
-
+__all__ = [
+    "AgentExecutionTrace",
+    "Base",
+    "ConversationSession",
+    "Document",
+    "DocumentChunk",
+    "KgEntity",
+    "KgRelationship",
+    "MemoryEntry",
+    "MessageTurn",
+    "SystemSetting",
+    "dispose_async_engine",
+    "get_async_engine",
+    "get_db_session",
+    "get_session_factory",
+]
