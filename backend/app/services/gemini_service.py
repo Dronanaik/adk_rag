@@ -293,3 +293,30 @@ class GeminiService:
             timeout_seconds=float(self._settings.TOOL_TIMEOUT_SECONDS),
             operation_name="gemini_extract_chunk_kg",
         )
+
+    async def generate_grounded_synthesis(
+        self,
+        prompt: str,
+        system_instruction: str,
+    ) -> str:
+        """Generate a grounded Markdown synthesis response via GEMINI_REASONING_MODEL."""
+        client = self._client
+        if client is None:
+            return ""
+
+        async def _call() -> str:
+            response = await client.aio.models.generate_content(
+                model=self._settings.GEMINI_REASONING_MODEL,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_instruction,
+                    temperature=0.1,
+                ),
+            )
+            return (response.text or "").strip()
+
+        return await execute_with_resilience(
+            _call,
+            timeout_seconds=float(self._settings.TOOL_TIMEOUT_SECONDS),
+            operation_name="gemini_generate_grounded_synthesis",
+        )
