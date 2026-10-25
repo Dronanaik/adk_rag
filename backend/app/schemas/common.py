@@ -122,6 +122,16 @@ class OffsetPaginationMeta(StrictSchema):
     offset: int = Field(default=0, ge=0)
     has_more: bool = False
 
+    @classmethod
+    def create(cls, *, total: int, limit: int, offset: int) -> "OffsetPaginationMeta":
+        """Construct an OffsetPaginationMeta computing has_more deterministically."""
+        return cls(
+            total=total,
+            limit=limit,
+            offset=offset,
+            has_more=(offset + limit) < total,
+        )
+
 
 class ErrorDetail(StrictSchema):
     """Inner error structure matching API.md Section 5.1."""
@@ -136,6 +146,24 @@ class ErrorEnvelope(StrictSchema):
     """Canonical non-2xx HTTP error response envelope."""
 
     error: ErrorDetail
+
+
+class APIException(Exception):
+    """Domain HTTP exception formatted into the canonical API.md Section 5.1 ErrorEnvelope."""
+
+    def __init__(
+        self,
+        status_code: int,
+        code: str,
+        message: str,
+        details: dict[str, str | int | float | bool | list[str] | None] | None = None,
+    ) -> None:
+        super().__init__(message)
+        self.status_code = status_code
+        self.code = code
+        self.message = message
+        self.details = details or {}
+
 
 
 class DependencyStatus(StrictSchema):

@@ -50,6 +50,7 @@ from app.schemas.memory import (
     MemoryDeleteResponse,
     MemoryEntryItem,
     MemoryListResponse,
+    MemoryUpdateRequest,
     VerifiedFactCandidate,
 )
 from app.schemas.sessions import (
@@ -124,6 +125,7 @@ __all__ = [
     "MemoryEntryItem",
     "MemoryListResponse",
     "MemoryTierEnum",
+    "MemoryUpdateRequest",
     "MessageTurnResponse",
     "ModelConfigSummary",
     "OffsetPaginationMeta",

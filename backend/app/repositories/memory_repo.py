@@ -185,6 +185,22 @@ class MemoryRepository:
         await self._session.flush()
         return entry, superseded, False
 
+    async def update_memory_content(
+        self,
+        memory_id: UUID,
+        content: str,
+        embedding: list[float],
+    ) -> MemoryEntry | None:
+        """Update a memory entry's text content and 768-dim embedding vector."""
+        entry = await self.get_by_id(memory_id)
+        if entry is None:
+            return None
+        entry.content = content.strip()
+        entry.embedding = embedding
+        await self._session.commit()
+        await self._session.refresh(entry)
+        return entry
+
     async def delete_memory(self, memory_id: UUID) -> MemoryEntry | None:
         """Delete a memory entry by ID and return the deleted record, or None if not found."""
         entry = await self.get_by_id(memory_id)
@@ -193,3 +209,4 @@ class MemoryRepository:
         await self._session.delete(entry)
         await self._session.commit()
         return entry
+

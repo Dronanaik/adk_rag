@@ -8,27 +8,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import Settings, get_settings
 from app.models.database import get_db_session
-from app.schemas.common import RoleEnum
+from app.schemas.common import APIException, RoleEnum
 from app.utils.logging import get_current_request_id
 
 DbSessionDep = Annotated[AsyncSession, Depends(get_db_session)]
 
+__all__ = [
+    "APIException",
+    "DbSessionDep",
+    "get_active_role",
+    "get_request_id",
+    "require_admin_role",
+]
 
-class APIException(Exception):
-    """Domain HTTP exception formatted into the canonical API.md Section 5.1 ErrorEnvelope."""
-
-    def __init__(
-        self,
-        status_code: int,
-        code: str,
-        message: str,
-        details: dict[str, str | int | float | bool | list[str] | None] | None = None,
-    ) -> None:
-        super().__init__(message)
-        self.status_code = status_code
-        self.code = code
-        self.message = message
-        self.details = details or {}
 
 
 async def get_request_id(request: Request) -> str:

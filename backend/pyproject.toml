@@ -59,6 +59,10 @@ no_implicit_optional = true
 ignore_missing_imports = true
 mypy_path = "."
 
+[[tool.mypy.overrides]]
+module = ["app.utils.document_parser", "pymupdf", "pymupdf.*"]
+disallow_untyped_calls = false
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
