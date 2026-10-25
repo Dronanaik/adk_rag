@@ -9,11 +9,7 @@ import { useSessionContext } from "./hooks/useSessionContext";
 import { KnowledgeBasePage } from "./pages/KnowledgeBasePage";
 import { KnowledgeGraphExplorerPage } from "./pages/KnowledgeGraphExplorerPage";
 import { MemoryInspectorPage } from "./pages/MemoryInspectorPage";
-import {
-  ResearchWorkspacePage,
-  SEED_CITATIONS,
-  SEED_TRACE_STEPS,
-} from "./pages/ResearchWorkspacePage";
+import { ResearchWorkspacePage } from "./pages/ResearchWorkspacePage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,6 +25,8 @@ function WorkspaceRoutes() {
     isDrawerOpen,
     activeDrawerTab,
     activeCitationId,
+    sessionCitations,
+    sessionTraceSteps,
     setActiveDrawerTab,
     openProvenanceForCitation,
     setIsDrawerOpen,
@@ -41,8 +39,8 @@ function WorkspaceRoutes() {
           isOpen={isDrawerOpen}
           activeTab={activeDrawerTab}
           activeCitationId={activeCitationId}
-          citations={SEED_CITATIONS}
-          traceSteps={SEED_TRACE_STEPS}
+          citations={sessionCitations}
+          traceSteps={sessionTraceSteps}
           onTabChange={setActiveDrawerTab}
           onSelectCitation={openProvenanceForCitation}
           onClose={() => setIsDrawerOpen(false)}
@@ -75,4 +73,3 @@ export function App() {
     </QueryClientProvider>
   );
 }
-

@@ -1,11 +1,11 @@
-import { Moon, PanelRight, Sparkles, Sun } from "lucide-react";
+import { KeyRound, Moon, PanelRight, Sparkles, Sun } from "lucide-react";
 import { useRoleContext } from "../../hooks/useRoleContext";
 import { useSessionContext } from "../../hooks/useSessionContext";
 import { useThemeContext } from "../../hooks/useThemeContext";
 import { RoleSwitcherPill } from "./RoleSwitcherPill";
 
 export function TopHeaderBar() {
-  const { role, setRole } = useRoleContext();
+  const { role, setRole, isAdmin, adminApiKey, setAdminApiKey } = useRoleContext();
   const { isDrawerOpen, setIsDrawerOpen } = useSessionContext();
   const { theme, toggleTheme } = useThemeContext();
 
@@ -58,6 +58,38 @@ export function TopHeaderBar() {
       </div>
 
       <div className="flex items-center gap-3">
+        {isAdmin && (
+          <label
+            className="inline-flex items-center gap-1"
+            style={{
+              padding: "3px 8px",
+              borderRadius: "var(--radius-md)",
+              backgroundColor: "var(--bg-surface-subtle)",
+              border: "1px solid var(--border-subtle)",
+              fontSize: "var(--text-xs)",
+              color: "var(--text-secondary)",
+            }}
+          >
+            <KeyRound size={12} />
+            <input
+              type="password"
+              aria-label="Admin API Key"
+              placeholder="X-Admin-Api-Key"
+              value={adminApiKey}
+              onChange={(e) => setAdminApiKey(e.target.value)}
+              className="font-mono-tabular"
+              style={{
+                width: "120px",
+                border: "none",
+                outline: "none",
+                background: "transparent",
+                fontSize: "var(--text-xs)",
+                color: "var(--text-primary)",
+              }}
+            />
+          </label>
+        )}
+
         <RoleSwitcherPill role={role} onChangeRole={setRole} />
 
         <button
@@ -104,4 +136,3 @@ export function TopHeaderBar() {
     </header>
   );
 }
-

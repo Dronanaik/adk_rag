@@ -1,3 +1,8 @@
-/** Screen 2 (Knowledge Base & Ingestion Manager) feature components module. */
-export {};
-
+export {
+  DocumentRecordCard,
+  type DocumentRecordCardProps,
+} from "./DocumentRecordCard";
+export {
+  DocumentUploadPanel,
+  type DocumentUploadPanelProps,
+} from "./DocumentUploadPanel";

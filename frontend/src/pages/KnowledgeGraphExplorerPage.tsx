@@ -1,7 +1,9 @@
+import { useState } from "react";
+import { GraphFilterToolbar, SubgraphCanvas } from "../components/graph";
 import { GraphEntityCard, GraphRelationshipPill } from "../components/ui";
-import type { GraphEdgeItem, GraphNodeItem } from "../types/api";
+import type { EntityType, GraphEdgeItem, GraphNodeItem } from "../types/api";
 
-const SEED_NODES: GraphNodeItem[] = [
+export const SEED_NODES: GraphNodeItem[] = [
   {
     id: "22222222-2222-4222-8222-222222222201",
     canonical_name: "OrchestratorAgent",
@@ -22,9 +24,19 @@ const SEED_NODES: GraphNodeItem[] = [
     confidence: 0.97,
     primary_document_id: "00000000-0000-4000-8000-000000000001",
   },
+  {
+    id: "22222222-2222-4222-8222-222222222203",
+    canonical_name: "TriPillarGroundingPolicy",
+    entity_type: "Policy",
+    description:
+      "Mandates verified [Doc:N], [KG:N], or [Mem:N] citations for every synthesized claim.",
+    aliases: ["Grounding Policy D-04"],
+    confidence: 0.99,
+    primary_document_id: "00000000-0000-4000-8000-000000000001",
+  },
 ];
 
-const SEED_EDGES: GraphEdgeItem[] = [
+export const SEED_EDGES: GraphEdgeItem[] = [
   {
     id: "33333333-3333-4333-8333-333333333301",
     source_node_id: "22222222-2222-4222-8222-222222222201",
@@ -37,9 +49,47 @@ const SEED_EDGES: GraphEdgeItem[] = [
     confidence: 0.95,
     source_chunk_id: "11111111-1111-4111-8111-111111111101",
   },
+  {
+    id: "33333333-3333-4333-8333-333333333302",
+    source_node_id: "22222222-2222-4222-8222-222222222202",
+    source_name: "SynthesisVerifierAgent",
+    target_node_id: "22222222-2222-4222-8222-222222222203",
+    target_name: "TriPillarGroundingPolicy",
+    relation_type: "GOVERNED_BY",
+    evidence_quote:
+      "SynthesisVerifierAgent enforces TriPillarGroundingPolicy before any long-term memory consolidation occurs.",
+    confidence: 0.97,
+    source_chunk_id: "11111111-1111-4111-8111-111111111101",
+  },
 ];
 
 export function KnowledgeGraphExplorerPage() {
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [entityTypeFilter, setEntityTypeFilter] =
+    useState<"ALL" | EntityType>("ALL");
+  const [maxHops, setMaxHops] = useState<number>(2);
+  const [selectedNodeId, setSelectedNodeId] = useState<string>(
+    SEED_NODES[0]?.id ?? "",
+  );
+
+  const filteredNodes = SEED_NODES.filter((node) => {
+    const matchesType =
+      entityTypeFilter === "ALL" || node.entity_type === entityTypeFilter;
+    const q = searchQuery.trim().toLowerCase();
+    const matchesSearch =
+      !q ||
+      node.canonical_name.toLowerCase().includes(q) ||
+      (node.description ?? "").toLowerCase().includes(q);
+    return matchesType && matchesSearch;
+  });
+
+  const visibleEdges = SEED_EDGES.filter((edge) =>
+    maxHops === 1
+      ? edge.source_node_id === selectedNodeId ||
+        edge.target_node_id === selectedNodeId
+      : true,
+  );
+
   return (
     <div
       className="flex flex-col gap-4 mx-auto"
@@ -68,6 +118,23 @@ export function KnowledgeGraphExplorerPage() {
         </p>
       </div>
 
+      <GraphFilterToolbar
+        searchQuery={searchQuery}
+        entityTypeFilter={entityTypeFilter}
+        maxHops={maxHops}
+        onSearchChange={setSearchQuery}
+        onEntityTypeChange={setEntityTypeFilter}
+        onMaxHopsChange={setMaxHops}
+      />
+
+      <SubgraphCanvas
+        nodes={filteredNodes}
+        edges={visibleEdges}
+        selectedNodeId={selectedNodeId}
+        maxHops={maxHops}
+        onSelectNode={(node) => setSelectedNodeId(node.id)}
+      />
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <section className="flex flex-col gap-3">
           <h2
@@ -78,10 +145,15 @@ export function KnowledgeGraphExplorerPage() {
               color: "var(--text-primary)",
             }}
           >
-            Canonical Entities ({String(SEED_NODES.length)})
+            Canonical Entities ({String(filteredNodes.length)})
           </h2>
-          {SEED_NODES.map((node) => (
-            <GraphEntityCard key={node.id} node={node} />
+          {filteredNodes.map((node) => (
+            <GraphEntityCard
+              key={node.id}
+              node={node}
+              isSelected={node.id === selectedNodeId}
+              onSelect={(n) => setSelectedNodeId(n.id)}
+            />
           ))}
         </section>
 
@@ -94,9 +166,9 @@ export function KnowledgeGraphExplorerPage() {
               color: "var(--text-primary)",
             }}
           >
-            Directed Relationships ({String(SEED_EDGES.length)})
+            Directed Relationships ({String(visibleEdges.length)})
           </h2>
-          {SEED_EDGES.map((edge) => (
+          {visibleEdges.map((edge) => (
             <GraphRelationshipPill key={edge.id} edge={edge} />
           ))}
         </section>
@@ -104,4 +176,3 @@ export function KnowledgeGraphExplorerPage() {
     </div>
   );
 }
-
