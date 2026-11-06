@@ -1,10 +1,13 @@
 google-adk
 google-genai
-pinecone
+psycopg2-binary
+pgvector
+neo4j
 fastapi
 uvicorn
 python-multipart
 python-dotenv
+pydantic
 pymupdf
 python-docx
 openpyxl
