@@ -1,230 +1,85 @@
-# Chat System
+# Agentic Chat & Graph Tools
 
-How the Google ADK agent works, session lifecycle, tool calling flow, and example conversations.
+The chat subsystem uses **Google Agent Development Kit (`google-adk`)** and **Gemini (`gemini-2.5-pro`)** to reason across both **Neon PostgreSQL (`pgvector` + Full-Text Search)** and the **Neo4j Knowledge Graph**.
 
 ---
 
-## Overview
+## Multi-Tool Agent Architecture (`app/agent.py`)
 
-The chat system is powered by **Google ADK** (`google-adk`). It uses an `LlmAgent` backed by `gemini-2.5-pro` that has access to one custom tool: `search_user_documents`.
+The root agent (`root_agent`) is an instance of `google.adk.agents.LlmAgent` configured with four specialized tools:
 
-```
-User asks question
-        ↓
-FastAPI POST /chat
-        ↓
-ADK Runner.run_async(user_id, session_id, message)
-        ↓
-LlmAgent (gemini-2.5-pro) decides to call tool
-        ↓
-search_user_documents(query, tool_context)
-        ↓
-embed query → Pinecone DB search (filtered by user_id)
-        ↓
-Top-K relevant chunks returned to agent
-        ↓
-Agent generates answer with source citations
-        ↓
-Final response returned to user
+```mermaid
+flowchart TD
+    Question["User Question in Agentic Chat"] --> Agent["Google ADK LlmAgent\n(gemini-2.5-pro)"]
+    Agent -->|Exact terms + semantics| T1["1. hybrid_search\n(70% pgvector cosine + 30% PostgreSQL FTS)"]
+    Agent -->|Broad conceptual similarity| T2["2. vector_search\n(100% pgvector cosine similarity)"]
+    Agent -->|Entities & factual triplets| T3["3. graph_search\n(Neo4j Entity & RELATES_TO keyword match)"]
+    Agent -->|1-hop / 2-hop graph neighborhood| T4["4. get_entity_relationships\n(Neo4j Cypher neighborhood traversal)"]
+    T1 --> Synthesis["Synthesized Markdown Response\nwith Tool Badges + [Source] & [Graph] Citations"]
+    T2 --> Synthesis
+    T3 --> Synthesis
+    T4 --> Synthesis
 ```
 
 ---
 
-## Agent Configuration
+## The 4 Agent Tools in Detail
 
-**File**: `app/agent.py`
+### 1. `hybrid_search(query, user_id, top_k=5)`
+- **Backend Function**: `app/rag_store.py -> hybrid_search_documents()`
+- **How It Works**: Embeds `query` with `gemini-embedding-001` (`768`-dim) and runs a single SQL query on Neon PostgreSQL combining cosine similarity (`0.7` weight) and English full-text rank `ts_rank_cd` (`0.3` weight).
+- **Best For**: Technical questions, specific names, numbers, dates, and general factual questions over uploaded documents.
+
+### 2. `vector_search(query, user_id, top_k=5)`
+- **Backend Function**: `app/rag_store.py -> search_documents()`
+- **How It Works**: Queries `document_chunks` ordered purely by `pgvector` cosine distance (`embedding <=> query_vec`).
+- **Best For**: Conceptual, thematic, or paraphrased queries where exact keywords may not appear in the source text.
+
+### 3. `graph_search(query, user_id, limit=15)`
+- **Backend Function**: `app/graph_store.py -> search_knowledge_graph()`
+- **How It Works**: Tokenizes the query and searches Neo4j `(:Entity)` names, categories, descriptions, and `[:RELATES_TO]` facts scoped to `user_id`.
+- **Best For**: Discovering how people, organizations, technologies, models, and concepts connect across one or more documents.
+
+### 4. `get_entity_relationships(entity_name, user_id, depth=1)`
+- **Backend Function**: `app/graph_store.py -> get_entity_relationships_from_graph()`
+- **How It Works**: Finds the matching `(:Entity)` node in Neo4j and traverses all incoming and outgoing `[:RELATES_TO]` edges plus `[:MENTIONED_IN]` document links.
+- **Best For**: Deep-diving into a specific entity's direct connections and dependencies.
+
+---
+
+## Dynamic User Context Injection
+
+To guarantee that the agent always queries only the signed-in user's data without asking the user for their ID, `build_agent_instruction(readonly_context: ReadonlyContext)` dynamically injects the authenticated `user_id` into the system prompt on every turn:
 
 ```python
-root_agent = LlmAgent(
-    name="document_rag_agent",
-    model="gemini-2.5-pro",
-    description="Answers questions using the user's uploaded documents.",
-    instruction="""...""",
-    tools=[search_user_documents],
-)
+def build_agent_instruction(readonly_context: ReadonlyContext) -> str:
+    user_id = "default_user"
+    if readonly_context and getattr(readonly_context, "session", None):
+        user_id = getattr(readonly_context.session, "user_id", None) or "default_user"
+    return (
+        f"... The current authenticated user's `user_id` is EXACTLY: \"{user_id}\". "
+        f"Whenever you call ANY tool, you MUST pass `user_id=\"{user_id}\"` ..."
+    )
 ```
-
-### Agent instructions (system prompt)
-
-The agent is instructed to:
-
-1. Use the `search_user_documents` tool for any question that may require document content
-2. Answer only using retrieved document content
-3. Never invent facts not present in the retrieved chunks
-4. Say "I could not find that information" when documents don't contain the answer
-5. Include source citations in the format `[Source: filename, chunk N]`
-6. Cite all relevant sources when multiple chunks support an answer
-7. Never reveal documents from another user
 
 ---
 
-## The `search_user_documents` Tool
+## Tool Execution Tracking & Dual Citations
 
-```python
-def search_user_documents(query: str, tool_context: ToolContext) -> dict:
-```
-
-The tool:
-1. Reads `user_id` from `tool_context.user_id` (injected by the ADK runner — not user-controlled)
-2. Validates that a user ID exists
-3. Calls `search_documents(user_id, query, top_k=5)`
-4. Returns a structured dict of source chunks with metadata
-
-**Return format when found**:
+In `app/api.py`, the `/chat` endpoint inspects the ADK event stream (`event.get_function_calls()`) during `runner.run_async(...)` and collects the ordered list of invoked tool names into `tools_used`:
 
 ```json
 {
-  "found": true,
-  "sources": [
-    {
-      "source_number": 1,
-      "filename": "research.pdf",
-      "document_id": "550e8400...",
-      "chunk_index": 3,
-      "distance": 0.142,
-      "text": "The study found that..."
-    }
-  ]
+  "status": "success",
+  "question": "How does the platform store vectors and knowledge graph facts?",
+  "answer": "The platform stores 768-dimensional embeddings in Neon PostgreSQL [Source: architecture.md, chunk 0] and extracts entities into Neo4j [Graph: FastAPI Backend -> USES -> Neo4j].",
+  "tools_used": ["hybrid_search", "graph_search"],
+  "session_id": "session_a8b9c0",
+  "user_id": "user_9f8e7d6c5b4a3210"
 }
 ```
 
-**Return format when not found**:
-
-```json
-{
-  "found": false,
-  "message": "No relevant document content was found.",
-  "sources": []
-}
-```
-
----
-
-## Session Lifecycle
-
-ADK uses sessions to maintain conversation history (multi-turn chat).
-
-### In-memory sessions
-
-The `InMemorySessionService` keeps sessions in memory for the lifetime of the server process.
-
-```python
-_session_service = InMemorySessionService()
-_runner = Runner(app_name=APP_NAME, agent=root_agent, session_service=_session_service)
-```
-
-### Session creation
-
-- When `session_id` is `null` in the request → a **new session** is created
-- When `session_id` is provided → the existing session is reused
-
-The session ID is returned in every `/chat` response. Pass it back in the next request to continue the conversation.
-
-### Session expiry
-
-Sessions are lost when the backend server restarts. There is no persistence by default. For persistent sessions, replace `InMemorySessionService` with a database-backed implementation.
-
----
-
-## Example Conversations
-
-### Single-turn Q&A
-
-**Request**:
-```json
-POST /chat
-x-user-id: drona
-
-{
-  "query": "What programming languages are mentioned in the document?"
-}
-```
-
-**Response**:
-```json
-{
-  "answer": "Based on your uploaded documents, the following programming languages are mentioned:\n\n- Python\n- JavaScript\n- Go\n\n[Source: resume.pdf, chunk 2]\n[Source: resume.pdf, chunk 5]",
-  "session_id": "abc123-def456-789"
-}
-```
-
----
-
-### Multi-turn conversation
-
-**Turn 1**:
-```json
-{"query": "What is the document about?"}
-```
-```json
-{"answer": "The document is a research paper about...", "session_id": "session-xyz"}
-```
-
-**Turn 2** (reusing session):
-```json
-{"query": "What were the main findings?", "session_id": "session-xyz"}
-```
-```json
-{"answer": "Building on the overview I gave, the main findings are...", "session_id": "session-xyz"}
-```
-
-The agent has access to the previous conversation in turn 2.
-
----
-
-## When No Documents Are Found
-
-If the user has no uploaded documents or the query doesn't match any chunks, the agent responds:
-
-> "I could not find that information in the uploaded documents."
-
-This happens when:
-- No documents have been uploaded for this user
-- The query is too dissimilar to any stored chunk
-- `TOP_K` results were all retrieved but none were relevant
-
----
-
-## Running the Agent via CLI
-
-For testing without the API, use `app/run_agent.py`:
-
-```python
-# app/run_agent.py
-user_id = "user_123"
-question = "Why Self-Attention?"
-```
-
-```bash
-python -m app.run_agent
-```
-
-This creates a session, sends one question, and prints the agent's final response.
-
----
-
-## Customizing the Agent
-
-### Change the LLM model
-
-In `app/agent.py`:
-```python
-root_agent = LlmAgent(
-    model="gemini-2.5-flash",  # faster, lower cost
-    ...
-)
-```
-
-### Change the number of retrieved chunks
-
-In `.env`:
-```env
-TOP_K=10
-```
-
-### Add more tools
-
-Additional tools can be added to the `tools` list:
-```python
-tools=[search_user_documents, another_tool],
-```
+The frontend `ChatMessage.jsx` component renders:
+- **Tool Execution Badges** at the top of the assistant message bubble (`hybrid_search`, `graph_search`)
+- **Source Chunk Citations**: `[Source: filename, chunk N]`
+- **Knowledge Graph Citations**: `[Graph: EntityA -> RELATION -> EntityB]`

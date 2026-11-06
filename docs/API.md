@@ -1,250 +1,219 @@
 # API Reference
 
-All HTTP endpoints exposed by the FastAPI backend.
+The FastAPI backend (`app/api.py`) exposes REST endpoints on `http://localhost:8000` (interactive Swagger UI available at `http://localhost:8000/docs`).
 
-**Base URL** (local development): `http://localhost:8000`  
-**Swagger UI**: http://localhost:8000/docs  
-**ReDoc**: http://localhost:8000/redoc
+All protected endpoints require an `Authorization: Bearer <jwt_token>` header obtained from `/auth/login` or `/auth/signup`.
 
 ---
 
-## Authentication
-
-All document and chat endpoints require the `x-user-id` header.
-
-```http
-x-user-id: your_user_id
-```
-
-> In production, replace this with a validated authentication token. The server should derive the user ID from the token, not from a user-supplied header.
-
----
-
-## Endpoints
+## 1. Health Check
 
 ### `GET /health`
-
-Health check. No authentication required.
-
-**Response**
-
-```json
-{"status": "ok"}
-```
-
-**Example**
+Returns server liveness status.
 
 ```bash
 curl http://localhost:8000/health
 ```
 
----
-
-### `GET /ingest/status`
-
-Returns the current pipeline status and statistics.
-
-**Response**
-
+**Response (`200 OK`)**:
 ```json
 {
-  "status": "ready",
-  "total_chunks": 47,
-  "supported_file_types": [".pdf", ".docx", ".xlsx", "..."],
-  "pipeline_steps": [
-    "1. Text extraction (parser)",
-    "2. Text normalization & chunking",
-    "3. Gemini embedding generation (gemini-embedding-001)",
-    "4. Pinecone DB vector storage"
-  ]
+  "status": "ok",
+  "service": "ADK Agentic RAG + Knowledge Graph API"
 }
 ```
 
-**Example**
+---
+
+## 2. Authentication Endpoints (Neon PostgreSQL)
+
+### `POST /auth/signup`
+Creates a new user account in the Neon PostgreSQL `users` table and returns a signed `HS256` JWT Bearer token.
 
 ```bash
-curl http://localhost:8000/ingest/status
+curl -X POST http://localhost:8000/auth/signup \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Alice Morgan",
+    "email": "alice@company.com",
+    "password": "securepassword123"
+  }'
+```
+
+**Response (`200 OK`)**:
+```json
+{
+  "status": "success",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "user_id": "user_9f8e7d6c5b4a3210",
+    "email": "alice@company.com",
+    "name": "Alice Morgan",
+    "created_at": "2026-11-06T18:30:00+00:00"
+  }
+}
+```
+
+---
+
+### `POST /auth/login`
+Authenticates an existing user by email and password against Neon PostgreSQL.
+
+```bash
+curl -X POST http://localhost:8000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "alice@company.com",
+    "password": "securepassword123"
+  }'
+```
+
+**Response (`200 OK`)**: Same structure as `/auth/signup`.
+
+---
+
+### `GET /auth/me`
+Verifies the Bearer JWT token and returns the active user profile.
+
+```bash
+curl http://localhost:8000/auth/me \
+  -H "Authorization: Bearer <TOKEN>"
+```
+
+---
+
+## 3. Ingestion Pipeline & Status Endpoints
+
+### `GET /ingest/status`
+Returns database connectivity and aggregate counts across Neon PostgreSQL (`pgvector`) and Neo4j for the authenticated user.
+
+```bash
+curl http://localhost:8000/ingest/status \
+  -H "Authorization: Bearer <TOKEN>"
+```
+
+**Response (`200 OK`)**:
+```json
+{
+  "status": "ready",
+  "vector_db": "Neon PostgreSQL (pgvector + FTS)",
+  "vector_db_connected": true,
+  "graph_db": "Neo4j Knowledge Graph",
+  "graph_db_connected": true,
+  "embedding_model": "gemini-embedding-001",
+  "agent_model": "gemini-2.5-pro",
+  "graph_extraction_model": "gemini-2.5-flash",
+  "total_documents": 2,
+  "total_chunks_in_db": 28,
+  "total_entities_in_graph": 34,
+  "total_relationships_in_graph": 41,
+  "supported_file_types": [".csv", ".docx", ".htm", ".html", ".json", ".log", ".md", ".pdf", ".pptx", ".txt", ".xls", ".xlsx", ".xml"]
+}
+```
+
+---
+
+### `GET /ingest/progress`
+Returns real-time step-by-step execution status (`pending`, `running`, `completed`, `error`) for each of the 5 ingestion stages for the authenticated user.
+
+```bash
+curl http://localhost:8000/ingest/progress \
+  -H "Authorization: Bearer <TOKEN>"
 ```
 
 ---
 
 ### `POST /documents/upload`
-
-Upload a document and run the full ingestion pipeline.
-
-**Headers**
-
-| Header | Required | Description |
-|--------|----------|-------------|
-| `x-user-id` | ✅ | User identifier |
-| `Content-Type` | auto | Set by multipart form |
-
-**Body**: `multipart/form-data`
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `file` | file | The document to upload |
-
-**Supported file types**: `.pdf`, `.docx`, `.xlsx`, `.xls`, `.pptx`, `.txt`, `.md`, `.csv`, `.json`, `.xml`, `.html`, `.htm`, `.log`
-
-**Response (200)**
-
-```json
-{
-  "success": true,
-  "message": "Document ingested successfully.",
-  "result": {
-    "document_id": "550e8400-e29b-41d4-a716-446655440000",
-    "filename": "research_paper.pdf",
-    "chunks_created": 12,
-    "characters_extracted": 13400
-  }
-}
-```
-
-**Error responses**
-
-| Status | Cause |
-|--------|-------|
-| 400 | Missing filename, unsupported file type, or no readable text |
-| 500 | Ingestion pipeline failure |
-
-**Example**
+Uploads a file and runs the 5-step dual ingestion pipeline into Neon PostgreSQL and Neo4j.
 
 ```bash
-curl -X POST \
-  -H "x-user-id: drona" \
-  -F "file=@/path/to/document.pdf" \
-  http://localhost:8000/documents/upload
+curl -X POST http://localhost:8000/documents/upload \
+  -H "Authorization: Bearer <TOKEN>" \
+  -F "file=@/path/to/document.pdf"
+```
+
+**Response (`200 OK`)**:
+```json
+{
+  "status": "success",
+  "filename": "document.pdf",
+  "document_id": "52e1a9d0-8c1a-4f3b-9b12-0192837465ab",
+  "chunks_created": 14,
+  "text_length": 15240,
+  "entities_extracted": 18,
+  "relationships_extracted": 22
+}
 ```
 
 ---
 
+## 4. Document Management Endpoints
+
 ### `GET /documents`
-
-List all documents for the authenticated user.
-
-**Headers**: `x-user-id` required
-
-**Response (200)**
-
-```json
-{
-  "success": true,
-  "documents": [
-    {
-      "document_id": "550e8400-e29b-41d4-a716-446655440000",
-      "filename": "research_paper.pdf",
-      "chunks": 12
-    },
-    {
-      "document_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
-      "filename": "notes.txt",
-      "chunks": 3
-    }
-  ]
-}
-```
-
-**Example**
+Lists all ingested documents belonging to the authenticated user.
 
 ```bash
-curl -H "x-user-id: drona" http://localhost:8000/documents
+curl http://localhost:8000/documents \
+  -H "Authorization: Bearer <TOKEN>"
 ```
 
 ---
 
 ### `DELETE /documents/{document_id}`
-
-Delete a document and all of its chunks from Pinecone DB.
-
-**Path parameters**: `document_id` — the UUID of the document to delete
-
-**Headers**: `x-user-id` required
-
-**Response (200)**
-
-```json
-{
-  "success": true,
-  "document_id": "550e8400-e29b-41d4-a716-446655440000",
-  "deleted_chunks": 12
-}
-```
-
-**Error responses**
-
-| Status | Cause |
-|--------|-------|
-| 404 | Document not found for this user |
-
-**Example**
+Cascade-deletes a document and all of its chunks from Neon PostgreSQL and removes its relationships, document node, and orphaned entities from Neo4j.
 
 ```bash
-curl -X DELETE \
-  -H "x-user-id: drona" \
-  http://localhost:8000/documents/550e8400-e29b-41d4-a716-446655440000
+curl -X DELETE http://localhost:8000/documents/52e1a9d0-8c1a-4f3b-9b12-0192837465ab \
+  -H "Authorization: Bearer <TOKEN>"
 ```
 
 ---
+
+## 5. Knowledge Graph Endpoints (Neo4j)
+
+### `GET /graph`
+Returns the user's Neo4j knowledge graph (`nodes`, `edges`, and `stats`) for visualization in the **Knowledge Graph** tab.
+
+```bash
+curl "http://localhost:8000/graph?limit=150" \
+  -H "Authorization: Bearer <TOKEN>"
+```
+
+---
+
+### `GET /graph/entity/{entity_name}`
+Returns the 1-hop incoming and outgoing relationships for a specific entity in Neo4j.
+
+```bash
+curl "http://localhost:8000/graph/entity/PostgreSQL?depth=1" \
+  -H "Authorization: Bearer <TOKEN>"
+```
+
+---
+
+## 6. Agentic Chat Endpoint
 
 ### `POST /chat`
-
-Send a question to the Google ADK agent. The agent searches the user's documents and returns an answer with source citations.
-
-**Headers**: `x-user-id` required, `Content-Type: application/json`
-
-**Request body**
-
-```json
-{
-  "query": "What are the main conclusions in the research paper?",
-  "session_id": null
-}
-```
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `query` | string | ✅ | The question to ask |
-| `session_id` | string | ❌ | Reuse an existing ADK session for conversation history |
-
-**Response (200)**
-
-```json
-{
-  "answer": "The main conclusions are...\n\n[Source: research_paper.pdf, chunk 3]\n[Source: research_paper.pdf, chunk 7]",
-  "session_id": "abc123-def456-..."
-}
-```
-
-Pass the returned `session_id` in subsequent requests to maintain conversation context.
-
-**Error responses**
-
-| Status | Cause |
-|--------|-------|
-| 500 | ADK agent or Gemini API error |
-
-**Example**
+Sends a question to the Google ADK `LlmAgent` equipped with `hybrid_search`, `vector_search`, `graph_search`, and `get_entity_relationships`.
 
 ```bash
-# First message (creates new session)
-curl -X POST \
-  -H "x-user-id: drona" \
+curl -X POST http://localhost:8000/chat \
+  -H "Authorization: Bearer <TOKEN>" \
   -H "Content-Type: application/json" \
-  -d '{"query": "What is this document about?"}' \
-  http://localhost:8000/chat
-
-# Follow-up (same session)
-curl -X POST \
-  -H "x-user-id: drona" \
-  -H "Content-Type: application/json" \
-  -d '{"query": "Can you elaborate on that?", "session_id": "abc123-def456-..."}' \
-  http://localhost:8000/chat
+  -d '{
+    "question": "How are entities extracted and connected across my documents?",
+    "session_id": "session_demo_1"
+  }'
 ```
 
----
-
-## CORS
-
-The backend accepts requests from any origin (`*`) in development mode. In production, restrict `allow_origins` to your actual frontend domain in `app/api.py`.
+**Response (`200 OK`)**:
+```json
+{
+  "status": "success",
+  "question": "How are entities extracted and connected across my documents?",
+  "answer": "Entities are extracted using Gemini Structured Outputs and stored in Neo4j...",
+  "tools_used": ["hybrid_search", "graph_search"],
+  "session_id": "session_demo_1",
+  "user_id": "user_9f8e7d6c5b4a3210"
+}
+```

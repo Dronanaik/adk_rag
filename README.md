@@ -1,39 +1,28 @@
-# ADK RAG
+# ADK Agentic RAG + Knowledge Graph
 
-> **Document Intelligence Platform** — Upload, ingest, and chat with your documents using Google ADK, Gemini, and Pinecone DB.
+> *"Where Knowledge Connects, Agents Reason, and Intelligence Emerges."*
+>
+> **Hybrid Document Intelligence Platform** — Authenticate, upload, monitor a live 5-step dual ingestion pipeline, explore interactive knowledge graphs, and chat with your documents using **Google ADK**, **Gemini**, **Neon Console PostgreSQL (`pgvector`)**, and **Neo4j**.
+>
+> *Inspired by [`coleam00/ottomator-agents/agentic-rag-knowledge-graph`](https://github.com/coleam00/ottomator-agents/tree/main/agentic-rag-knowledge-graph)*
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Google ADK](https://img.shields.io/badge/Google%20ADK-latest-4285F4?logo=google&logoColor=white)](https://developers.google.com/adk)
-[![Pinecone DB](https://img.shields.io/badge/Pinecone-latest-1B1B36?logo=pinecone&logoColor=white)](https://www.pinecone.io)
+[![Neon PostgreSQL](https://img.shields.io/badge/Neon%20Postgres-pgvector-00E599?logo=postgresql&logoColor=white)](https://neon.tech)
+[![Neo4j](https://img.shields.io/badge/Neo4j-Knowledge%20Graph-008CC1?logo=neo4j&logoColor=white)](https://neo4j.com)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev)
-
-<br/>
-<video src="docs/adk_rag.mp4" width="100%" controls autoplay loop></video>
-<br/>
-
----
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Architecture](#architecture)
-- [Quick Start](#quick-start)
-- [Deployment](#deployment)
-- [Project Structure](#project-structure)
-- [Supported File Types](#supported-file-types)
-- [API Endpoints](#api-endpoints)
-- [Documentation](#documentation)
-- [Production Recommendations](#production-recommendations)
 
 ---
 
 ## Overview
 
-ADK RAG is a **Retrieval-Augmented Generation** system that lets users upload documents, converts them into searchable vector embeddings, and answers natural language questions using only the user's uploaded content.
-
-Each user has an **isolated document workspace** — one user cannot access another user's documents.
+**ADK Agentic RAG + Knowledge Graph** upgrades traditional single-tool RAG into a **Hybrid Agentic RAG** system:
+1. **Neon Console PostgreSQL (`pgvector` + `tsvector`)** stores structure-aware document chunks and 768-dimensional Gemini embeddings for both semantic vector search and hybrid keyword+vector retrieval.
+2. **Neo4j Knowledge Graph** stores domain entities (`Person`, `Organization`, `Technology`, `Concept`, `Model`, `Metric`, etc.) and factual relationships (`RELATES_TO`) extracted automatically during ingestion using Gemini Structured Outputs.
+3. **Google ADK `LlmAgent`** dynamically chooses between four tools—`hybrid_search`, `vector_search`, `graph_search`, and `get_entity_relationships`—or combines them to answer complex questions with full citations.
+4. **Neon PostgreSQL Authentication** provides full user registration and sign-in (`users` table in Neon Postgres secured with `PBKDF2-HMAC-SHA256` and `HS256` JWT Bearer tokens).
+5. **Bioluminescent Neural Forest UI** features an atmospheric Tree of Knowledge backdrop, translucent emerald-pine glass cards, cyan & golden firefly accents, live step-by-step ingestion tracking, and an interactive **Knowledge Graph Explorer** tab.
 
 ---
 
@@ -41,34 +30,30 @@ Each user has an **isolated document workspace** — one user cannot access anot
 
 | Feature | Details |
 |---------|---------|
+| **Neon Authentication** | Sign Up / Sign In backed by Neon PostgreSQL (`PBKDF2-SHA256` password hashing + `HS256` JWT tokens) |
 | **Document Upload** | PDF, DOCX, XLSX, XLS, PPTX, TXT, MD, CSV, JSON, XML, HTML, LOG |
-| **Text Extraction** | Format-specific parsers (PyMuPDF, python-docx, openpyxl, python-pptx) |
-| **Chunking** | Overlapping 1200-character chunks, 200-character overlap |
-| **Embeddings** | Gemini `gemini-embedding-001`, 768 dimensions |
-| **Vector Store** | Pinecone DB Serverless Index |
-| **AI Agent** | Google ADK `LlmAgent` powered by `gemini-2.5-pro` |
-| **Source Citations** | `[Source: filename, chunk N]` in every answer |
-| **React UI** | Dark glassmorphism theme, drag-and-drop upload, chat interface |
-| **User Isolation** | All Pinecone DB queries are filtered by `user_id` |
+| **Live 5-Step Pipeline** | Real-time per-step progress polling (`Completed`, `Running Now...`, `Queued`) |
+| **Semantic Chunking** | Structure-aware paragraph & sentence chunking (1200 chars, 200-char overlap) |
+| **Embeddings** | Gemini `gemini-embedding-001` (batched, 768 dimensions) |
+| **Vector & Hybrid Store** | **Neon Console PostgreSQL** with `pgvector` HNSW index + `tsvector` GIN full-text index |
+| **Knowledge Graph** | **Neo4j** storing `(:Entity)-[:RELATES_TO]->(:Entity)` and `(:Document)` nodes |
+| **Agentic RAG Tools** | `hybrid_search`, `vector_search`, `graph_search`, `get_entity_relationships` |
+| **Dual Citations** | `[Source: filename, chunk N]` and `[Graph: Source -> RELATION -> Target]` |
+| **Bioluminescent Forest UI** | Neural Tree backdrop + translucent emerald glass cards + Interactive SVG Knowledge Graph Explorer |
+| **User Isolation** | Every SQL row and Neo4j node/edge is strictly scoped by `user_id` |
 
 ---
 
-## Architecture
-
-![ADK RAG Architecture](docs/adk_rag.png)
-
-### Ingestion pipeline (step by step)
+## Hybrid Ingestion & Retrieval Pipeline
 
 ```
-File uploaded
+File Uploaded
     ↓
-parsers.py      — extract raw text by file type
+parsers.py       — Format-specific text extraction
     ↓
-chunking.py     — normalize whitespace, split into 1200-char overlapping chunks
-    ↓
-embeddings.py   — Gemini gemini-embedding-001 → 768-dim vectors
-    ↓
-rag_store.py    — store chunks + embeddings + metadata in Pinecone DB
+chunking.py      — Structure-aware paragraph & sentence chunking (1200 chars, 200 overlap)
+    ├──→ embeddings.py + rag_store.py  → Neon PostgreSQL (pgvector + Full-Text Search)
+    └──→ graph_store.py (Gemini JSON)  → Neo4j Knowledge Graph (Entities & Relationships)
 ```
 
 ---
@@ -77,41 +62,52 @@ rag_store.py    — store chunks + embeddings + metadata in Pinecone DB
 
 ### Prerequisites
 
-- Python 3.10 or later
-- Node.js 18 or later (for the React UI)
-- A [Google API key](https://aistudio.google.com/app/apikey)
-- A [Pinecone API key](https://app.pinecone.io/) and an Index with **768 dimensions** using **cosine similarity**.
+- Python 3.10+
+- Node.js 18+
+- A [Google Gemini API key](https://aistudio.google.com/app/apikey)
+- A [Neon Console PostgreSQL](https://console.neon.tech) database connection string (`DATABASE_URL`)
+- A [Neo4j AuraDB](https://console.neo4j.io) or local Neo4j instance (`NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD`)
 
-### 1 — Clone and enter the project
-
-```bash
-git clone <YOUR_REPOSITORY_URL>
-cd adk_rag
-```
-
-### 2 — Set up the Python environment
+### 1 — Set up the Python environment
 
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 3 — Configure environment variables
+### 2 — Configure environment variables
 
 ```bash
 cp .env.example .env
-# Edit .env and add your API keys
 ```
+
+Edit `.env` with your credentials:
 
 ```env
 GOOGLE_API_KEY=your_google_api_key_here
-PINECONE_API_KEY=your_pinecone_api_key_here
-PINECONE_INDEX_NAME=documents
+AGENT_MODEL=gemini-2.5-pro
+GRAPH_EXTRACTION_MODEL=gemini-2.5-flash
+
+# Neon Console PostgreSQL (pgvector is enabled automatically on startup)
+DATABASE_URL=postgresql://neondb_owner:password@ep-xxx.region.aws.neon.tech/neondb?sslmode=require
+
+# JWT Secret for Neon Authentication
+JWT_SECRET_KEY=replace-with-a-secure-random-secret-key
+JWT_EXPIRE_HOURS=168
+
+# Neo4j Knowledge Graph
+NEO4J_URI=neo4j+s://xxxxxxxx.databases.neo4j.io
+NEO4J_USERNAME=neo4j
+NEO4J_PASSWORD=your_neo4j_password_here
+NEO4J_DATABASE=neo4j
+
 TOP_K=5
 ```
 
-### 4 — Start the backend API
+> Note: On startup, the backend automatically initializes the `pgvector` extension, PostgreSQL tables/indexes (also available in `sql/schema.sql`), and Neo4j constraints/indexes.
+
+### 3 — Start the FastAPI backend
 
 ```bash
 uvicorn app.api:app --reload
@@ -119,7 +115,7 @@ uvicorn app.api:app --reload
 # Swagger UI at http://localhost:8000/docs
 ```
 
-### 5 — Start the React UI
+### 4 — Start the React UI
 
 ```bash
 cd frontend
@@ -127,33 +123,6 @@ npm install
 npm run dev
 # UI available at http://localhost:5173
 ```
-
-### 6 — Open the app
-
-Navigate to **http://localhost:5173**, enter your User ID, and start uploading documents.
-
----
-
-## Deployment
-
-The application is configured to easily deploy the frontend to **Netlify** and the backend to **Render**. Both support free tier options.
-
-### Frontend Deployment (Netlify)
-The React frontend is configured for Netlify SPA deployment.
-1. Create a new site on Netlify from your Git repository.
-2. Ensure the Build command is `npm run build` and the Publish directory is `dist`.
-3. Set the `VITE_API_URL` environment variable to your Render backend URL (e.g. `https://adk-rag-backend.onrender.com`).
-4. `netlify.toml` is provided to handle standard React Router SPA redirects automatically.
-
-### Backend Deployment (Render)
-The FastAPI backend is configured for Render.
-1. Connect your repository to Render as a "Web Service".
-2. The `render.yaml` Blueprint specifies the environment. (Alternatively, set Build Command to `./build.sh` and Start Command to `uvicorn app.api:app --host 0.0.0.0 --port $PORT`).
-3. Set your environment variables in the Render dashboard:
-   - `GOOGLE_API_KEY`
-   - `PINECONE_API_KEY`
-   - `PINECONE_INDEX_NAME`
-   - `ALLOWED_ORIGINS` (Set this to your Netlify URL e.g. `https://my-rag-app.netlify.app`)
 
 ---
 
@@ -163,69 +132,73 @@ The FastAPI backend is configured for Render.
 adk_rag/
 ├── app/
 │   ├── __init__.py
-│   ├── agent.py          # Google ADK LlmAgent + search tool
-│   ├── api.py            # FastAPI endpoints (upload, chat, delete, status)
-│   ├── chunking.py       # Text normalization and overlapping chunker
-│   ├── config.py         # Environment variable loading
-│   ├── database.py       # Pinecone DB client initialization
-│   ├── embeddings.py     # Gemini embedding wrapper
-│   ├── ingest.py         # Orchestrates extract → chunk → embed → store
+│   ├── agent.py          # Google ADK LlmAgent with 4 hybrid vector + graph tools
+│   ├── api.py            # FastAPI endpoints (auth, upload, progress, chat, documents, graph)
+│   ├── auth.py           # Neon PostgreSQL authentication (PBKDF2-SHA256 + HS256 JWT)
+│   ├── chunking.py       # Structure-aware semantic chunker
+│   ├── config.py         # Environment variable configuration
+│   ├── database.py       # Neon PostgreSQL pool + Neo4j driver & schema init
+│   ├── embeddings.py     # Batched Gemini embedding wrapper (768-dim)
+│   ├── graph_store.py    # Gemini Structured Output extraction + Neo4j Cypher CRUD/search
+│   ├── ingest.py         # 5-step dual ingestion with live step progress tracking
 │   ├── parsers.py        # Format-specific text extractors
-│   ├── rag_store.py      # Pinecone DB CRUD operations
-│   └── run_agent.py      # Standalone CLI agent runner
+│   └── rag_store.py      # Neon PostgreSQL (pgvector + FTS) CRUD & hybrid search
+├── docs/
+│   ├── index.md                      # MkDocs documentation home
+│   ├── USER_GUIDE.md                 # Step-by-step end-user interaction guide
+│   ├── ARCHITECTURE.md               # System architecture & data flow diagrams
+│   ├── TECHNICAL_SPECIFICATIONS.md   # Database schemas, auth, scoring & API specs
+│   ├── INGESTION.md                  # 5-step dual ingestion pipeline deep dive
+│   ├── CHAT.md                       # Google ADK multi-tool agent guide
+│   ├── FRONTEND.md                   # React 18 UI & Knowledge Graph guide
+│   ├── API.md                        # REST API reference
+│   ├── INSTALLATION.md               # Local setup instructions
+│   ├── DEPLOYMENT.md                 # Production cloud deployment guide
+│   └── TROUBLESHOOTING.md            # Common error resolutions
+├── sql/
+│   └── schema.sql        # Reference Neon PostgreSQL pgvector schema
 ├── frontend/
 │   ├── src/
-│   │   ├── components/   # React components
-│   │   │   ├── UserIdModal.jsx    # User ID gate
-│   │   │   ├── Header.jsx         # App header + sub-header
-│   │   │   ├── Tabs.jsx           # Tab navigation
-│   │   │   ├── UploadTab.jsx      # Drag-and-drop upload
-│   │   │   ├── DocumentsTab.jsx   # Document list + delete
-│   │   │   ├── IngestionTab.jsx   # Pipeline status + file types
-│   │   │   ├── ChatTab.jsx        # RAG chat interface
-│   │   │   └── ChatMessage.jsx    # Message bubble component
-│   │   ├── api.js         # API utility functions
-│   │   ├── App.jsx        # Root component
-│   │   └── index.css      # Design system (dark glassmorphism)
-│   ├── index.html
-│   ├── netlify.toml      # Netlify deployment configuration
-│   ├── package.json
-│   └── vite.config.js
-├── docs/
-│   ├── ARCHITECTURE.md   # System architecture deep-dive
-│   ├── API.md            # All API endpoints with examples
-│   ├── CHAT.md           # ADK agent and chat system
-│   ├── FRONTEND.md       # React UI guide
-│   ├── INGESTION.md      # Ingestion pipeline walkthrough
-│   ├── INSTALLATION.md   # Step-by-step installation
-│   └── TROUBLESHOOTING.md # Common errors and fixes
-├── uploads/              # Temporary file storage (auto-cleaned)
-├── .env                  # Your local environment (do not commit)
-├── .env.example          # Environment variable template
-├── requirements.txt      # Python dependencies
-├── build.sh              # Backend build script for Render
-├── render.yaml           # Render deployment Blueprint
+│   │   ├── components/
+│   │   │   ├── UserIdModal.jsx    # Neon PostgreSQL Sign In / Create Account screen
+│   │   │   ├── Header.jsx         # Sticky top navigation bar
+│   │   │   ├── Tabs.jsx           # 5-tab navigation bar
+│   │   │   ├── UploadTab.jsx      # Drag-and-drop document upload
+│   │   │   ├── IngestionTab.jsx   # Live 5-step hybrid pipeline & Neon/Neo4j metrics
+│   │   │   ├── DocumentsTab.jsx   # Document list + cascade delete
+│   │   │   ├── GraphTab.jsx       # Interactive Neo4j Knowledge Graph explorer
+│   │   │   ├── ChatTab.jsx        # Agentic RAG + Graph chat interface
+│   │   │   └── ChatMessage.jsx    # Message bubble with tool badges & citations
+│   │   ├── api.js         # Frontend API client
+│   │   ├── App.jsx        # Root React application
+│   │   └── index.css      # Bioluminescent Neural Forest Design System
+│   ├── public/
+│   │   └── bg-neural-tree.jpg # Tree of Knowledge backdrop artwork
+│   └── package.json
+├── mkdocs.yml            # MkDocs documentation site configuration
+├── .env.example
+├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## Supported File Types
+## Documentation (MkDocs)
 
-| Extension | Parser | Notes |
-|-----------|--------|-------|
-| `.pdf` | PyMuPDF | Text-based PDFs only. Scanned PDFs require OCR. |
-| `.docx` | python-docx | Full paragraph extraction. |
-| `.xlsx` | openpyxl | All sheets extracted row by row. |
-| `.xls` | openpyxl | Legacy Excel format. |
-| `.pptx` | python-pptx | Slide-by-slide text extraction. |
-| `.txt` | Plain reader | UTF-8 with error-ignore fallback. |
-| `.md` | Plain reader | Markdown treated as plain text. |
-| `.csv` | Plain reader | Raw CSV values. |
-| `.json` | Plain reader | Raw JSON text. |
-| `.xml` | Plain reader | Raw XML markup. |
-| `.html` / `.htm` | Plain reader | HTML tags included. |
-| `.log` | Plain reader | Log files as plain text. |
+Comprehensive documentation is available in the `docs/` directory and configured for **MkDocs**:
+
+- **[User Guide](docs/USER_GUIDE.md)** — Step-by-step guide on how to sign in, upload documents, monitor live 5-step ingestion, manage files, chat with the ADK agent, and explore the Knowledge Graph.
+- **[Architecture](docs/ARCHITECTURE.md)** — High-level system architecture, module breakdown, and sequence diagrams for authentication, dual ingestion, multi-tool retrieval, and cascade deletion.
+- **[Technical Specifications](docs/TECHNICAL_SPECIFICATIONS.md)** — Full engineering specs covering Neon PostgreSQL & Neo4j schemas, `PBKDF2-SHA256` + `HS256` JWT security, hybrid search scoring formulas, and structured output schemas.
+
+To serve the interactive documentation site locally:
+
+```bash
+source .venv/bin/activate
+pip install mkdocs mkdocs-material
+mkdocs serve -a 127.0.0.1:8001
+# Open http://127.0.0.1:8001
+```
 
 ---
 
@@ -234,50 +207,14 @@ adk_rag/
 | Method | Path | Description |
 |--------|------|-------------|
 | `GET` | `/health` | Health check |
-| `GET` | `/ingest/status` | Pipeline status + chunk count |
-| `POST` | `/documents/upload` | Upload and ingest a document |
-| `GET` | `/documents` | List user's documents |
-| `DELETE` | `/documents/{id}` | Delete a document and its chunks |
-| `POST` | `/chat` | Chat with the ADK agent |
-
-All document endpoints require the `x-user-id` header.
-
-See [docs/API.md](docs/API.md) for full examples.
-
----
-
-## Documentation
-
-| Document | Description |
-|----------|-------------|
-| [INSTALLATION.md](docs/INSTALLATION.md) | Step-by-step environment setup |
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design and data flow |
-| [INGESTION.md](docs/INGESTION.md) | Ingestion pipeline walkthrough |
-| [API.md](docs/API.md) | All API endpoints with curl examples |
-| [CHAT.md](docs/CHAT.md) | ADK agent and session lifecycle |
-| [FRONTEND.md](docs/FRONTEND.md) | React UI setup and component guide |
-| [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Common errors and fixes |
-
----
-
-## Production Recommendations
-
-For production deployments, consider:
-
-- **Authentication**: Replace `x-user-id` header with Firebase Auth, Google Identity Platform, or JWT
-- **Vector storage**: PostgreSQL with pgvector, Vertex AI Vector Search, or AlloyDB (or Pinecone Serverless).
-- **Document storage**: Google Cloud Storage for original files
-- **Async ingestion**: Cloud Pub/Sub + worker service for large file processing
-- **OCR**: Tesseract, Google Document AI, or Cloud Vision API for scanned PDFs
-- **Rate limiting**: API Gateway or FastAPI middleware
-- **Security**: File size limits, virus scanning, content validation
-
----
-
-## Author
-
-Created by **Drona**.
-
-## License
-
-MIT License
+| `POST` | `/auth/signup` | Create a user account in Neon PostgreSQL |
+| `POST` | `/auth/login` | Sign in with email & password and receive a Bearer JWT |
+| `GET` | `/auth/me` | Verify active Bearer JWT session |
+| `GET` | `/ingest/status` | Neon Postgres + Neo4j pipeline status & counts |
+| `GET` | `/ingest/progress` | Real-time step-by-step status for the 5 ingestion stages |
+| `POST` | `/documents/upload` | Upload & ingest into Neon Postgres + Neo4j |
+| `GET` | `/documents` | List user's documents with chunk/entity/relation counts |
+| `DELETE` | `/documents/{id}` | Cascade-delete document from Neon Postgres & Neo4j |
+| `GET` | `/graph` | Fetch user's Neo4j nodes, edges, and stats for UI visualization |
+| `GET` | `/graph/entity/{name}` | Traverse 1-hop relationships for a specific entity |
+| `POST` | `/chat` | Chat with the multi-tool Google ADK agent |

@@ -1,0 +1,66 @@
+site_name: ADK Agentic RAG + Knowledge Graph
+site_description: Hybrid Document Intelligence Platform powered by Google ADK, Gemini, Neon PostgreSQL (pgvector), and Neo4j Knowledge Graph.
+site_url: http://localhost:8000
+copyright: "Where Knowledge Connects, Agents Reason, and Intelligence Emerges."
+docs_dir: docs
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: teal
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: teal
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.tabs.link
+
+nav:
+  - Home: index.md
+  - User Guide: USER_GUIDE.md
+  - System Design:
+      - Architecture: ARCHITECTURE.md
+      - Technical Specifications: TECHNICAL_SPECIFICATIONS.md
+  - Core Subsystems:
+      - Ingestion Pipeline: INGESTION.md
+      - Agentic Chat & Graph Tools: CHAT.md
+      - Frontend Application: FRONTEND.md
+      - API Reference: API.md
+  - Operations:
+      - Installation & Setup: INSTALLATION.md
+      - Deployment Guide: DEPLOYMENT.md
+      - Troubleshooting: TROUBLESHOOTING.md
+
+markdown_extensions:
+  - admonition
+  - tables
+  - attr_list
+  - def_list
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format

@@ -1,195 +1,111 @@
 # Ingestion Pipeline
 
-A complete walkthrough of how documents are processed from upload to searchable vector storage.
+The 5-step dual ingestion pipeline converts raw uploaded files into both **searchable `768`-dimensional vector chunks in Neon PostgreSQL (`pgvector`)** and **structured entities and relationships in the Neo4j Knowledge Graph**, while streaming real-time step progress to the UI.
 
 ---
 
-## Overview
+## 5-Step Dual Ingestion Overview
 
-```
-File Upload (via API or UI)
-         ↓
- ┌───────────────────┐
- │  1. Text Extract  │  parsers.py
- └────────┬──────────┘
-          ↓
- ┌───────────────────┐
- │  2. Normalize     │  chunking.py → normalize_text()
- │     & Chunk       │  chunking.py → chunk_text()
- └────────┬──────────┘
-          ↓
- ┌───────────────────┐
- │  3. Embed         │  embeddings.py → embed_texts()
- │     (Gemini)      │  gemini-embedding-001, 768 dims
- └────────┬──────────┘
-          ↓
- ┌───────────────────┐
- │  4. Store         │  rag_store.py → add_document_chunks()
- │     (Pinecone DB)    │  with user_id, document_id metadata
- └───────────────────┘
+```mermaid
+flowchart TD
+    Upload["Uploaded File\n(app/api.py -> /tmp/adk_rag_uploads)"] --> Step1["Step 1: Format-Specific Text Extraction\n(app/parsers.py)"]
+    Step1 --> Step2["Step 2: Structure-Aware Semantic Chunking\n(app/chunking.py — 1200 chars, 200 overlap)"]
+    Step2 --> Step3["Step 3: Batched Gemini Embeddings\n(app/embeddings.py — gemini-embedding-001, 768-dim)"]
+    Step3 --> Step4["Step 4: Neon PostgreSQL Indexing\n(app/rag_store.py — pgvector HNSW + FTS GIN)"]
+    Step4 --> Step5["Step 5: Neo4j Knowledge Graph Extraction\n(app/graph_store.py — gemini-2.5-flash Structured JSON -> Cypher MERGE)"]
 ```
 
 ---
 
-## Step 1 — Text Extraction
+## Step 1: Format-Specific Text Extraction (`app/parsers.py`)
 
-**File**: `app/parsers.py`  
-**Entry point**: `extract_text(file_path: str) -> str`
+`parse_file(file_path)` inspects the lowercase file extension and routes the file to the appropriate parser:
 
-The function reads the file extension and dispatches to the correct parser.
-
-### Supported formats
-
-| Extension | Parser | Library | Notes |
-|-----------|--------|---------|-------|
-| `.pdf` | `extract_from_pdf` | PyMuPDF (`fitz`) | Adds `[Page N]` headers. Text-based PDFs only. |
-| `.docx` | `extract_from_docx` | `python-docx` | Extracts non-empty paragraphs. |
-| `.xlsx`, `.xls` | `extract_from_xlsx` | `openpyxl` | All sheets; rows as tab-separated values. Adds `[Sheet: name]` headers. |
-| `.pptx` | `extract_from_pptx` | `python-pptx` | All slides; text frames in order. Adds `[Slide N]` headers. |
-| `.txt`, `.md`, `.csv`, `.json`, `.xml`, `.html`, `.htm`, `.log` | `extract_from_text` | built-in | UTF-8 with `errors='ignore'` fallback. |
-
-### Unsupported formats
-
-The following formats are **not** supported and will raise `ValueError: Unsupported file type`:
-
-- `.doc` (old Word binary format)
-- `.ppt` (old PowerPoint)
-- `.rtf`
-- Images (`.png`, `.jpg`, `.jpeg`, `.tiff`)
-- Scanned PDFs (returns empty text from PyMuPDF)
-
-For scanned documents, use OCR (Tesseract, Google Document AI, or Cloud Vision API) to produce a text file first.
+| Extension | Library | Extraction Details |
+|-----------|---------|--------------------|
+| `.pdf` | `pymupdf` (`import pymupdf as fitz`) | Opens each page in sequence and extracts text blocks via `page.get_text("text")`. |
+| `.docx` | `python-docx` | Extracts all non-empty paragraphs followed by all table rows formatted as `cell1 \| cell2`. |
+| `.xlsx` | `openpyxl` | Loads workbook with `data_only=True` (evaluated formula values) and formats each sheet under `[Sheet: Name]`. |
+| `.xls` | `xlrd` | Iterates legacy Excel sheets and formats non-empty rows. |
+| `.pptx` | `python-pptx` | Extracts text frames and tables slide-by-slide under `[Slide N]`. |
+| `.txt`, `.md`, `.log` | Built-in `open()` | Reads UTF-8 text directly. |
+| `.csv` | `csv` | Joins each CSV row with `, `. |
+| `.json` | `json` | Parses JSON and pretty-prints with `indent=2`. |
+| `.xml`, `.html`, `.htm` | `xml.etree.ElementTree` / regex | Strips tags and normalizes whitespace into clean text. |
 
 ---
 
-## Step 2 — Text Normalization and Chunking
+## Step 2: Structure-Aware Semantic Chunking (`app/chunking.py`)
 
-**File**: `app/chunking.py`
+Instead of slicing text at arbitrary character offsets (which breaks sentences and tables mid-thought), `chunk_text(text, chunk_size=1200, overlap=200)` preserves document structure:
 
-### Normalization (`normalize_text`)
-
-Before chunking, the text is cleaned:
-- Each line is stripped of leading/trailing whitespace
-- Multiple consecutive spaces within a line are collapsed to one
-- Empty lines are removed
-
-This prevents chunks from being filled with whitespace padding.
-
-### Chunking (`chunk_text`)
-
-```python
-chunk_text(text, chunk_size=1200, overlap=200)
-```
-
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `chunk_size` | 1200 | Maximum characters per chunk |
-| `overlap` | 200 | Characters shared between consecutive chunks |
-
-**Why overlap?**  
-If a sentence or concept spans the boundary of two chunks, overlap ensures that content is not lost — it appears in both the preceding and the following chunk.
-
-**Example** (simplified with chunk_size=20, overlap=5):
-```
-Input:  "Hello world this is a test sentence for chunking"
-Chunk 1: "Hello world this is "
-Chunk 2: "is a test sentence f"
-Chunk 3: "nce for chunking"
-```
+1. **Line Normalization**: Converts `\r\n` to `\n` and collapses 3+ consecutive newlines into `\n\n`.
+2. **Paragraph & Header Segmentation**: Splits along paragraph breaks (`\n\n`) and Markdown headings (`#`, `##`, `###`).
+3. **Greedy Paragraph Packing**: Accumulates complete paragraphs into the current chunk as long as total length remains $\le 1200$ characters.
+4. **Sentence-Boundary Fallback**: If a single paragraph exceeds `1200` characters, splits along sentence boundaries (`(?<=[.!?])\s+`).
+5. **Contextual Overlap**: Carries the trailing `200` characters of chunk $i$ into the start of chunk $i+1$ so concepts spanning chunk boundaries remain intact.
 
 ---
 
-## Step 3 — Embedding Generation
+## Step 3: Batched Gemini Embedding Generation (`app/embeddings.py`)
 
-**File**: `app/embeddings.py`
-
-Each chunk is converted to a 768-dimensional vector using the Gemini embedding model.
+`get_embeddings_batch(texts, batch_size=50)` generates `768`-dimensional vectors for all chunks using `gemini-embedding-001`:
 
 ```python
 response = client.models.embed_content(
     model="gemini-embedding-001",
-    contents=chunk_text,
-    config=EmbedContentConfig(output_dimensionality=768),
-)
-embedding = response.embeddings[0].values  # list of 768 floats
-```
-
-**Important**: The same model and dimensionality are used for:
-1. Indexing document chunks
-2. Embedding user queries at search time
-
-Both must match for cosine similarity to work correctly.
-
-> ⚠️ If you change the embedding model or dimensionality, you must re-ingest all documents. Old embeddings in Pinecone DB will be incompatible.
-
----
-
-## Step 4 — Vector Storage
-
-**File**: `app/rag_store.py`  
-**Function**: `add_document_chunks`
-
-Each chunk is stored in Pinecone DB with:
-
-```python
-collection.add(
-    ids=[chunk_id, ...],          # unique per chunk
-    documents=[chunk_text, ...],  # raw text
-    embeddings=[embedding, ...],  # 768-dim vector
-    metadatas=[{                  # per-chunk metadata
-        "user_id": user_id,
-        "document_id": document_id,
-        "filename": filename,
-        "chunk_index": chunk_index,
-    }, ...],
+    contents=batch,
+    config=types.EmbedContentConfig(output_dimensionality=768),
 )
 ```
 
-**Chunk ID format**: `{document_id}_{chunk_index}_{8-hex-random}`  
-Example: `550e8400-e29b-41d4-a716-446655440000_3_ab12cd34`
+Batching up to `50` chunks per API request significantly reduces ingestion latency compared to sequential per-chunk calls.
 
 ---
 
-## Ingestion Result
+## Step 4: Neon PostgreSQL Vector + Full-Text Indexing (`app/rag_store.py`)
 
-After a successful upload, the API returns:
+`add_document_chunks(...)` inserts the document metadata into `documents` and bulk-inserts all chunks into `document_chunks` using `psycopg2.extras.execute_values`:
+
+- **Vector Index (`pgvector` HNSW)**: Indexes `embedding vector_cosine_ops` for fast cosine similarity search.
+- **Full-Text Index (PostgreSQL GIN)**: Indexes `to_tsvector('english', content)` for keyword and phrase matching.
+
+---
+
+## Step 5: Neo4j Knowledge Graph Extraction (`app/graph_store.py`)
+
+`add_document_to_graph(...)` extracts domain entities and factual relationships from the chunks and merges them into Neo4j:
+
+1. **Structured LLM Extraction**:
+   - Sends batches of `4` chunks to `gemini-2.5-flash` configured with `response_mime_type="application/json"` and `response_schema=ChunkGraphExtraction`.
+   - Extracts canonical `ExtractedEntity` nodes (`name`, `category`, `description`) and `ExtractedRelationship` edges (`source`, `target`, `relation_type`, `fact`).
+2. **Neo4j Cypher Persistence**:
+   - Creates/merges the `(:Document {id: user_id::document_id})` node.
+   - Merges each `(:Entity {id: user_id::lower(name)})` node and links `(e)-[:MENTIONED_IN]->(d)`.
+   - Merges directed `(source:Entity)-[:RELATES_TO {relation_type, document_id, user_id}]->(target:Entity)` edges storing the supporting `fact`.
+3. **Metadata Sync**:
+   - Updates `documents.entities_count` and `documents.relationships_count` in Neon PostgreSQL so the **Documents** tab displays accurate counts for every file.
+
+---
+
+## Live Per-User Progress Tracking (`app/ingest.py`)
+
+During ingestion, `ingest_document()` updates an in-memory per-user state dictionary (`_user_ingestion_progress[user_id]`) before and after each of the 5 steps.
+
+The frontend polls `GET /ingest/progress` every `800ms` while an upload is active, receiving:
 
 ```json
 {
-  "success": true,
-  "message": "Document ingested successfully.",
-  "result": {
-    "document_id": "550e8400-e29b-41d4-a716-446655440000",
-    "filename": "research.pdf",
-    "chunks_created": 12,
-    "characters_extracted": 13400
+  "active": true,
+  "filename": "architecture_overview.pdf",
+  "current_step": 3,
+  "error": null,
+  "steps": {
+    "1": { "status": "completed", "detail": "Extracted 14,820 characters" },
+    "2": { "status": "completed", "detail": "Created 15 semantic chunks" },
+    "3": { "status": "running", "detail": "Generating 768-dim vectors for 15 chunks..." },
+    "4": { "status": "pending", "detail": "Waiting" },
+    "5": { "status": "pending", "detail": "Waiting" }
   }
 }
 ```
-
----
-
-## Checking the Database
-
-```python
-from app.database import collection
-
-# Total chunks in the collection
-print(collection.count())
-
-# View recent records
-records = collection.get(limit=5, include=["documents", "metadatas"])
-print(records)
-```
-
----
-
-## Troubleshooting Ingestion
-
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| `ValueError: Unsupported file type` | File extension not in parser list | Convert to a supported format or add a custom parser |
-| `ValueError: No readable text was found` | Empty or scanned PDF | Use OCR or choose a text-based PDF |
-| `chunks_created: 0` | Text was empty after normalization | Verify the file contains readable text |
-| Slow ingestion | Many chunks + Gemini API latency | Expected — each chunk requires one API call |
-| `openai.APIError` or similar | Wrong API key | Check `GOOGLE_API_KEY` in `.env` |
