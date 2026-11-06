@@ -41,35 +41,35 @@ The **ADK Agentic RAG + Knowledge Graph** platform is engineered as a modular, m
 ```mermaid
 flowchart TB
     subgraph Client["React 18 + Vite Frontend (Port 5173)"]
-        AuthUI["Sign In / Create Account\n(UserIdModal.jsx)"]
-        UploadUI["1. Upload Tab\n(UploadTab.jsx)"]
-        PipelineUI["2. Live 5-Step Pipeline Tab\n(IngestionTab.jsx)"]
-        DocsUI["3. Documents Manager Tab\n(DocumentsTab.jsx)"]
-        ChatUI["4. Agentic Chat Tab\n(ChatTab.jsx + ChatMessage.jsx)"]
-        GraphUI["5. Interactive SVG Knowledge Graph\n(GraphTab.jsx)"]
+        AuthUI["Sign In / Create Account (UserIdModal.jsx)"]
+        UploadUI["1. Upload Tab (UploadTab.jsx)"]
+        PipelineUI["2. Live 5-Step Pipeline Tab (IngestionTab.jsx)"]
+        DocsUI["3. Documents Manager Tab (DocumentsTab.jsx)"]
+        ChatUI["4. Agentic Chat Tab (ChatTab.jsx)"]
+        GraphUI["5. Interactive SVG Knowledge Graph (GraphTab.jsx)"]
     end
 
     subgraph Backend["FastAPI Backend (Port 8000)"]
-        API["FastAPI Router\n(app/api.py)"]
-        AuthSvc["Neon Auth + HS256 JWT\n(app/auth.py)"]
-        IngestSvc["5-Step Dual Ingestion Orchestrator\n(app/ingest.py)"]
-        Parsers["Format Extractors\n(app/parsers.py)"]
-        Chunker["Structure-Aware Semantic Chunker\n(app/chunking.py)"]
-        Embedder["Batched Gemini Embedder\n(app/embeddings.py)"]
-        ADKAgent["Google ADK LlmAgent\n(app/agent.py)"]
-        RagStore["PostgreSQL Vector & Hybrid Store\n(app/rag_store.py)"]
-        GraphStore["Neo4j Graph Extractor & Store\n(app/graph_store.py)"]
+        API["FastAPI Router (app/api.py)"]
+        AuthSvc["Neon Auth + HS256 JWT (app/auth.py)"]
+        IngestSvc["5-Step Dual Ingestion Orchestrator (app/ingest.py)"]
+        Parsers["Format Extractors (app/parsers.py)"]
+        Chunker["Structure-Aware Semantic Chunker (app/chunking.py)"]
+        Embedder["Batched Gemini Embedder (app/embeddings.py)"]
+        ADKAgent["Google ADK LlmAgent (app/agent.py)"]
+        RagStore["PostgreSQL Vector & Hybrid Store (app/rag_store.py)"]
+        GraphStore["Neo4j Graph Extractor & Store (app/graph_store.py)"]
     end
 
     subgraph ExternalAI["Google Gemini API"]
-        GeminiEmbed["gemini-embedding-001\n(768-dim vectors)"]
-        GeminiFlash["gemini-2.5-flash\n(Structured JSON Graph Extraction)"]
-        GeminiPro["gemini-2.5-pro\n(ADK Multi-Tool Reasoning)"]
+        GeminiEmbed["gemini-embedding-001 (768-dim vectors)"]
+        GeminiFlash["gemini-2.5-flash (Structured JSON Graph Extraction)"]
+        GeminiPro["gemini-2.5-pro (ADK Multi-Tool Reasoning)"]
     end
 
     subgraph Storage["Cloud Persistence Layer"]
-        NeonDB[("Neon Console PostgreSQL\n• users\n• documents\n• document_chunks (pgvector HNSW + FTS GIN)")]
-        Neo4jDB[("Neo4j Knowledge Graph\n• (:Entity)-[:RELATES_TO]->(:Entity)\n• (:Entity)-[:MENTIONED_IN]->(:Document)")]
+        NeonDB[("Neon Console PostgreSQL (users, documents, document_chunks)")]
+        Neo4jDB[("Neo4j Knowledge Graph (Entity, RELATES_TO, MENTIONED_IN)")]
     end
 
     AuthUI -->|POST /auth/login, /auth/signup| API
@@ -217,10 +217,10 @@ flowchart TB
 
     ```mermaid
     flowchart LR
-        A["DELETE /documents/{document_id}"] --> B["Neon PostgreSQL:\nDelete from documents & document_chunks\nWHERE document_id = :id AND user_id = :uid"]
-        B --> C["Neo4j Step 1:\nDelete RELATES_TO edges\nWHERE r.document_id = :id AND r.user_id = :uid"]
-        C --> D["Neo4j Step 2:\nDETACH DELETE (:Document {id: uid::doc_id})"]
-        D --> E["Neo4j Step 3:\nPrune orphaned (:Entity) nodes\nwith no remaining MENTIONED_IN or RELATES_TO links"]
+        A["DELETE /documents/{document_id}"] --> B["Neon PostgreSQL: Delete from documents & document_chunks"]
+        B --> C["Neo4j Step 1: Delete RELATES_TO edges for document_id"]
+        C --> D["Neo4j Step 2: DETACH DELETE (:Document) node"]
+        D --> E["Neo4j Step 3: Prune orphaned (:Entity) nodes"]
     ```
 
 ---

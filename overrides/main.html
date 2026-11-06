@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="ADK Agentic RAG + Knowledge Graph">
+  <meta property="og:description" content="Where Knowledge Connects, Agents Reason, and Intelligence Emerges — Hybrid Vector (Neon pgvector) + Knowledge Graph (Neo4j) powered by Google ADK & Gemini.">
+{% endblock %}
+
+{% block announce %}
+<span class="announce-item">
+  <strong>ADK Agentic RAG + Knowledge Graph</strong> — Hybrid Vector (<code>Neon pgvector</code>) + Graph (<code>Neo4j</code>) Intelligence powered by <strong>Google ADK &amp; Gemini 2.5</strong>.
+  <a href="{{ 'INSTALLATION/' | url }}">Start building →</a>
+</span>
+{% endblock %}

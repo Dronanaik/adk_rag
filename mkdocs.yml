@@ -3,53 +3,56 @@ site_description: Hybrid Document Intelligence Platform powered by Google ADK, G
 site_url: https://dronanaik.github.io/adk_rag/
 repo_url: https://github.com/Dronanaik/adk_rag
 repo_name: Dronanaik/adk_rag
+edit_uri: edit/main/docs/
 copyright: "Where Knowledge Connects, Agents Reason, and Intelligence Emerges."
 docs_dir: docs
 
 theme:
   name: material
+  custom_dir: overrides
   font:
-    text: Inter
-    code: JetBrains Mono
+    text: Roboto
+    code: Roboto Mono
   icon:
-    logo: material/brain
+    logo: material/hub
     repo: fontawesome/brands/github
   palette:
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: custom
-      accent: custom
+    - scheme: default
+      primary: white
+      accent: white
       toggle:
-        icon: material/weather-night
-        name: Switch to light mode
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: custom
-      accent: custom
-      toggle:
-        icon: material/weather-sunny
+        icon: material/brightness-7
         name: Switch to dark mode
+    - scheme: slate
+      primary: grey
+      accent: grey
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
   features:
+    - content.action.edit
+    - content.action.view
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
     - navigation.instant
     - navigation.instant.progress
     - navigation.tracking
-    - navigation.tabs
-    - navigation.tabs.sticky
+    - navigation.path
     - navigation.sections
     - navigation.expand
-    - navigation.path
     - navigation.top
+    - navigation.tabs
     - navigation.footer
     - toc.follow
     - search.suggest
     - search.highlight
     - search.share
-    - content.code.copy
-    - content.code.annotate
-    - content.tabs.link
-    - content.tooltips
 
 extra_css:
+  - stylesheets/custom.css
+  - stylesheets/homepage.css
   - stylesheets/extra.css
 
 extra_javascript:
@@ -67,7 +70,7 @@ extra:
 
 nav:
   - Home: index.md
-  - Get Started:
+  - Build & Get Started:
       - Quickstart & Installation: INSTALLATION.md
       - Interactive User Guide: USER_GUIDE.md
   - Architecture & Specs:

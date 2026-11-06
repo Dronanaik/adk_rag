@@ -8,11 +8,11 @@ The 5-step dual ingestion pipeline converts raw uploaded files into both **searc
 
 ```mermaid
 flowchart TD
-    Upload["Uploaded File\n(app/api.py -> /tmp/adk_rag_uploads)"] --> Step1["Step 1: Format-Specific Text Extraction\n(app/parsers.py)"]
-    Step1 --> Step2["Step 2: Structure-Aware Semantic Chunking\n(app/chunking.py — 1200 chars, 200 overlap)"]
-    Step2 --> Step3["Step 3: Batched Gemini Embeddings\n(app/embeddings.py — gemini-embedding-001, 768-dim)"]
-    Step3 --> Step4["Step 4: Neon PostgreSQL Indexing\n(app/rag_store.py — pgvector HNSW + FTS GIN)"]
-    Step4 --> Step5["Step 5: Neo4j Knowledge Graph Extraction\n(app/graph_store.py — gemini-2.5-flash Structured JSON -> Cypher MERGE)"]
+    Upload["Uploaded File (app/api.py -> /tmp/adk_rag_uploads)"] --> Step1["Step 1: Format-Specific Text Extraction (app/parsers.py)"]
+    Step1 --> Step2["Step 2: Structure-Aware Semantic Chunking (app/chunking.py — 1200 chars, 200 overlap)"]
+    Step2 --> Step3["Step 3: Batched Gemini Embeddings (app/embeddings.py — gemini-embedding-001, 768-dim)"]
+    Step3 --> Step4["Step 4: Neon PostgreSQL Indexing (app/rag_store.py — pgvector HNSW + FTS GIN)"]
+    Step4 --> Step5["Step 5: Neo4j Knowledge Graph Extraction (app/graph_store.py — gemini-2.5-flash Structured JSON)"]
 ```
 
 ---

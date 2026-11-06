@@ -8,15 +8,15 @@ The frontend (`frontend/`) is a **React 18 + Vite** single-page application styl
 
 ```mermaid
 flowchart TD
-    Main["main.jsx"] --> App["App.jsx\n(Root Auth & Tab State)"]
-    App -->|Unauthenticated| AuthModal["UserIdModal.jsx\n(Neon PostgreSQL Sign In / Create Account)"]
-    App -->|Authenticated| Header["Header.jsx\n(Status Pill, User Profile, Sign Out)"]
-    App -->|Authenticated| Tabs["Tabs.jsx\n(5-Tab Navigation Bar)"]
-    Tabs --> T1["1. UploadTab.jsx\n(Drag & Drop File Upload)"]
-    Tabs --> T2["2. IngestionTab.jsx\n(Live 5-Step Progress & DB Metrics)"]
-    Tabs --> T3["3. DocumentsTab.jsx\n(Document List & Cascade Delete)"]
-    Tabs --> T4["4. ChatTab.jsx + ChatMessage.jsx\n(Agentic Chat with Tool Badges & Citations)"]
-    Tabs --> T5["5. GraphTab.jsx\n(Interactive SVG Neo4j Knowledge Graph)"]
+    Main["main.jsx"] --> App["App.jsx (Root Auth & Tab State)"]
+    App -->|Unauthenticated| AuthModal["UserIdModal.jsx (Neon PostgreSQL Sign In / Create Account)"]
+    App -->|Authenticated| Header["Header.jsx (Status Pill, User Profile, Sign Out)"]
+    App -->|Authenticated| Tabs["Tabs.jsx (5-Tab Navigation Bar)"]
+    Tabs --> T1["1. UploadTab.jsx (Drag & Drop File Upload)"]
+    Tabs --> T2["2. IngestionTab.jsx (Live 5-Step Progress & DB Metrics)"]
+    Tabs --> T3["3. DocumentsTab.jsx (Document List & Cascade Delete)"]
+    Tabs --> T4["4. ChatTab.jsx + ChatMessage.jsx (Agentic Chat with Tool Badges & Citations)"]
+    Tabs --> T5["5. GraphTab.jsx (Interactive SVG Neo4j Knowledge Graph)"]
 ```
 
 ---

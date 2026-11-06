@@ -8,11 +8,11 @@ This step-by-step guide walks you through every screen and interaction in the **
 
 ```mermaid
 flowchart LR
-    A["1. Sign In / Sign Up\n(Neon Postgres Auth)"] --> B["2. Upload Document\n(12 Supported Formats)"]
-    B --> C["3. Watch Live Pipeline\n(5 Real-Time Stages)"]
-    C --> D["4. Manage Documents\n(View Counts / Cascade Delete)"]
-    D --> E["5. Agentic Chat\n(4 Tools + Dual Citations)"]
-    E --> F["6. Knowledge Graph\n(Interactive SVG Topology)"]
+    A["1. Sign In / Sign Up (Neon Postgres Auth)"] --> B["2. Upload Document (12 Supported Formats)"]
+    B --> C["3. Watch Live Pipeline (5 Real-Time Stages)"]
+    C --> D["4. Manage Documents (View Counts / Cascade Delete)"]
+    D --> E["5. Agentic Chat (4 Tools + Dual Citations)"]
+    E --> F["6. Knowledge Graph (Interactive SVG Topology)"]
 ```
 
 <div class="grid cards" markdown>

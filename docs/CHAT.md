@@ -10,12 +10,12 @@ The root agent (`root_agent`) is an instance of `google.adk.agents.LlmAgent` con
 
 ```mermaid
 flowchart TD
-    Question["User Question in Agentic Chat"] --> Agent["Google ADK LlmAgent\n(gemini-2.5-pro)"]
-    Agent -->|Exact terms + semantics| T1["1. hybrid_search\n(70% pgvector cosine + 30% PostgreSQL FTS)"]
-    Agent -->|Broad conceptual similarity| T2["2. vector_search\n(100% pgvector cosine similarity)"]
-    Agent -->|Entities & factual triplets| T3["3. graph_search\n(Neo4j Entity & RELATES_TO keyword match)"]
-    Agent -->|1-hop / 2-hop graph neighborhood| T4["4. get_entity_relationships\n(Neo4j Cypher neighborhood traversal)"]
-    T1 --> Synthesis["Synthesized Markdown Response\nwith Tool Badges + [Source] & [Graph] Citations"]
+    Question["User Question in Agentic Chat"] --> Agent["Google ADK LlmAgent (gemini-2.5-pro)"]
+    Agent -->|Exact terms + semantics| T1["1. hybrid_search (70% pgvector cosine + 30% PostgreSQL FTS)"]
+    Agent -->|Broad conceptual similarity| T2["2. vector_search (100% pgvector cosine similarity)"]
+    Agent -->|Entities & factual triplets| T3["3. graph_search (Neo4j Entity & RELATES_TO keyword match)"]
+    Agent -->|1-hop / 2-hop graph neighborhood| T4["4. get_entity_relationships (Neo4j Cypher neighborhood traversal)"]
+    T1 --> Synthesis["Synthesized Markdown Response with Tool Badges + Citations"]
     T2 --> Synthesis
     T3 --> Synthesis
     T4 --> Synthesis

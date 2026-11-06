@@ -1,0 +1,240 @@
+/**
+ * ADK Agentic RAG — Global Documentation Styles (Adapted from adk.dev/stylesheets/custom.css)
+ */
+
+/* Prevent layout shift from scrollbar appearing/disappearing */
+html {
+  scrollbar-gutter: stable;
+}
+
+/* Wide 80% layout on documentation pages, matching adk.dev */
+.md-grid {
+  max-width: 80%;
+}
+
+.footer {
+  padding-bottom: 30vh;
+}
+
+/* Centered install command container */
+.install-command-container {
+  max-width: 600px;
+  margin: 2.5em auto;
+  padding: 1.5em 2em;
+  background-color: var(--md-code-bg-color, #f5f5f5);
+  border-radius: 8px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+  border-left: 5px solid #3b82f6;
+  margin-top: 30px;
+}
+
+.install-command-container p {
+  font-size: 1.1em;
+  color: var(--md-default-fg-color);
+  margin-bottom: -10px;
+  margin-top: -10px;
+}
+
+.install-command-container p code {
+  font-size: 1.1em;
+  font-weight: 600;
+  padding: 0.3em 0.6em;
+  background-color: var(--md-code-fg-color--light);
+  text-align: center;
+  border-radius: 4px;
+  display: inline-block;
+  line-height: 1.4;
+}
+
+/* Centered install tabs */
+#centered-install-tabs .tabbed-labels {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Copy page button */
+button.md-content__button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+button.md-content__button:hover svg {
+  color: var(--md-accent-fg-color);
+}
+
+/* Header styles */
+@media screen and (max-width: 76.1875em) {
+  .md-header__topic .md-ellipsis {
+    display: none;
+  }
+
+  .md-header__topic::before {
+    content: "ADK RAG";
+    display: block;
+    padding-left: 0.6rem;
+  }
+}
+
+.md-header__title {
+  flex-shrink: 1 !important;
+  min-width: 120px !important;
+  overflow: hidden !important;
+}
+
+/* Navigation section titles — exact adk.dev styling */
+nav.md-nav--primary .md-nav__item--section > .md-nav__link {
+  color: #1565C0;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+/* Resource & Tool cards */
+.resource-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+@media (max-width: 992px) {
+  .resource-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .resource-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.resource-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  text-decoration: none !important;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.resource-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border-color: #4285F4;
+}
+
+/* Dark mode styles — exact adk.dev slate overrides */
+[data-md-color-scheme="slate"] nav.md-nav--primary,
+[data-md-color-scheme="slate"] .md-sidebar--primary,
+[data-md-color-scheme="slate"] .md-sidebar--primary .md-sidebar__scrollwrap,
+[data-md-color-scheme="slate"] .md-sidebar--primary .md-sidebar__inner {
+  background-color: var(--md-default-bg-color);
+}
+
+[data-md-color-scheme="slate"] .md-header,
+[data-md-color-scheme="slate"] .md-header__inner,
+[data-md-color-scheme="slate"] .md-tabs {
+  background-color: var(--md-default-bg-color);
+}
+
+[data-md-color-scheme="slate"] .md-header,
+[data-md-color-scheme="slate"] .md-header *,
+[data-md-color-scheme="slate"] .md-tabs,
+[data-md-color-scheme="slate"] .md-tabs * {
+  color: var(--md-default-fg-color);
+}
+
+[data-md-color-scheme="slate"] .md-header svg,
+[data-md-color-scheme="slate"] .md-header path {
+  fill: var(--md-default-fg-color);
+}
+
+[data-md-color-scheme="slate"] .resource-card {
+  background: var(--md-default-bg-color);
+  border-color: var(--md-default-fg-color--lightest);
+}
+
+[data-md-color-scheme="slate"] nav.md-nav--primary .md-nav__item--section > .md-nav__link {
+  color: #60a5fa;
+}
+
+/* Light mode clean header & tabs border */
+[data-md-color-scheme="default"] .md-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+[data-md-color-scheme="default"] .md-tabs {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+[data-md-color-scheme="slate"] .md-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[data-md-color-scheme="slate"] .md-tabs {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ========================
+   ANNOUNCEMENT BANNER
+   Adapts to light/dark via [data-md-color-scheme] (exact adk.dev styling)
+   ======================== */
+[data-md-color-scheme="default"] .md-banner {
+  background: #1e293b;
+  color: #e2e8f0;
+}
+
+[data-md-color-scheme="default"] .md-banner a {
+  color: #93c5fd;
+}
+
+[data-md-color-scheme="slate"] .md-banner {
+  background: #1e1b4b;
+  color: #c7d2fe;
+}
+
+[data-md-color-scheme="slate"] .md-banner a {
+  color: #a5b4fc;
+}
+
+.md-banner {
+  font-size: 0.8rem;
+}
+
+.md-banner .announce-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.md-banner .announce-item a {
+  text-decoration: none;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.md-banner .announce-item a:hover {
+  text-decoration: underline;
+}
+
+.md-banner .announce-item code {
+  background: rgba(255, 255, 255, 0.12);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .md-banner {
+    text-align: center;
+  }
+  .md-banner .announce-item {
+    display: inline;
+  }
+}
