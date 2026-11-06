@@ -3,31 +3,29 @@ hide:
   - navigation
 ---
 
-<div class="adk-hero" markdown>
-  <div class="adk-hero-badge">
-    :material-sparkles: Google ADK &bull; Gemini 2.5 &bull; Neon pgvector &bull; Neo4j
-  </div>
-  <h1>ADK Agentic RAG + Knowledge Graph</h1>
-  <div class="adk-hero-tagline">
-    "Where Knowledge Connects, Agents Reason, and Intelligence Emerges."
-  </div>
-  <p>
-    An enterprise-ready <strong>Hybrid Document Intelligence Platform</strong> built with <strong>Google Agent Development Kit (ADK)</strong>. Authenticate with <strong>Neon PostgreSQL</strong>, ingest documents through a live 5-step dual vector + graph pipeline, explore interactive <strong>Neo4j</strong> knowledge topologies, and converse with a multi-tool reasoning agent.
-  </p>
-  <div class="adk-hero-actions">
-    <a href="INSTALLATION/" class="adk-btn-primary">
-      :material-rocket-launch: Quickstart Guide
-    </a>
-    <a href="USER_GUIDE/" class="adk-btn-secondary">
-      :material-book-open-page-variant: Interactive User Guide
-    </a>
-    <a href="ARCHITECTURE/" class="adk-btn-secondary">
-      :material-sitemap: System Architecture
-    </a>
-    <a href="TECHNICAL_SPECIFICATIONS/" class="adk-btn-secondary">
-      :material-file-cog: Technical Specs
-    </a>
-  </div>
+<div class="adk-hero" markdown="1">
+
+<div class="adk-hero-badge" markdown="1">
+:material-sparkles: Google ADK &bull; Gemini 2.5 &bull; Neon pgvector &bull; Neo4j
+</div>
+
+# ADK Agentic RAG + Knowledge Graph
+
+<div class="adk-hero-tagline" markdown="1">
+"Where Knowledge Connects, Agents Reason, and Intelligence Emerges."
+</div>
+
+An enterprise-ready **Hybrid Document Intelligence Platform** built with **Google Agent Development Kit (ADK)**. Authenticate with **Neon PostgreSQL**, ingest documents through a live 5-step dual vector + graph pipeline, explore interactive **Neo4j** knowledge topologies, and converse with a multi-tool reasoning agent.
+
+<div class="adk-hero-actions" markdown="1">
+
+[:material-rocket-launch: Quickstart Guide](INSTALLATION.md){ .adk-btn-primary }
+[:material-book-open-page-variant: Interactive User Guide](USER_GUIDE.md){ .adk-btn-secondary }
+[:material-sitemap: System Architecture](ARCHITECTURE.md){ .adk-btn-secondary }
+[:material-file-cog: Technical Specs](TECHNICAL_SPECIFICATIONS.md){ .adk-btn-secondary }
+
+</div>
+
 </div>
 
 ## :material-compass-outline: Explore the Platform
