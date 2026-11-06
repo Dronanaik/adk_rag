@@ -1,204 +1,192 @@
-# User Guide
+# :material-book-open-page-variant: Interactive User Guide
 
-This guide walks you step-by-step through how to interact with the **ADK Agentic RAG + Knowledge Graph** application—from creating an account and uploading documents to monitoring the live 5-step ingestion pipeline, chatting with the AI agent, and exploring your interactive Neo4j Knowledge Graph.
+This step-by-step guide walks you through every screen and interaction in the **ADK Agentic RAG + Knowledge Graph** platform—from signing in with **Neon PostgreSQL Authentication** to monitoring the live 5-step ingestion pipeline, querying the **Google ADK Agent**, and exploring your interactive **Neo4j Knowledge Graph**.
 
 ---
 
-## End-to-End User Workflow
+## :material-map-marker-path: User Journey Overview
 
 ```mermaid
 flowchart LR
-    A["1. Sign In / Create Account"] --> B["2. Upload Document"]
-    B --> C["3. Watch Live 5-Step Pipeline"]
-    C --> D["4. Review in Documents Tab"]
-    D --> E["5. Ask Questions in Agentic Chat"]
-    E --> F["6. Explore Neo4j Knowledge Graph"]
+    A["1. Sign In / Sign Up\n(Neon Postgres Auth)"] --> B["2. Upload Document\n(12 Supported Formats)"]
+    B --> C["3. Watch Live Pipeline\n(5 Real-Time Stages)"]
+    C --> D["4. Manage Documents\n(View Counts / Cascade Delete)"]
+    D --> E["5. Agentic Chat\n(4 Tools + Dual Citations)"]
+    E --> F["6. Knowledge Graph\n(Interactive SVG Topology)"]
 ```
 
----
+<div class="grid cards" markdown>
 
-## Step 1: Sign In or Create an Account
+-   :material-shield-account:{ .lg .middle } **Step 1 — Authenticate**
 
-When you open the application in your browser (`http://localhost:5173` in local development), you are greeted by the **Authentication Screen** backed by **Neon Console PostgreSQL**.
+    ---
 
-### Creating a New Account
-1. Click the **Create Account** tab at the top of the card.
-2. Fill in your details:
-   - **Full Name**: Your display name (for example, `Alice Morgan`). Displayed in the top header bar once signed in.
-   - **Email Address**: Your email address (for example, `alice@company.com`).
-   - **Password**: A password with at least **6 characters**.
-3. Click **Create Account →**.
-4. Your account is immediately created in the Neon PostgreSQL `users` table (with a salted `PBKDF2-SHA256` password hash), and you are automatically signed in.
+    Sign in or register an isolated workspace backed by Neon PostgreSQL & JWT tokens.
 
-### Signing In with an Existing Account
-1. Select the **Sign In** tab.
-2. Enter your registered **Email Address** and **Password**.
-3. Click **Sign In →**.
+    [:octicons-arrow-down-24: Jump to Step 1](#step-1-create-an-account-or-sign-in)
 
-> [!NOTE]
-> **Strict User Isolation:** Every document you upload, every vector chunk stored in Neon PostgreSQL, and every entity/relationship extracted into Neo4j is strictly scoped to your authenticated user account. Other users cannot view, search, or modify your documents or knowledge graph.
+-   :material-cloud-upload:{ .lg .middle } **Step 2 & 3 — Upload & Ingest**
 
----
+    ---
 
-## Step 2: Understanding the Workspace Layout
+    Drag and drop files and watch each of the 5 pipeline stages execute live.
 
-Once signed in, the workspace consists of two main navigation areas:
+    [:octicons-arrow-down-24: Jump to Step 3](#step-3-uploading-a-document)
 
-### 1. Top Header Bar
-Located at the top of the screen, the header displays:
-- **Application Title & Subtitle**: *ADK Agentic RAG — Neon pgvector + Neo4j Knowledge Graph*
-- **API Status Pill**:
-  - **Green dot (`API Ready`)**: The FastAPI backend, Neon PostgreSQL, and Neo4j are reachable.
-  - **Red dot (`API Offline`)**: The backend server is unreachable.
-- **User Profile Pill**: Shows your **Full Name** and **Email Address**.
-- **Sign Out Button**: Click **Sign Out** at any time to clear your session token and return to the Sign In screen.
+-   :material-forum:{ .lg .middle } **Step 5 — Agentic Chat**
 
-### 2. Five-Tab Navigation Bar
-Below the header, five tabs organize your workflow in logical order:
+    ---
 
-| Tab Order | Tab Name | Purpose |
-|-----------|----------|---------|
-| **1** | **Upload** | Select or drag-and-drop files to ingest into your workspace. |
-| **2** | **Ingestion Pipeline** | Watch real-time step-by-step progress across all 5 ingestion stages and view database metrics. |
-| **3** | **Documents** | View all ingested files, check chunk/entity/relationship counts, or cascade-delete files. |
-| **4** | **Agentic Chat** | Ask natural-language questions answered by the Google ADK agent using hybrid vector + graph tools. |
-| **5** | **Knowledge Graph** | Visually explore extracted Neo4j entities and factual relationships on an interactive canvas. |
+    Ask complex questions with tool execution badges and `[Source]` / `[Graph]` citations.
+
+    [:octicons-arrow-down-24: Jump to Step 5](#step-5-asking-questions-in-agentic-chat)
+
+-   :material-graph:{ .lg .middle } **Step 6 — Knowledge Graph**
+
+    ---
+
+    Filter entity categories and click nodes to inspect 1-hop relationships.
+
+    [:octicons-arrow-down-24: Jump to Step 6](#step-6-exploring-the-neo4j-knowledge-graph)
+
+</div>
 
 ---
 
-## Step 3: Uploading a Document (`Upload` Tab)
+## Step 1: Create an Account or Sign In
 
-1. Navigate to the **Upload** tab (selected by default when you sign in).
-2. **Select a File**:
-   - **Drag and drop** a file directly onto the dashed drop zone, **or**
-   - Click anywhere inside the drop zone to open your system file browser.
-   - **Supported Formats**: `.pdf`, `.docx`, `.xlsx`, `.xls`, `.pptx`, `.txt`, `.md`, `.csv`, `.json`, `.xml`, `.html`, `.log`.
-3. Once a file is selected, the drop zone displays:
-   - The **file name**
-   - The **file size** in KB
-   - A **Remove file** button if you wish to pick a different file
-4. Click **Upload & Ingest into Vector + Graph**.
-5. **Automatic Redirection**: As soon as the upload begins, the application automatically switches you to the **Ingestion Pipeline** tab so you can watch each stage of the pipeline execute in real time.
+When you open the application (`http://localhost:5173`), the **Bioluminescent Neural Forest Authentication Screen** appears in front of the Tree of Knowledge backdrop.
+
+=== ":material-account-plus: Create a New Account"
+
+    1. Click the **Create Account** tab on the authentication card.
+    2. Enter your credentials:
+       - **Full Name**: Your display name (e.g., `Drona Sharma`), shown in the top navigation bar.
+       - **Email Address**: Your email address (e.g., `drona@company.com`).
+       - **Password**: At least **6 characters** (hashed with `PBKDF2-HMAC-SHA256` using `260,000` iterations).
+    3. Click **Create Account & Continue →**.
+    4. Your user record is created in the Neon PostgreSQL `users` table and you are signed in immediately.
+
+=== ":material-login: Sign In to Existing Account"
+
+    1. Select the **Sign In** tab.
+    2. Enter your registered **Email Address** and **Password**.
+    3. Click **Sign In to Workspace →**.
+
+!!! info "Strict Multi-Tenant Isolation"
+    Every document you upload, every vector chunk stored in **Neon PostgreSQL**, and every entity/relationship node created in **Neo4j** is strictly scoped to your authenticated `user_id`. No other user can view or query your workspace data.
 
 ---
 
-## Step 4: Monitoring Live Progress (`Ingestion Pipeline` Tab)
+## Step 2: Navigating the Workspace Header & 5-Tab Bar
 
-The **Ingestion Pipeline** tab provides complete visibility into how your document is processed and stored across **Neon PostgreSQL** and **Neo4j**.
+Once authenticated, the workspace presents a sticky top header and a 5-tab workflow bar:
 
-### Understanding the Live 5-Step Progress Indicators
+| UI Element | Location | What It Shows |
+|------------|----------|---------------|
+| **API Online / Offline Pill** | Top-Right Header | Real-time connectivity check against `GET /health` (`API Online` in glowing emerald when healthy). |
+| **User Profile Badge** | Top-Right Header | Displays your avatar initial, **Full Name**, and **Email Address**. |
+| **Sign Out Button** | Top-Right Header | Clears your JWT session token and returns you to the Sign In screen. |
+| **5-Tab Navigation Bar** | Below Header | Ordered left-to-right following your natural workflow: **Upload** → **Ingestion Pipeline** → **Documents** → **Agentic Chat** → **Knowledge Graph**. |
 
-While a document is being ingested, only the **currently executing step** spins/rotates, making it clear what the system is doing at any given moment:
+---
 
-| Visual State | Badge | Meaning |
-|--------------|-------|---------|
-| **Checkmark (`✓`)** | `Completed` (Green) | This stage has finished for your current document. |
-| **Spinning Ring** | `In Progress...` (Blue) | This is the exact stage currently executing on the server. |
-| **Numbered Badge (`03`)** | `Queued` (Grey) | This stage is waiting for the current step to finish. |
+## Step 3: Uploading a Document
 
-### What Happens in Each of the 5 Steps
+1. Select the **Upload** tab (active by default upon sign-in).
+2. **Choose a Document**:
+   - **Drag and drop** a file onto the bioluminescent dashed drop zone, **or** click anywhere inside the drop zone to browse your computer.
+   - **Supported Formats**: `.pdf`, `.docx`, `.xlsx`, `.xls`, `.pptx`, `.txt`, `.md`, `.csv`, `.json`, `.xml`, `.html`, `.htm`, `.log`.
+3. Verify the file preview card showing the **filename** and **file size** (click **Remove** if you want to pick a different file).
+4. Click **Ingest into Neon Postgres & Neo4j**.
 
-1. **Step 01 — Format-Specific Text Extraction (`parsers.py`)**:
-   - Extracts clean text from your uploaded file (PyMuPDF for PDFs, `python-docx` for Word, `openpyxl` for Excel, `python-pptx` for PowerPoint, or UTF-8 text readers).
-   - Displays the total character count extracted once complete.
-2. **Step 02 — Structure-Aware Semantic Chunking (`chunking.py`)**:
-   - Splits the text along natural markdown headers, paragraphs, and sentence boundaries (`1200` characters per chunk with a `200`-character sliding overlap).
-   - Displays the exact number of semantic chunks created.
-3. **Step 03 — Gemini Embedding Generation (`embeddings.py`)**:
-   - Calls `gemini-embedding-001` in batches to generate `768`-dimensional semantic vectors for every chunk.
-4. **Step 04 — Neon PostgreSQL Indexing (`rag_store.py`)**:
-   - Stores the document metadata, text chunks, `VECTOR(768)` embeddings (indexed via `pgvector` HNSW), and `tsvector` full-text index (GIN) inside Neon PostgreSQL.
-5. **Step 05 — Neo4j Knowledge Graph Extraction (`graph_store.py`)**:
-   - Uses `gemini-2.5-flash` with Structured Outputs to extract key domain entities (`Person`, `Organization`, `Technology`, `Concept`, `Location`, `Event`, `Process`, `Metric`, `Model`) and factual relationships (`RELATES_TO`), then merges them into Neo4j.
+!!! tip "Automatic Tab Switch"
+    As soon as you click **Ingest into Neon Postgres & Neo4j**, the UI automatically switches you to the **Ingestion Pipeline** tab so you can watch the live 5-step execution in real time.
 
-### Pipeline Completion Summary
-When all 5 steps finish, a green **All 5 Pipeline Steps Completed Successfully** banner appears at the top of the tab displaying:
-- **File**: Name of the ingested document
-- **Text Length**: Total characters extracted
-- **Vector Chunks**: Number of chunks stored in Neon PostgreSQL
-- **Graph Entities**: Number of entities extracted into Neo4j
-- **Relationships**: Number of factual links stored in Neo4j
+---
 
-You will also see live summary metric cards at the top of the tab showing your workspace's total **Documents**, **Vector Chunks**, **Graph Entities**, and **Graph Relations**.
+## Step 4: Monitoring the Live 5-Step Ingestion Pipeline
+
+In the **Ingestion Pipeline** tab, only the **currently active step** spins/rotates, so you always know the exact operation executing on the backend:
+
+<div class="grid cards" markdown>
+
+-   :material-check-circle:{ .lg .middle } **`Completed` (Emerald Checkmark)**
+
+    ---
+
+    The stage has finished executing for your document and displays its concrete output (e.g., characters extracted or chunks created).
+
+-   :material-loading:{ .lg .middle } **`Running Now…` (Cyan Spinner)**
+
+    ---
+
+    This is the exact stage currently executing on the FastAPI backend. The top live banner also shows the percentage progress bar.
+
+-   :material-clock-outline:{ .lg .middle } **`Queued` (Muted Badge)**
+
+    ---
+
+    Upcoming stages waiting for the active step to finish.
+
+</div>
+
+### What Happens in Each Stage
+
+1. **Step 1 — Text Extraction (`parsers.py`)**: Extracts raw text using format-specific parsers (`PyMuPDF`, `python-docx`, `openpyxl`, `python-pptx`, etc.).
+2. **Step 2 — Structure-Aware Semantic Chunking (`chunking.py`)**: Preserves headings and paragraphs while splitting text into `1,200`-character chunks with a `200`-character overlap.
+3. **Step 3 — Gemini Embedding Generation (`embeddings.py`)**: Embeds chunks in batches using `gemini-embedding-001` (`768` dimensions).
+4. **Step 4 — Neon PostgreSQL Vector & Hybrid Storage (`rag_store.py`)**: Bulk-inserts chunks, `VECTOR(768)` embeddings (HNSW index), and `tsvector` full-text index (GIN) into Neon PostgreSQL.
+5. **Step 5 — Neo4j Knowledge Graph Extraction (`graph_store.py`)**: Uses `gemini-2.5-flash` Structured Outputs to extract domain entities and factual relationships and merges them into Neo4j.
+
+!!! success "Completion Summary Banner"
+    When all 5 stages complete, an emerald banner titled **All 5 Pipeline Steps Completed Successfully** displays the **Filename**, **Chunks (pgvector)**, **Entities (Neo4j)**, **Relationships (Neo4j)**, and **Characters** extracted.
 
 ---
 
 ## Step 5: Managing Your Documents (`Documents` Tab)
 
-Click the **Documents** tab to inspect or clean up your ingested files.
+Switch to the **Documents** tab to view or delete files in your workspace:
 
-1. **Review Document Metadata**:
-   Each document row displays:
-   - **File Name** and file type icon
-   - **Ingestion Timestamp**
-   - **Chunks Badge**: Number of vector chunks in Neon PostgreSQL
-   - **Entities Badge**: Number of nodes extracted into Neo4j
-   - **Relations Badge**: Number of relationships extracted into Neo4j
-2. **Refreshing the List**:
-   Click the **↻ Refresh** button in the top-right corner of the card to reload the latest document statistics.
-3. **Deleting a Document (Cascade Delete)**:
-   - Click the **Delete** button (trash icon) on the right side of a document row.
-   - Confirm the deletion in the dialog prompt.
-   - **What gets deleted**: The backend performs a **cascade deletion** across both databases—removing the document and all its vector chunks from **Neon PostgreSQL**, detaching its `MENTIONED_IN` links and `RELATES_TO` edges in **Neo4j**, and pruning any orphaned entity nodes that belong solely to that document.
+- **Per-Document Badges**: Each document card shows its **chunks** count (in Neon Postgres), **entities** count (in Neo4j), and **relations** count (in Neo4j).
+- **Cascade Delete**:
+  1. Click **Delete** on any document card.
+  2. Click **Yes, delete** on the confirmation prompt (`Delete from Postgres & Neo4j?`).
+  3. The backend atomically removes the document and its vector chunks from **Neon PostgreSQL**, deletes its `RELATES_TO` edges and `Document` node in **Neo4j**, and prunes any orphaned entity nodes.
 
 ---
 
-## Step 6: Asking Questions (`Agentic Chat` Tab)
+## Step 6: Asking Questions in Agentic Chat (`Agentic Chat` Tab)
 
-Click the **Agentic Chat** tab to converse with the **Google ADK (`LlmAgent`)** assistant over your ingested knowledge base.
+Switch to the **Agentic Chat** tab to query your documents using the **Google ADK `LlmAgent`**.
 
-### Starting a Conversation
-1. **Use a Suggested Prompt** (on an empty chat screen):
-   Click any of the starter prompt chips (such as *"Summarize the key topics across my documents"* or *"How are the main entities and technologies connected?"*) to immediately send that question.
-2. **Type Your Own Question**:
-   - Click the text input box at the bottom of the screen.
-   - Type your question (press `Enter` to send, or `Shift + Enter` to insert a new line).
-   - Click the **Send** button.
+1. **Click a Suggested Question Chip** on the starter screen, **or** type your question in the input box at the bottom.
+2. Press ++enter++ to send (or ++shift+enter++ to insert a newline).
 
-### Understanding How the Agent Answers
-Unlike basic RAG systems that only perform a single vector lookup, the ADK Agent dynamically selects and combines **4 specialized retrieval tools** depending on your question:
+### Understanding Tool Badges & Dual Citations
 
-| Tool Badge Shown in UI | When the Agent Uses It |
-|------------------------|------------------------|
-| `hybrid_search` | Default tool for general questions, technical terms, names, and numbers. Combines semantic vector similarity (`70%`) with PostgreSQL full-text keyword matching (`30%`). |
-| `vector_search` | Used for broad conceptual or thematic questions where exact keywords may not appear verbatim. |
-| `graph_search` | Used when you ask about entities, organizations, architectures, or factual connections stored in Neo4j. |
-| `get_entity_relationships` | Used when you ask how a specific entity connects to other concepts (multi-hop graph traversal in Neo4j). |
+The ADK agent autonomously selects one or more of its 4 specialized tools and displays **Tool Execution Badges** at the top of its reply:
 
-### Reading Tool Badges & Citations in Responses
-Every assistant response includes:
-1. **Tool Execution Badges** (at the top of the message bubble): Displays which tools the agent called to answer your question (e.g., `hybrid_search` + `graph_search`).
-2. **Inline Source Citations**:
-   - **Vector/Hybrid Chunk Citations**: Rendered as `[Source: filename.pdf, chunk 2]` so you know the exact document and section where the passage came from.
-   - **Knowledge Graph Citations**: Rendered as `[Graph: EntityA -> RELATION_TYPE -> EntityB]` so you can verify factual relationships extracted from the Neo4j graph.
+| Tool Badge | Database Queried | When the Agent Chooses It |
+|------------|------------------|---------------------------|
+| `hybrid_search` | Neon PostgreSQL (`pgvector` + FTS) | Default for most questions; combines `70%` semantic similarity + `30%` keyword matching. |
+| `vector_search` | Neon PostgreSQL (`pgvector`) | Broad conceptual or thematic questions. |
+| `graph_search` | Neo4j Knowledge Graph | Questions about entities, technologies, people, or how concepts connect. |
+| `get_entity_relationships` | Neo4j Knowledge Graph | Deep-dive traversal into a specific entity's 1-hop neighborhood. |
 
-### Starting a Fresh Conversation
-Click the **New Session** button in the top-right corner of the chat header to clear the current conversation history and start a fresh multi-turn session with the agent.
+Every assistant response includes inline verifiable citations:
+- **Document Chunk Citation**: `[Source: filename.pdf, chunk 3]` (highlighted in emerald)
+- **Knowledge Graph Citation**: `[Graph: Google ADK -> USES -> Gemini 2.5 Pro]` (highlighted in gold)
 
 ---
 
-## Step 7: Exploring the Knowledge Graph (`Knowledge Graph` Tab)
+## Step 7: Exploring the Neo4j Knowledge Graph (`Knowledge Graph` Tab)
 
-Click the **Knowledge Graph** tab to visually inspect the entities and relationships extracted from your documents into **Neo4j**.
+Switch to the **Knowledge Graph** tab to visually explore the entities and relationships extracted from your documents:
 
-### 1. Graph Overview & Controls Bar
-At the top of the Knowledge Graph tab, you can:
-- **Search Entities or Facts**: Type a keyword in the search box (for example, `Gemini` or `PostgreSQL`) to filter the visible graph nodes and relationships in real time.
-- **Filter by Entity Category**: Click any category pill (`All`, `Technology`, `Concept`, `Organization`, `Person`, `Model`, `Metric`, `Process`, `Location`, `Event`) to isolate nodes of that category.
-- **Zoom Controls**: Use the **`+`** (Zoom In), **`-`** (Zoom Out), and **`Reset`** buttons to adjust your view of the SVG network diagram.
-- **Refresh**: Click **↻ Refresh** to fetch the latest graph nodes and edges from Neo4j.
-
-### 2. Interacting with the Visual Network Canvas
-- **Color-Coded Nodes**: Each circular node represents an extracted `Entity` colored by its category (for example, Indigo for `Technology`, Teal for `Concept`, Amber for `Organization`, Pink for `Person`).
-- **Directed Edges (`RELATES_TO`)**: Lines connecting nodes display the relationship label (such as `USES`, `INTEGRATES_WITH`, `DEPENDS_ON`).
-- **Inspecting a Node (1-Hop Neighborhood)**:
-  1. **Click any node** on the canvas.
-  2. The canvas highlights that node and all its direct neighbors while dimming unrelated nodes.
-  3. The **Entity Inspector Drawer** on the right displays:
-     - The entity's **Name**, **Category Badge**, and **Description**
-     - All **Outgoing Relationships** (`Selected Entity -> RELATION -> Target Entity` + supporting fact description)
-     - All **Incoming Relationships** (`Source Entity -> RELATION -> Selected Entity` + supporting fact description)
-  4. Click any connected entity inside the inspector drawer to jump directly to that entity in the graph.
-
-### 3. Extracted Triplets Table
-Below the visual canvas, the **Extracted Knowledge Graph Triplets** table lists every factual relationship in structured form (`Source Entity`, `Relationship Type`, `Target Entity`, and `Supporting Fact`), allowing you to audit the exact facts discovered across your uploaded documents.
+1. **Filter by Category Pills**: Click `All`, `Technology`, `Model`, `Concept`, `Organization`, `Person`, `Metric`, `Location`, or `Event` to isolate specific node types.
+2. **Real-Time Search**: Type any keyword into the filter bar to highlight matching entities, relationship types, or facts.
+3. **Interactive SVG Topology**:
+   - **Click any node** on the glowing neural canvas to highlight its 1-hop neighborhood and inspect its description and relationships in the right-hand **Entity Inspector** panel.
+   - Click any entity name in the **Extracted Relationship Facts** list on the right to center and select that node on the graph.
+   - Click **Clear** on the selected entity card to return to the full graph view.

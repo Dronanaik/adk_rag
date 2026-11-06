@@ -1,52 +1,153 @@
-# ADK Agentic RAG + Knowledge Graph
+---
+hide:
+  - navigation
+---
 
-> **Hybrid Document Intelligence Platform** — Upload documents, monitor a live 5-step dual ingestion pipeline, explore interactive Neo4j knowledge graphs, and chat with your documents using **Google ADK**, **Gemini**, **Neon Console PostgreSQL (`pgvector`)**, and **Neo4j**.
+<div class="adk-hero" markdown>
+  <div class="adk-hero-badge">
+    :material-sparkles: Google ADK &bull; Gemini 2.5 &bull; Neon pgvector &bull; Neo4j
+  </div>
+  <h1>ADK Agentic RAG + Knowledge Graph</h1>
+  <div class="adk-hero-tagline">
+    "Where Knowledge Connects, Agents Reason, and Intelligence Emerges."
+  </div>
+  <p>
+    An enterprise-ready <strong>Hybrid Document Intelligence Platform</strong> built with <strong>Google Agent Development Kit (ADK)</strong>. Authenticate with <strong>Neon PostgreSQL</strong>, ingest documents through a live 5-step dual vector + graph pipeline, explore interactive <strong>Neo4j</strong> knowledge topologies, and converse with a multi-tool reasoning agent.
+  </p>
+  <div class="adk-hero-actions">
+    <a href="INSTALLATION/" class="adk-btn-primary">
+      :material-rocket-launch: Quickstart Guide
+    </a>
+    <a href="USER_GUIDE/" class="adk-btn-secondary">
+      :material-book-open-page-variant: Interactive User Guide
+    </a>
+    <a href="ARCHITECTURE/" class="adk-btn-secondary">
+      :material-sitemap: System Architecture
+    </a>
+    <a href="TECHNICAL_SPECIFICATIONS/" class="adk-btn-secondary">
+      :material-file-cog: Technical Specs
+    </a>
+  </div>
+</div>
+
+## :material-compass-outline: Explore the Platform
+
+<div class="grid cards" markdown>
+
+-   :material-book-open-variant:{ .lg .middle } **Interactive User Guide**
+
+    ---
+
+    Step-by-step walkthrough of every screen: Neon authentication, drag-and-drop file upload, live 5-step pipeline monitoring, Agentic Chat, and Knowledge Graph exploration.
+
+    [:octicons-arrow-right-24: Read User Guide](USER_GUIDE.md)
+
+-   :material-sitemap:{ .lg .middle } **System Architecture**
+
+    ---
+
+    End-to-end architectural diagrams, sequence flows for authentication, dual ingestion, multi-tool ADK retrieval, and multi-tenant data isolation.
+
+    [:octicons-arrow-right-24: Explore Architecture](ARCHITECTURE.md)
+
+-   :material-file-code-outline:{ .lg .middle } **Technical Specifications**
+
+    ---
+
+    Complete engineering specs: Neon `pgvector` HNSW & GIN schemas, Neo4j graph constraints, `PBKDF2-SHA256` + `HS256` JWT security, and hybrid search formulas.
+
+    [:octicons-arrow-right-24: View Technical Specs](TECHNICAL_SPECIFICATIONS.md)
+
+-   :material-pipe:{ .lg .middle } **5-Step Dual Ingestion Pipeline**
+
+    ---
+
+    How documents are parsed, semantically chunked (`1200` chars), batch-embedded (`768`-dim), indexed in Neon Postgres, and extracted into Neo4j triplets.
+
+    [:octicons-arrow-right-24: Pipeline Deep Dive](INGESTION.md)
+
+-   :material-robot-outline:{ .lg .middle } **Agentic Chat & Graph Tools**
+
+    ---
+
+    How the Google ADK `LlmAgent` dynamically orchestrates `hybrid_search`, `vector_search`, `graph_search`, and `get_entity_relationships`.
+
+    [:octicons-arrow-right-24: Agent Tools Guide](CHAT.md)
+
+-   :material-api:{ .lg .middle } **REST API & Cloud Deployment**
+
+    ---
+
+    Complete FastAPI endpoint reference with `curl` examples plus production deployment guides for Render, Netlify, Neon, and Neo4j AuraDB.
+
+    [:octicons-arrow-right-24: View API Reference](API.md)
+
+</div>
 
 ---
 
-## Welcome to the Documentation
+## :material-layers-triple-outline: Why Hybrid Vector + Knowledge Graph RAG?
 
-This documentation covers everything you need to use, understand, configure, and deploy the **ADK Agentic RAG + Knowledge Graph** platform:
+Traditional RAG systems rely solely on vector similarity over isolated chunks, often missing global entity relationships or exact technical identifiers. **ADK Agentic RAG** unites three complementary paradigms under a single Google ADK agent:
 
-| Section | Description |
-|---------|-------------|
-| **[User Guide](USER_GUIDE.md)** | Step-by-step instructions on how users sign in, upload files, monitor the live 5-step ingestion pipeline, manage documents, ask questions in Agentic Chat, and explore the Knowledge Graph. |
-| **[Architecture](ARCHITECTURE.md)** | System design, component breakdown, data flow diagrams (Authentication, Dual Ingestion, Multi-Tool Retrieval, Cascade Deletion), and module responsibilities. |
-| **[Technical Specifications](TECHNICAL_SPECIFICATIONS.md)** | Detailed specifications for the tech stack, Neon PostgreSQL & Neo4j schemas, authentication security (`PBKDF2-SHA256` + `HS256` JWT), chunking/embedding parameters, hybrid search scoring, and API contracts. |
-| **[Ingestion Pipeline](INGESTION.md)** | Deep dive into format-specific text parsing, structure-aware semantic chunking, batched Gemini embeddings, and Gemini Structured Output graph extraction. |
-| **[Agentic Chat & Graph Tools](CHAT.md)** | How the Google ADK `LlmAgent` selects and combines `hybrid_search`, `vector_search`, `graph_search`, and `get_entity_relationships`. |
-| **[Frontend Application](FRONTEND.md)** | React 18 + Vite component architecture, Clean Modern SaaS Light theme tokens, and interactive SVG Knowledge Graph canvas. |
-| **[API Reference](API.md)** | Request/response schemas and `curl` examples for all FastAPI endpoints. |
-| **[Installation](INSTALLATION.md)** | Local setup guide for Python, Node.js, Neon PostgreSQL, and Neo4j. |
-| **[Deployment](DEPLOYMENT.md)** | Production deployment guide for Render, Netlify, Neon, and Neo4j AuraDB. |
-| **[Troubleshooting](TROUBLESHOOTING.md)** | Solutions for common database, authentication, ingestion, and frontend errors. |
+=== ":material-database-search: Hybrid Search (Neon PostgreSQL)"
+
+    Combines **768-dimensional semantic vector search** (`pgvector` HNSW cosine similarity, `70%` weight) with **PostgreSQL Full-Text Search** (`ts_rank_cd` GIN index, `30%` weight) in a single SQL query—capturing both conceptual meaning and exact keyword/identifier matches.
+
+    ```sql
+    SELECT chunk_id, filename, content,
+           (1 - (embedding <=> %(query_vec)s::vector)) AS vector_similarity,
+           ts_rank_cd(to_tsvector('english', content), plainto_tsquery('english', %(query)s)) AS keyword_score,
+           (0.7 * (1 - (embedding <=> %(query_vec)s::vector)) +
+            0.3 * ts_rank_cd(to_tsvector('english', content), plainto_tsquery('english', %(query)s))) AS combined_score
+    FROM document_chunks
+    WHERE user_id = %(user_id)s
+    ORDER BY combined_score DESC
+    LIMIT 5;
+    ```
+
+=== ":material-graph: Knowledge Graph (Neo4j)"
+
+    Uses **Gemini 2.5 Flash Structured Outputs** during ingestion to extract typed domain entities (`Technology`, `Model`, `Organization`, `Person`, `Concept`, `Metric`) and directed `[:RELATES_TO]` facts into **Neo4j**, enabling multi-hop relationship traversal.
+
+    ```cypher
+    MATCH (s:Entity {user_id: $user_id})-[r:RELATES_TO {user_id: $user_id}]->(t:Entity {user_id: $user_id})
+    WHERE toLower(s.name) CONTAINS $term OR toLower(r.fact) CONTAINS $term
+    RETURN s.name AS source, r.relation_type AS relation_type, t.name AS target, r.fact AS fact
+    LIMIT 15;
+    ```
+
+=== ":material-brain: Google ADK Multi-Tool Agent"
+
+    The `LlmAgent` powered by **Gemini 2.5 Pro** autonomously chooses which tool—or combination of tools—to invoke for each user question, returning inline citations for both document chunks (`[Source: file.pdf, chunk 2]`) and graph facts (`[Graph: EntityA -> USES -> EntityB]`).
+
+    ```python
+    root_agent = LlmAgent(
+        name="hybrid_rag_kg_agent",
+        model=AGENT_MODEL,
+        description="Hybrid Vector + Knowledge Graph Agentic RAG assistant.",
+        instruction=build_agent_instruction,
+        tools=[
+            hybrid_search,
+            vector_search,
+            graph_search,
+            get_entity_relationships,
+        ],
+    )
+    ```
 
 ---
 
-## Key Capabilities
+## :material-transit-connection-variant: End-to-End Architecture at a Glance
 
-1. **Neon PostgreSQL Authentication**: Built-in user accounts (`users` table in Neon Postgres) secured with `PBKDF2-HMAC-SHA256` password hashing and `HS256` JWT Bearer tokens, ensuring strict multi-tenant data isolation.
-2. **5-Step Live Dual Ingestion Pipeline**:
-   - **Step 1**: Format-specific text extraction (`PDF`, `DOCX`, `XLSX`, `PPTX`, `TXT`, `MD`, `CSV`, `JSON`, `XML`, `HTML`, `LOG`)
-   - **Step 2**: Structure-aware semantic paragraph & sentence chunking (`1200` chars, `200`-char overlap)
-   - **Step 3**: Batched `768`-dimensional vector embedding generation via `gemini-embedding-001`
-   - **Step 4**: Neon PostgreSQL `pgvector` HNSW + `tsvector` GIN indexing
-   - **Step 5**: Gemini Structured Output entity/relationship extraction & Neo4j `MERGE` persistence
-3. **Multi-Tool Google ADK Agent**:
-   - `hybrid_search`: Combined semantic vector similarity (`70%`) + PostgreSQL full-text rank (`30%`)
-   - `vector_search`: Pure semantic cosine similarity over `pgvector`
-   - `graph_search`: Keyword search across Neo4j entities and factual triplets
-   - `get_entity_relationships`: Multi-hop neighborhood traversal around specific entities
-4. **Interactive Knowledge Graph Explorer**: Force-layout SVG canvas with category filtering, search, zoom controls, and 1-hop relationship inspection drawer.
-
----
-
-## Previewing This Documentation Locally
-
-```bash
-source .venv/bin/activate
-pip install mkdocs mkdocs-material
-mkdocs serve -a 127.0.0.1:8001
+```mermaid
+flowchart LR
+    User(["Authenticated User"]) --> UI["Bioluminescent React UI\n(5-Tab Workspace)"]
+    UI -->|JWT Bearer Auth| API["FastAPI Backend"]
+    API -->|5-Step Pipeline| Ingest["Dual Ingestion Engine"]
+    Ingest -->|768-dim Vectors + FTS| Neon[("Neon PostgreSQL\n(pgvector + tsvector)")]
+    Ingest -->|Structured Triplets| Neo4j[("Neo4j AuraDB\n(Knowledge Graph)")]
+    API -->|Multi-Turn Session| ADK["Google ADK LlmAgent\n(Gemini 2.5 Pro)"]
+    ADK -->|hybrid_search / vector_search| Neon
+    ADK -->|graph_search / get_entity_relationships| Neo4j
 ```
-
-Then open `http://127.0.0.1:8001` in your browser.

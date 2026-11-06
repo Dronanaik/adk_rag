@@ -1,4 +1,4 @@
-site_name: ADK Agentic RAG + Knowledge Graph
+site_name: ADK Agentic RAG
 site_description: Hybrid Document Intelligence Platform powered by Google ADK, Gemini, Neon PostgreSQL (pgvector), and Neo4j Knowledge Graph.
 site_url: https://dronanaik.github.io/adk_rag/
 repo_url: https://github.com/Dronanaik/adk_rag
@@ -8,59 +8,113 @@ docs_dir: docs
 
 theme:
   name: material
+  font:
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    logo: material/brain
+    repo: fontawesome/brands/github
   palette:
-    - scheme: slate
-      primary: teal
-      accent: amber
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
       toggle:
-        icon: material/brightness-4
+        icon: material/weather-night
         name: Switch to light mode
-    - scheme: default
-      primary: teal
-      accent: amber
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
       toggle:
-        icon: material/brightness-7
+        icon: material/weather-sunny
         name: Switch to dark mode
   features:
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.tracking
     - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.sections
+    - navigation.expand
+    - navigation.path
     - navigation.top
     - navigation.footer
+    - toc.follow
     - search.suggest
     - search.highlight
+    - search.share
     - content.code.copy
+    - content.code.annotate
     - content.tabs.link
+    - content.tooltips
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Dronanaik/adk_rag
+      name: GitHub Repository
+    - icon: material/google
+      link: https://adk.dev/
+      name: Powered by Google ADK
 
 nav:
   - Home: index.md
-  - User Guide: USER_GUIDE.md
-  - System Design:
-      - Architecture: ARCHITECTURE.md
+  - Get Started:
+      - Quickstart & Installation: INSTALLATION.md
+      - Interactive User Guide: USER_GUIDE.md
+  - Architecture & Specs:
+      - System Architecture: ARCHITECTURE.md
       - Technical Specifications: TECHNICAL_SPECIFICATIONS.md
-  - Core Subsystems:
-      - Ingestion Pipeline: INGESTION.md
+  - Core Platform:
+      - 5-Step Dual Ingestion: INGESTION.md
       - Agentic Chat & Graph Tools: CHAT.md
-      - Frontend Application: FRONTEND.md
-      - API Reference: API.md
-  - Operations:
-      - Installation & Setup: INSTALLATION.md
-      - Deployment Guide: DEPLOYMENT.md
+      - Bioluminescent React UI: FRONTEND.md
+  - API & Operations:
+      - REST API Reference: API.md
+      - Cloud Deployment: DEPLOYMENT.md
       - Troubleshooting: TROUBLESHOOTING.md
 
 markdown_extensions:
   - admonition
-  - tables
   - attr_list
+  - md_in_html
   - def_list
+  - footnotes
+  - tables
   - toc:
       permalink: true
+      toc_depth: 3
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
   - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.highlight:
       anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
   - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
   - pymdownx.snippets
   - pymdownx.tabbed:
       alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
