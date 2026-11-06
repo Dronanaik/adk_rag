@@ -7,11 +7,11 @@ function getFileIcon(name = '') {
   const ext = name.split('.').pop().toLowerCase()
   if (['pdf'].includes(ext)) return <FileText size={22} color="#ef4444" />
   if (['docx', 'doc'].includes(ext)) return <FileText size={22} color="#3b82f6" />
-  if (['xlsx', 'xls', 'csv'].includes(ext)) return <FileSpreadsheet size={22} color="#22c55e" />
+  if (['xlsx', 'xls', 'csv'].includes(ext)) return <FileSpreadsheet size={22} color="#16a34a" />
   if (['pptx', 'ppt'].includes(ext)) return <FileText size={22} color="#f97316" />
-  if (['json', 'xml'].includes(ext)) return <FileJson size={22} color="#eab308" />
-  if (['html', 'htm'].includes(ext)) return <Globe size={22} color="#0ea5e9" />
-  return <FileIcon size={22} color="#94a3b8" />
+  if (['json', 'xml'].includes(ext)) return <FileJson size={22} color="#ca8a04" />
+  if (['html', 'htm'].includes(ext)) return <Globe size={22} color="#0284c7" />
+  return <FileIcon size={22} color="#64748b" />
 }
 
 export default function DocumentsTab({ userId }) {
@@ -57,7 +57,9 @@ export default function DocumentsTab({ userId }) {
         <div>
           <h2 className={styles.title}>My Documents</h2>
           <p className={styles.sub}>
-            {loading ? 'Loading…' : `${documents.length} document${documents.length !== 1 ? 's' : ''} in your workspace`}
+            {loading
+              ? 'Loading…'
+              : `${documents.length} document${documents.length !== 1 ? 's' : ''} indexed in Neon PostgreSQL & Neo4j`}
           </p>
         </div>
         <button
@@ -79,9 +81,9 @@ export default function DocumentsTab({ userId }) {
       {!loading && documents.length === 0 && !error && (
         <div className="empty-state glass-card">
           <span className="empty-state-icon">
-            <FileIcon size={48} strokeWidth={1} color="rgba(124, 108, 255, 0.4)" />
+            <FileIcon size={48} strokeWidth={1.3} color="#22d3ee" />
           </span>
-          <p style={{ fontWeight: 600 }}>No documents yet</p>
+          <p style={{ fontWeight: 700, color: 'var(--text-primary)' }}>No documents yet</p>
           <p style={{ fontSize: '0.85rem' }}>Upload a document in the Upload tab to get started.</p>
         </div>
       )}
@@ -100,6 +102,12 @@ export default function DocumentsTab({ userId }) {
                 </span>
                 <div className={styles.docMeta}>
                   <span className="badge badge-purple">{doc.chunks} chunks</span>
+                  {doc.entities !== undefined && (
+                    <span className="badge badge-teal">{doc.entities} entities</span>
+                  )}
+                  {doc.relationships !== undefined && (
+                    <span className="badge badge-green">{doc.relationships} relations</span>
+                  )}
                   <span className={styles.docId} title={doc.document_id}>
                     ID: {doc.document_id.slice(0, 12)}…
                   </span>
@@ -108,7 +116,7 @@ export default function DocumentsTab({ userId }) {
 
               {confirmId === doc.document_id ? (
                 <div className={styles.confirmRow}>
-                  <span className={styles.confirmText}>Delete?</span>
+                  <span className={styles.confirmText}>Delete from Postgres & Neo4j?</span>
                   <button
                     className="btn btn-danger btn-sm"
                     onClick={() => handleDelete(doc.document_id)}

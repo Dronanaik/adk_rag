@@ -4,13 +4,46 @@
    ============================================================ */
 
 const BASE_URL = import.meta.env.VITE_API_URL || '/api'
+const TOKEN_STORAGE_KEY = 'adk_rag_auth_token'
+const USER_STORAGE_KEY = 'adk_rag_user'
+
+export function getStoredAuth() {
+  try {
+    const token = localStorage.getItem(TOKEN_STORAGE_KEY)
+    const userRaw = localStorage.getItem(USER_STORAGE_KEY)
+    const user = userRaw ? JSON.parse(userRaw) : null
+    if (token && user && user.email) {
+      return { token, user }
+    }
+  } catch (_) {}
+  return { token: null, user: null }
+}
+
+export function setStoredAuth(token, user) {
+  try {
+    localStorage.setItem(TOKEN_STORAGE_KEY, token)
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user))
+  } catch (_) {}
+}
+
+export function clearStoredAuth() {
+  try {
+    localStorage.removeItem(TOKEN_STORAGE_KEY)
+    localStorage.removeItem(USER_STORAGE_KEY)
+  } catch (_) {}
+}
 
 /**
- * Shared fetch wrapper with user-id header injection.
+ * Shared fetch wrapper with Bearer JWT token + user-id header injection.
  */
 async function apiFetch(path, options = {}, userId = null) {
+  const { token } = getStoredAuth()
   const headers = {
     ...(options.headers || {}),
+  }
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
   }
 
   if (userId) {
@@ -35,6 +68,45 @@ async function apiFetch(path, options = {}, userId = null) {
 }
 
 // ---------------------------------------------------------------------------
+// Authentication (Neon PostgreSQL)
+// ---------------------------------------------------------------------------
+
+export async function signUp(fullName, email, password) {
+  const data = await apiFetch('/auth/signup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      full_name: fullName,
+      email,
+      password,
+    }),
+  })
+  if (data.access_token && data.user) {
+    setStoredAuth(data.access_token, data.user)
+  }
+  return data
+}
+
+export async function signIn(email, password) {
+  const data = await apiFetch('/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email,
+      password,
+    }),
+  })
+  if (data.access_token && data.user) {
+    setStoredAuth(data.access_token, data.user)
+  }
+  return data
+}
+
+export async function fetchCurrentUser() {
+  return apiFetch('/auth/me')
+}
+
+// ---------------------------------------------------------------------------
 // Health
 // ---------------------------------------------------------------------------
 
@@ -48,6 +120,10 @@ export async function checkHealth() {
 
 export async function getIngestStatus() {
   return apiFetch('/ingest/status')
+}
+
+export async function getIngestProgress(userId) {
+  return apiFetch('/ingest/progress', {}, userId)
 }
 
 // ---------------------------------------------------------------------------
@@ -78,6 +154,19 @@ export async function deleteDocument(documentId, userId) {
     { method: 'DELETE' },
     userId
   )
+}
+
+// ---------------------------------------------------------------------------
+// Knowledge Graph (Neo4j)
+// ---------------------------------------------------------------------------
+
+export async function getKnowledgeGraph(userId, query = '') {
+  const qs = query ? `?q=${encodeURIComponent(query)}` : ''
+  return apiFetch(`/graph${qs}`, {}, userId)
+}
+
+export async function getEntityRelationships(entityName, userId) {
+  return apiFetch(`/graph/entity/${encodeURIComponent(entityName)}`, {}, userId)
 }
 
 // ---------------------------------------------------------------------------

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Wifi, WifiOff, Loader2, ChevronRight, LogOut, Brain } from 'lucide-react'
+import { Wifi, WifiOff, Loader2, LogOut, Brain } from 'lucide-react'
 import { checkHealth } from '../api.js'
 import styles from './Header.module.css'
 
-export default function Header({ userId, onChangeUser }) {
+export default function Header({ user, userId, onChangeUser }) {
   const [backendStatus, setBackendStatus] = useState('loading')
 
   useEffect(() => {
@@ -23,6 +23,9 @@ export default function Header({ userId, onChangeUser }) {
     online:  'API Online',
     offline: 'API Offline',
   }[backendStatus]
+
+  const displayName = user?.name || user?.full_name || userId || 'User'
+  const displayEmail = user?.email || userId || ''
 
   return (
     <header className={styles.header}>
@@ -53,20 +56,26 @@ export default function Header({ userId, onChangeUser }) {
           {/* User badge */}
           <div className={styles.userBadge}>
             <div className={styles.userAvatar}>
-              {userId.charAt(0).toUpperCase()}
+              {displayName.charAt(0).toUpperCase()}
             </div>
             <div className={styles.userInfo}>
-              <span className={styles.userLabel}>Signed in as</span>
-              <span className={styles.userId}>{userId}</span>
+              <span className={styles.userId} title={displayName}>
+                {displayName}
+              </span>
+              {displayEmail && (
+                <span className={styles.userLabel} style={{ textTransform: 'none', letterSpacing: 0 }}>
+                  {displayEmail}
+                </span>
+              )}
             </div>
             <button
               className={`btn btn-ghost btn-sm ${styles.switchBtn}`}
               onClick={onChangeUser}
-              title="Switch user"
+              title="Sign out"
               id="switch-user-btn"
             >
               <LogOut size={14} />
-              <span>Switch</span>
+              <span>Sign Out</span>
             </button>
           </div>
         </div>

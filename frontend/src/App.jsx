@@ -1,30 +1,53 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import UserIdModal from './components/UserIdModal.jsx'
 import Header from './components/Header.jsx'
 import Tabs from './components/Tabs.jsx'
 import UploadTab from './components/UploadTab.jsx'
 import DocumentsTab from './components/DocumentsTab.jsx'
 import IngestionTab from './components/IngestionTab.jsx'
+import GraphTab from './components/GraphTab.jsx'
 import ChatTab from './components/ChatTab.jsx'
 import styles from './App.module.css'
-import { uploadDocument } from './api.js'
+import {
+  clearStoredAuth,
+  fetchCurrentUser,
+  getStoredAuth,
+  uploadDocument,
+} from './api.js'
 
 export default function App() {
-  const [userId, setUserId] = useState(null)
+  const [user, setUser] = useState(() => getStoredAuth().user)
   const [activeTab, setActiveTab] = useState('upload')
   const [uploadState, setUploadState] = useState({ status: 'idle', result: null, error: null })
 
-  // Show the User ID gate until a user logs in
-  if (!userId) {
-    return <UserIdModal onConfirm={(id) => setUserId(id)} />
+  useEffect(() => {
+    const { token } = getStoredAuth()
+    if (!token) return
+
+    fetchCurrentUser()
+      .then((res) => {
+        if (res?.user) setUser(res.user)
+      })
+      .catch(() => {
+        clearStoredAuth()
+        setUser(null)
+      })
+  }, [])
+
+  // Show the Neon PostgreSQL Sign In / Sign Up screen until authenticated
+  if (!user) {
+    return <UserIdModal onConfirm={(loggedInUser) => setUser(loggedInUser)} />
   }
+
+  const userId = user.email
 
   function handleTabChange(tab) {
     setActiveTab(tab)
   }
 
-  function handleChangeUser() {
-    setUserId(null)
+  function handleSignOut() {
+    clearStoredAuth()
+    setUser(null)
     setActiveTab('upload')
   }
 
@@ -40,15 +63,16 @@ export default function App() {
   }
 
   const tabContent = {
-    upload:    <UploadTab   userId={userId} onStartUpload={handleStartUpload} />,
+    upload:    <UploadTab    userId={userId} onStartUpload={handleStartUpload} />,
     documents: <DocumentsTab userId={userId} />,
     ingestion: <IngestionTab uploadState={uploadState} />,
-    chat:      <ChatTab     userId={userId} />,
+    chat:      <ChatTab      userId={userId} />,
+    graph:     <GraphTab     userId={userId} />,
   }
 
   return (
     <div className={styles.app}>
-      <Header userId={userId} onChangeUser={handleChangeUser} />
+      <Header user={user} userId={userId} onChangeUser={handleSignOut} />
 
       <main className={styles.main}>
         <div className="container">
@@ -69,10 +93,9 @@ export default function App() {
       <footer className={styles.footer}>
         <div className="container">
           <p>
-            ADK RAG &mdash; Built with{' '}
-            <span style={{ color: 'var(--accent-primary)' }}>Google ADK</span>,{' '}
-            <span style={{ color: 'var(--accent-secondary)' }}>Gemini</span>, and{' '}
-            <span style={{ color: 'var(--accent-primary)' }}>Pinecone DB</span>
+            Where <span style={{ color: 'var(--accent)', fontWeight: 600 }}>Knowledge Connects</span>,{' '}
+            <span style={{ color: 'var(--accent2)', fontWeight: 600 }}>Agents Reason</span>, and{' '}
+            <span style={{ color: 'var(--accent)', fontWeight: 600 }}>Intelligence Emerges</span>.
           </p>
         </div>
       </footer>

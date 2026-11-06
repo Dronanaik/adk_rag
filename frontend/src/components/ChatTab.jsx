@@ -5,10 +5,10 @@ import ChatMessage from './ChatMessage.jsx'
 import styles from './ChatTab.module.css'
 
 const SUGGESTED_QUESTIONS = [
-  'What are the main topics covered in my documents?',
-  'Summarize the key findings from my uploaded documents.',
-  'What technical skills are mentioned?',
-  'What are the conclusions or recommendations?',
+  'Summarize the key concepts and how they relate to each other.',
+  'What are the main entities and relationships in my knowledge graph?',
+  'Explain the core architecture and technical components described.',
+  'What are the key findings, metrics, or conclusions?',
 ]
 
 export default function ChatTab({ userId }) {
@@ -51,6 +51,7 @@ export default function ChatTab({ userId }) {
           id: Date.now() + 1,
           role: 'assistant',
           content: data.answer,
+          toolsUsed: data.tools_used || [],
           timestamp: new Date().toISOString(),
         },
       ])
@@ -89,15 +90,15 @@ export default function ChatTab({ userId }) {
       {/* Header row */}
       <div className={styles.headerRow}>
         <div>
-          <h2 className={styles.title}>Chat with your Documents</h2>
+          <h2 className={styles.title}>Agentic RAG + Knowledge Graph Chat</h2>
           <p className={styles.sub}>
-            Ask questions about your uploaded documents. The ADK agent searches ChromaDB and answers using the most relevant chunks.
+            The Google ADK agent autonomously selects between <code>hybrid_search</code>, <code>vector_search</code> (Neon pgvector), <code>graph_search</code>, and <code>get_entity_relationships</code> (Neo4j).
           </p>
         </div>
         <div className={styles.headerActions}>
           {sessionId && (
             <span className="badge badge-teal" title={`Session: ${sessionId}`}>
-              <LinkIcon size={12} style={{ marginRight: '4px' }}/> Session active
+              <LinkIcon size={12} style={{ marginRight: '4px' }} /> Session active
             </span>
           )}
           {messages.length > 0 && (
@@ -106,7 +107,7 @@ export default function ChatTab({ userId }) {
               onClick={handleNewSession}
               id="new-session-btn"
             >
-              <RefreshCw size={14} style={{ marginRight: '4px' }}/> New session
+              <RefreshCw size={14} style={{ marginRight: '4px' }} /> New session
             </button>
           )}
         </div>
@@ -117,10 +118,12 @@ export default function ChatTab({ userId }) {
         {messages.length === 0 ? (
           <div className={styles.emptyChat}>
             <div className={styles.emptyChatIconWrap}>
-              <MessageSquare size={32} />
+              <MessageSquare size={30} />
             </div>
-            <h3>Ask a question</h3>
-            <p>Your answers are grounded in your uploaded documents only.</p>
+            <h3>Ask your Agentic RAG + Knowledge Graph Assistant</h3>
+            <p>
+              Combines semantic chunk retrieval from <strong>Neon PostgreSQL (pgvector)</strong> with structured entity traversal in <strong>Neo4j</strong>.
+            </p>
 
             {/* Suggested questions */}
             <div className={styles.suggestions}>
@@ -164,7 +167,7 @@ export default function ChatTab({ userId }) {
         <textarea
           ref={inputRef}
           className={`input ${styles.chatInput}`}
-          placeholder="Ask a question about your documents… (Enter to send, Shift+Enter for new line)"
+          placeholder="Ask about concepts, facts, or entity relationships… (Enter to send, Shift+Enter for new line)"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -178,8 +181,12 @@ export default function ChatTab({ userId }) {
           disabled={loading || !input.trim()}
           id="send-btn"
         >
-          {loading ? <span className="spinner" /> : (
-            <><span>Send</span> <Send size={16} /></>
+          {loading ? (
+            <span className="spinner" />
+          ) : (
+            <>
+              <span>Send</span> <Send size={16} />
+            </>
           )}
         </button>
       </div>
@@ -188,7 +195,9 @@ export default function ChatTab({ userId }) {
       <div className={styles.infoFooterWrap}>
         <Lock size={14} color="var(--text-muted)" />
         <p className={styles.infoFooter}>
-          Answers are user-scoped — only your documents are searched (user: <strong>{userId}</strong>). Citations appear as <code>[Source: filename, chunk N]</code>.
+          User-scoped workspace (<strong>{userId}</strong>). Document citations appear as{' '}
+          <code>[Source: filename, chunk N]</code> and graph citations as{' '}
+          <code>[Graph: Source -&gt; RELATION -&gt; Target]</code>.
         </p>
       </div>
     </div>

@@ -7,15 +7,13 @@
 .sectionHeader { display: flex; flex-direction: column; gap: 8px; }
 
 .title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #fff, #c4bdff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
 }
 
-.sub { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
+.sub { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
 
 /* ── Drop Zone ── */
 .dropZone {
@@ -24,28 +22,29 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  border: 2px dashed rgba(124, 108, 255, 0.3) !important;
+  border: 2px dashed rgba(34, 211, 238, 0.35) !important;
   border-radius: var(--radius-xl);
   transition: all var(--transition-med);
   min-height: 220px;
-  background: rgba(255, 255, 255, 0.02) !important;
+  background: rgba(8, 24, 19, 0.78) !important;
 }
 
 .dropZone:hover:not(.hasFile) {
-  border-color: rgba(124, 108, 255, 0.6) !important;
-  background: rgba(124, 108, 255, 0.05) !important;
+  border-color: var(--accent-primary) !important;
+  background: rgba(12, 34, 27, 0.88) !important;
+  box-shadow: 0 0 28px rgba(34, 211, 238, 0.16) !important;
 }
 
 .dragOver {
-  border-color: var(--accent-primary) !important;
-  background: rgba(124, 108, 255, 0.08) !important;
-  box-shadow: 0 0 0 4px rgba(124, 108, 255, 0.15) !important;
+  border-color: var(--accent-secondary) !important;
+  background: rgba(20, 48, 38, 0.92) !important;
+  box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.20) !important;
 }
 
 .hasFile {
   cursor: default;
-  border-color: rgba(34, 211, 238, 0.4) !important;
-  background: rgba(34, 211, 238, 0.05) !important;
+  border-color: rgba(52, 211, 153, 0.55) !important;
+  background: rgba(12, 36, 28, 0.88) !important;
 }
 
 .hiddenInput { display: none; }
@@ -62,19 +61,19 @@
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(124, 108, 255, 0.2), rgba(34, 211, 238, 0.15));
-  border: 1px solid rgba(124, 108, 255, 0.3);
+  background: radial-gradient(circle at 30% 30%, rgba(34, 211, 238, 0.24), rgba(251, 191, 36, 0.12));
+  border: 1px solid rgba(34, 211, 238, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--accent-primary-light);
-  margin-bottom: 8px;
-  box-shadow: 0 0 20px rgba(124, 108, 255, 0.15);
+  color: var(--accent-primary);
+  margin-bottom: 6px;
+  box-shadow: 0 0 22px rgba(34, 211, 238, 0.24);
 }
 
 .dropTitle {
   font-size: 1.05rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-primary);
 }
 
@@ -84,10 +83,10 @@
 }
 
 .browseLink {
-  color: var(--accent-primary-light);
+  color: var(--accent-primary);
   font-weight: 600;
   text-decoration: underline;
-  text-decoration-color: rgba(124, 108, 255, 0.4);
+  text-decoration-color: rgba(34, 211, 238, 0.45);
   text-underline-offset: 4px;
 }
 
@@ -103,12 +102,13 @@
   width: 54px;
   height: 54px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(6, 18, 15, 0.85);
+  border: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-primary);
+  color: var(--accent-primary);
+  box-shadow: var(--shadow-sm);
 }
 
 .fileMeta {
@@ -120,7 +120,7 @@
 
 .fileName {
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
@@ -138,54 +138,4 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-}
-
-/* ── Pipeline steps ── */
-.pipelineStep {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.pipelineStep:last-child { border-bottom: none; }
-
-.stepIcon { color: var(--accent-primary-light); }
-
-/* ── Result card ── */
-.resultCard { padding: 24px; }
-
-.resultHeader {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.resultHeader h3 {
-  font-size: 1.05rem;
-  font-weight: 700;
-}
-
-.successIconWrap {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(52, 211, 153, 0.15);
-  border: 1px solid rgba(52, 211, 153, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--accent-success);
-}
-
-.resultGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-@media (max-width: 500px) {
-  .resultGrid { grid-template-columns: 1fr; }
 }

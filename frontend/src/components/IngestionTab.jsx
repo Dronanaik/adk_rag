@@ -1,6 +1,20 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Activity, Box, FileType, Zap, CheckCircle2, XCircle, AlertCircle, RefreshCw, BookOpen, Scissors, Cpu, Database, Check } from 'lucide-react'
-import { getIngestStatus } from '../api.js'
+import {
+  Activity,
+  Box,
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  RefreshCw,
+  BookOpen,
+  Scissors,
+  Cpu,
+  Database,
+  Share2,
+  Check,
+  Clock,
+} from 'lucide-react'
+import { getIngestProgress, getIngestStatus } from '../api.js'
 import styles from './IngestionTab.module.css'
 
 const PIPELINE_STEPS = [
@@ -13,47 +27,43 @@ const PIPELINE_STEPS = [
   },
   {
     step: 2,
-    name: 'Text Normalization & Chunking',
-    description: 'Normalizes whitespace and splits text into overlapping 1200-character chunks with 200-character overlap.',
+    name: 'Structure-Aware Semantic Chunking',
+    description: 'Preserves headings and paragraphs while splitting text into 1200-character semantic chunks with 200-character overlap.',
     icon: Scissors,
-    detail: 'chunk_size=1200, overlap=200',
+    detail: 'chunk_size=1200, overlap=200 (paragraph & sentence aware)',
   },
   {
     step: 3,
     name: 'Gemini Embedding Generation',
-    description: 'Each chunk is embedded using Gemini embedding-001 model, producing a 768-dimensional vector.',
+    description: 'Each chunk is embedded in batches using Gemini embedding-001 model, producing 768-dimensional vectors.',
     icon: Cpu,
     detail: 'gemini-embedding-001, dimensionality=768',
   },
   {
     step: 4,
-    name: 'Pinecone Vector Storage',
-    description: 'Embeddings, text chunks, and metadata (user_id, document_id, filename, chunk_index) are stored in Pinecone DB.',
+    name: 'Neon PostgreSQL Vector & Hybrid Storage',
+    description: 'Chunks, 768-dim embeddings, and full-text search indexes are stored in Neon Console PostgreSQL (pgvector + tsvector).',
     icon: Database,
-    detail: 'persistent Pinecone DB collection',
+    detail: 'Neon PostgreSQL + pgvector HNSW + GIN Full-Text Search',
   },
-]
-
-const SUPPORTED_TYPES = [
-  { ext: '.pdf',  parser: 'PyMuPDF',     note: 'Text PDFs only. Scanned PDFs need OCR.' },
-  { ext: '.docx', parser: 'python-docx', note: 'Full paragraph extraction.' },
-  { ext: '.xlsx', parser: 'openpyxl',    note: 'All sheets, row-by-row extraction.' },
-  { ext: '.xls',  parser: 'openpyxl',    note: 'Legacy Excel format.' },
-  { ext: '.pptx', parser: 'python-pptx', note: 'Slide-by-slide text extraction.' },
-  { ext: '.txt',  parser: 'Plain reader', note: 'UTF-8 with error-ignore fallback.' },
-  { ext: '.md',   parser: 'Plain reader', note: 'Markdown treated as plain text.' },
-  { ext: '.csv',  parser: 'Plain reader', note: 'Raw CSV values extracted.' },
-  { ext: '.json', parser: 'Plain reader', note: 'Raw JSON text.' },
-  { ext: '.xml',  parser: 'Plain reader', note: 'Raw XML markup.' },
-  { ext: '.html', parser: 'Plain reader', note: 'HTML tags included in extraction.' },
-  { ext: '.htm',  parser: 'Plain reader', note: 'Same as HTML.' },
-  { ext: '.log',  parser: 'Plain reader', note: 'Log files as plain text.' },
+  {
+    step: 5,
+    name: 'Neo4j Knowledge Graph Extraction',
+    description: 'Gemini Structured Outputs extract domain entities and factual relationships and upsert them into your Neo4j Knowledge Graph.',
+    icon: Share2,
+    detail: 'gemini-2.5-flash structured output → Neo4j (:Entity)-[:RELATES_TO]->(:Entity)',
+  },
 ]
 
 export default function IngestionTab({ uploadState }) {
   const [status, setStatus] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [liveProgress, setLiveProgress] = useState(null)
+
+  const isUploading = uploadState?.status === 'uploading'
+  const isCompleted = uploadState?.status === 'success'
+  const isError = uploadState?.status === 'error'
 
   const fetchStatus = useCallback(async () => {
     setLoading(true)
@@ -68,47 +78,126 @@ export default function IngestionTab({ uploadState }) {
     }
   }, [])
 
-  useEffect(() => { fetchStatus() }, [fetchStatus])
+  useEffect(() => {
+    fetchStatus()
+  }, [fetchStatus, uploadState?.status])
+
+  // Poll live step-by-step progress while uploading
+  useEffect(() => {
+    if (!isUploading) {
+      if (isCompleted) {
+        getIngestProgress().then(setLiveProgress).catch(() => {})
+      }
+      return
+    }
+
+    let cancelled = false
+    const poll = async () => {
+      try {
+        const prog = await getIngestProgress()
+        if (!cancelled) {
+          setLiveProgress(prog)
+        }
+      } catch (_) {}
+    }
+
+    poll()
+    const timer = setInterval(poll, 450)
+    return () => {
+      cancelled = true
+      clearInterval(timer)
+    }
+  }, [isUploading, isCompleted])
+
+  const activeStepNumber = isUploading
+    ? liveProgress?.current_step || 1
+    : isCompleted
+    ? 6
+    : 0
+
+  const progressPercent = isUploading
+    ? Math.min(95, Math.max(12, ((activeStepNumber - 1) / 5) * 100 + 15))
+    : isCompleted
+    ? 100
+    : 0
 
   return (
     <div className={`${styles.wrap} fade-in`}>
       <div className={styles.sectionHeader}>
-        <h2 className={styles.title}>Ingestion Pipeline</h2>
+        <h2 className={styles.title}>Hybrid Ingestion Pipeline</h2>
         <p className={styles.sub}>
-          Documents go through a 4-step pipeline before becoming searchable. Monitor the pipeline status and explore supported file types below.
+          Documents pass through a 5-step Agentic RAG + Knowledge Graph pipeline into{' '}
+          <strong>Neon PostgreSQL (pgvector)</strong> and <strong>Neo4j</strong>.
         </p>
       </div>
 
-      {/* Upload State Overlay / Alerts */}
-      {uploadState?.status === 'uploading' && (
-        <div className="glass-card" style={{ padding: '20px', marginBottom: '24px', border: '1px solid var(--accent-teal)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <Activity className="spinner" size={24} color="var(--accent-teal)" />
-            <h3 style={{ margin: 0, color: 'var(--text-primary)' }}>Ingestion Pipeline is Running...</h3>
+      {/* Live Step-by-Step Banner while Uploading */}
+      {isUploading && (
+        <div className={`glass-card ${styles.liveBanner}`}>
+          <div className={styles.liveBannerTop}>
+            <div className={styles.liveTitleRow}>
+              <Activity className="spinner" size={20} color="#22d3ee" />
+              <div>
+                <div className={styles.liveStepBadge}>
+                  Step {activeStepNumber} of {PIPELINE_STEPS.length} &bull;{' '}
+                  {liveProgress?.step_name || PIPELINE_STEPS[activeStepNumber - 1]?.name}
+                </div>
+                <h3 className={styles.liveMessage}>
+                  {liveProgress?.message || 'Starting document ingestion pipeline…'}
+                </h3>
+              </div>
+            </div>
+            <span className="badge badge-purple">{Math.round(progressPercent)}%</span>
           </div>
-          <p style={{ marginTop: '8px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Processing document. This involves Text Extraction, Normalization & Chunking, Gemini Embedding Generation, and Pinecone Vector Storage.
-          </p>
+
+          <div className={styles.progressTrack}>
+            <div
+              className={styles.progressFill}
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
         </div>
       )}
 
-      {uploadState?.status === 'error' && (
-        <div className="alert alert-error" style={{ marginBottom: '24px' }}>
+      {isError && (
+        <div className="alert alert-error">
           <AlertCircle size={18} /> Failed to ingest document: {uploadState.error}
         </div>
       )}
 
-      {uploadState?.status === 'success' && uploadState.result && (
-        <div className="glass-card" style={{ padding: '20px', marginBottom: '24px', border: '1px solid var(--accent-teal)' }}>
+      {isCompleted && uploadState.result && (
+        <div
+          className="glass-card"
+          style={{
+            padding: '20px 24px',
+            border: '1px solid rgba(52, 211, 153, 0.45)',
+            background: 'rgba(10, 34, 27, 0.88)',
+          }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-            <CheckCircle2 size={24} color="var(--accent-teal)" />
-            <h3 style={{ margin: 0, color: 'var(--text-primary)' }}>Document Ingested Successfully</h3>
+            <CheckCircle2 size={22} color="#34d399" />
+            <h3 style={{ margin: 0, color: '#6ee7b7', fontSize: '1.05rem' }}>
+              All 5 Pipeline Steps Completed Successfully
+            </h3>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-            <ResultRow label="Document ID" value={uploadState.result.document_id} mono />
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
+              gap: '16px',
+            }}
+          >
             <ResultRow label="Filename" value={uploadState.result.filename} />
-            <ResultRow label="Chunks Created" value={uploadState.result.chunks_created} />
-            <ResultRow label="Characters" value={uploadState.result.characters_extracted?.toLocaleString()} />
+            <ResultRow label="Chunks (pgvector)" value={uploadState.result.chunks_created} />
+            <ResultRow label="Entities (Neo4j)" value={uploadState.result.entities_extracted ?? 0} />
+            <ResultRow
+              label="Relationships (Neo4j)"
+              value={uploadState.result.relationships_extracted ?? 0}
+            />
+            <ResultRow
+              label="Characters"
+              value={uploadState.result.characters_extracted?.toLocaleString()}
+            />
           </div>
         </div>
       )}
@@ -116,39 +205,55 @@ export default function IngestionTab({ uploadState }) {
       {/* Stats bar */}
       <div className={styles.statsRow}>
         <StatCard
-          label="Pipeline Status"
-          value={loading ? '…' : (status?.status === 'ready' ? 'Ready' : 'Error')}
-          icon={loading ? RefreshCw : (status?.status === 'ready' ? CheckCircle2 : XCircle)}
-          accent={status?.status === 'ready' ? 'teal' : 'red'}
+          label="Neon Postgres Status"
+          value={
+            loading
+              ? '…'
+              : status?.postgres_status === 'ready'
+              ? 'Ready'
+              : 'Check .env'
+          }
+          icon={
+            loading
+              ? RefreshCw
+              : status?.postgres_status === 'ready'
+              ? CheckCircle2
+              : XCircle
+          }
+          accent={status?.postgres_status === 'ready' ? 'teal' : 'red'}
           loading={loading}
         />
         <StatCard
-          label="Total Chunks Stored"
-          value={loading ? '…' : (status?.total_chunks ?? '—')}
+          label="Vector Chunks Stored"
+          value={loading ? '…' : status?.total_chunks ?? 0}
           icon={Box}
           accent="purple"
           loading={loading}
         />
         <StatCard
-          label="Supported File Types"
-          value={loading ? '…' : SUPPORTED_TYPES.length}
-          icon={FileType}
+          label="Neo4j Entities"
+          value={loading ? '…' : status?.total_entities ?? 0}
+          icon={Share2}
           accent="purple"
           loading={loading}
         />
         <StatCard
-          label="Embedding Dimensions"
-          value="768"
-          icon={Zap}
+          label="Neo4j Relationships"
+          value={loading ? '…' : status?.total_relationships ?? 0}
+          icon={Database}
           accent="teal"
-          loading={false}
+          loading={loading}
         />
       </div>
 
       {error && (
         <div className="alert alert-error">
           <AlertCircle size={18} /> {error}
-          <button className="btn btn-secondary btn-sm" onClick={fetchStatus} style={{ marginLeft: 'auto' }}>
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={fetchStatus}
+            style={{ marginLeft: 'auto' }}
+          >
             <RefreshCw size={14} /> Retry
           </button>
         </div>
@@ -156,62 +261,117 @@ export default function IngestionTab({ uploadState }) {
 
       {/* Pipeline steps */}
       <div>
-        <h3 className={styles.sectionTitle}>Pipeline Steps</h3>
+        <h3 className={styles.sectionTitle}>Pipeline Execution Steps</h3>
         <div className={styles.pipeline}>
-          {PIPELINE_STEPS.map((step, i) => (
-            <div key={step.step} className={styles.pipelineStep}>
-              <div className={styles.stepLeft}>
-                <div className={styles.stepNumber}>{step.step}</div>
-                {i < PIPELINE_STEPS.length - 1 && <div className={styles.connector} />}
-              </div>
-              <div className={`glass-card ${styles.stepCard}`}>
-                <div className={styles.stepHeader}>
-                  <div className={styles.stepIconWrap}>
-                    {uploadState?.status === 'uploading' ? (
-                      <Activity size={18} className="spinner" />
-                    ) : (
-                      <step.icon size={18} />
-                    )}
+          {PIPELINE_STEPS.map((step, i) => {
+            const stepDone =
+              isCompleted || (isUploading && step.step < activeStepNumber)
+            const stepCurrent = isUploading && step.step === activeStepNumber
+            const stepPending = isUploading && step.step > activeStepNumber
+            const stepFailed =
+              isError && liveProgress?.current_step === step.step
+            const stepOutput = liveProgress?.step_outputs?.[String(step.step)]
+
+            return (
+              <div key={step.step} className={styles.pipelineStep}>
+                <div className={styles.stepLeft}>
+                  <div
+                    className={`${styles.stepNumber} ${
+                      stepDone
+                        ? styles.stepNumberDone
+                        : stepCurrent
+                        ? styles.stepNumberCurrent
+                        : stepPending
+                        ? styles.stepNumberPending
+                        : stepFailed
+                        ? styles.stepNumberFailed
+                        : ''
+                    }`}
+                  >
+                    {stepDone ? <Check size={18} strokeWidth={2.6} /> : step.step}
                   </div>
-                  <h4 className={styles.stepName}>{step.name}</h4>
-                  {uploadState?.status === 'uploading' ? (
-                    <span className="badge badge-teal">Processing</span>
-                  ) : (
-                    <span className="badge badge-teal">Active</span>
+                  {i < PIPELINE_STEPS.length - 1 && (
+                    <div
+                      className={`${styles.connector} ${
+                        stepDone ? styles.connectorDone : ''
+                      }`}
+                    />
                   )}
                 </div>
-                <p className={styles.stepDesc}>{step.description}</p>
-                <code className={styles.stepDetail}>{step.detail}</code>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
 
-      {/* File type matrix */}
-      <div>
-        <h3 className={styles.sectionTitle}>Supported File Types</h3>
-        <div className={`glass-card ${styles.tableWrap}`}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Extension</th>
-                <th>Parser</th>
-                <th>Notes</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {SUPPORTED_TYPES.map(row => (
-                <tr key={row.ext}>
-                  <td><code className={styles.codeExt}>{row.ext}</code></td>
-                  <td style={{ color: 'var(--text-secondary)' }}>{row.parser}</td>
-                  <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{row.note}</td>
-                  <td><span className="badge badge-teal"><Check size={12} style={{ marginRight: '4px' }}/> Supported</span></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                <div
+                  className={`glass-card ${styles.stepCard} ${
+                    stepCurrent
+                      ? styles.stepCardCurrent
+                      : stepDone
+                      ? styles.stepCardDone
+                      : stepPending
+                      ? styles.stepCardPending
+                      : ''
+                  }`}
+                >
+                  <div className={styles.stepHeader}>
+                    <div
+                      className={`${styles.stepIconWrap} ${
+                        stepCurrent
+                          ? styles.stepIconCurrent
+                          : stepDone
+                          ? styles.stepIconDone
+                          : ''
+                      }`}
+                    >
+                      {stepCurrent ? (
+                        <Activity size={18} className="spinner" />
+                      ) : stepDone ? (
+                        <CheckCircle2 size={18} />
+                      ) : (
+                        <step.icon size={18} />
+                      )}
+                    </div>
+
+                    <h4 className={styles.stepName}>{step.name}</h4>
+
+                    {stepCurrent && (
+                      <span className="badge badge-purple">
+                        <Activity size={11} className="spinner" /> Running Now…
+                      </span>
+                    )}
+                    {stepDone && (
+                      <span className="badge badge-green">
+                        <Check size={11} /> Completed
+                      </span>
+                    )}
+                    {stepPending && (
+                      <span className={styles.queuedBadge}>
+                        <Clock size={11} /> Queued
+                      </span>
+                    )}
+                    {stepFailed && (
+                      <span className="badge badge-red">Failed</span>
+                    )}
+                    {!isUploading && !isCompleted && !stepFailed && (
+                      <span className="badge badge-teal">Ready</span>
+                    )}
+                  </div>
+
+                  <p className={styles.stepDesc}>
+                    {stepCurrent && liveProgress?.message
+                      ? liveProgress.message
+                      : step.description}
+                  </p>
+
+                  {stepOutput ? (
+                    <div className={styles.stepOutputBox}>
+                      <Check size={13} />
+                      <span>{stepOutput}</span>
+                    </div>
+                  ) : (
+                    <code className={styles.stepDetail}>{step.detail}</code>
+                  )}
+                </div>
+              </div>
+            )
+          })}
         </div>
       </div>
     </div>
@@ -226,7 +386,15 @@ function StatCard({ label, value, icon: Icon, accent, loading }) {
       </div>
       <div>
         <div className={styles.statLabel}>{label}</div>
-        <div className={`${styles.statValue} ${accent === 'teal' ? styles.valueTeal : (accent === 'red' ? styles.valueRed : styles.valuePurple)}`}>
+        <div
+          className={`${styles.statValue} ${
+            accent === 'teal'
+              ? styles.valueTeal
+              : accent === 'red'
+              ? styles.valueRed
+              : styles.valuePurple
+          }`}
+        >
           {value}
         </div>
       </div>
@@ -237,10 +405,26 @@ function StatCard({ label, value, icon: Icon, accent, loading }) {
 function ResultRow({ label, value, mono = false }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-      <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.05em' }}>
+      <span
+        style={{
+          fontSize: '0.7rem',
+          color: '#6ee7b7',
+          textTransform: 'uppercase',
+          fontWeight: 700,
+          letterSpacing: '0.05em',
+        }}
+      >
         {label}
       </span>
-      <span style={{ fontSize: '0.88rem', color: 'var(--text-primary)', fontFamily: mono ? 'var(--font-mono)' : undefined, wordBreak: 'break-all' }}>
+      <span
+        style={{
+          fontSize: '0.92rem',
+          color: '#ecfdf5',
+          fontWeight: 700,
+          fontFamily: mono ? 'var(--font-mono)' : undefined,
+          wordBreak: 'break-all',
+        }}
+      >
         {value}
       </span>
     </div>

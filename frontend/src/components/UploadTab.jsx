@@ -1,26 +1,11 @@
 import { useRef, useState } from 'react'
-import { UploadCloud, FileIcon, X, Upload, CheckCircle2, Loader2, AlertTriangle, FileText, FileSpreadsheet, FileJson, Globe } from 'lucide-react'
+import { UploadCloud, FileIcon, X, Upload, AlertTriangle, FileText, FileSpreadsheet, FileJson, Globe } from 'lucide-react'
 import styles from './UploadTab.module.css'
 
 const SUPPORTED_TYPES = [
   '.pdf', '.docx', '.xlsx', '.xls', '.pptx',
   '.txt', '.md', '.csv', '.json', '.xml', '.html', '.htm', '.log',
 ]
-
-const MIME_MAP = {
-  'application/pdf': '.pdf',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '.xlsx',
-  'application/vnd.ms-excel': '.xls',
-  'application/vnd.openxmlformats-officedocument.presentationml.presentation': '.pptx',
-  'text/plain': '.txt',
-  'text/markdown': '.md',
-  'text/csv': '.csv',
-  'application/json': '.json',
-  'application/xml': '.xml',
-  'text/xml': '.xml',
-  'text/html': '.html',
-}
 
 function isFileSupported(file) {
   const name = file.name.toLowerCase()
@@ -83,7 +68,9 @@ export default function UploadTab({ userId, onStartUpload }) {
       <div className={styles.sectionHeader}>
         <h2 className={styles.title}>Upload Document</h2>
         <p className={styles.sub}>
-          Upload a document to your workspace. It will be extracted, chunked, embedded, and stored in Pinecone DB automatically.
+          Upload a document to your workspace. It will be semantically chunked, embedded into{' '}
+          <strong>Neon PostgreSQL (pgvector)</strong>, and analyzed by Gemini to populate your{' '}
+          <strong>Neo4j Knowledge Graph</strong>.
         </p>
       </div>
 
@@ -158,22 +145,9 @@ export default function UploadTab({ userId, onStartUpload }) {
           style={{ width: '100%', justifyContent: 'center' }}
           id="upload-btn"
         >
-          <Upload size={18} /> Ingest Document
+          <Upload size={18} /> Ingest into Neon Postgres & Neo4j
         </button>
       )}
-    </div>
-  )
-}
-
-function ResultRow({ label, value, mono = false }) {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-      <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.05em' }}>
-        {label}
-      </span>
-      <span style={{ fontSize: '0.88rem', color: 'var(--text-primary)', fontFamily: mono ? 'var(--font-mono)' : undefined, wordBreak: 'break-all' }}>
-        {value}
-      </span>
     </div>
   )
 }
@@ -182,9 +156,9 @@ function getFileIcon(name) {
   const ext = name.split('.').pop().toLowerCase()
   if (['pdf'].includes(ext)) return <FileText size={28} color="#ef4444" />
   if (['docx', 'doc'].includes(ext)) return <FileText size={28} color="#3b82f6" />
-  if (['xlsx', 'xls', 'csv'].includes(ext)) return <FileSpreadsheet size={28} color="#22c55e" />
+  if (['xlsx', 'xls', 'csv'].includes(ext)) return <FileSpreadsheet size={28} color="#16a34a" />
   if (['pptx', 'ppt'].includes(ext)) return <FileText size={28} color="#f97316" />
-  if (['json', 'xml'].includes(ext)) return <FileJson size={28} color="#eab308" />
-  if (['html', 'htm'].includes(ext)) return <Globe size={28} color="#0ea5e9" />
-  return <FileIcon size={28} color="#94a3b8" />
+  if (['json', 'xml'].includes(ext)) return <FileJson size={28} color="#ca8a04" />
+  if (['html', 'htm'].includes(ext)) return <Globe size={28} color="#0284c7" />
+  return <FileIcon size={28} color="#64748b" />
 }

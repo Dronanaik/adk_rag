@@ -1,4 +1,4 @@
-import { Brain, AlertCircle, User } from 'lucide-react'
+import { Brain, AlertCircle, User, Wrench } from 'lucide-react'
 import styles from './ChatMessage.module.css'
 
 export default function ChatMessage({ message }) {
@@ -24,7 +24,18 @@ export default function ChatMessage({ message }) {
       )}
 
       <div className={`${styles.bubble} ${isUser ? styles.bubbleUser : styles.bubbleAssistant}`}>
-        {/* Format the message: bold [Source:…] references */}
+        {/* Show which Agentic RAG / Graph tools the agent invoked */}
+        {!isUser && message.toolsUsed && message.toolsUsed.length > 0 && (
+          <div className={styles.toolsRow}>
+            {message.toolsUsed.map((tool, idx) => (
+              <span key={idx} className={styles.toolChip}>
+                <Wrench size={11} /> {tool}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Format the message: highlight [Source:…] and [Graph:…] references */}
         <MessageContent content={message.content} />
 
         {/* Timestamp */}
@@ -45,23 +56,32 @@ export default function ChatMessage({ message }) {
 }
 
 /**
- * Renders message content with [Source: …] citations highlighted.
+ * Renders message content with [Source: …] and [Graph: …] citations highlighted.
  */
 function MessageContent({ content }) {
   if (!content) return null
 
-  // Split on [Source: ...] citations
-  const parts = content.split(/(\[Source:[^\]]+\])/g)
+  const parts = content.split(/(\[(?:Source|Graph):[^\]]+\])/g)
 
   return (
     <p className={styles.content}>
-      {parts.map((part, i) =>
-        part.startsWith('[Source:') ? (
-          <span key={i} className={styles.citation}>{part}</span>
-        ) : (
-          <span key={i}>{part}</span>
-        )
-      )}
+      {parts.map((part, i) => {
+        if (part.startsWith('[Source:')) {
+          return (
+            <span key={i} className={styles.citation}>
+              {part}
+            </span>
+          )
+        }
+        if (part.startsWith('[Graph:')) {
+          return (
+            <span key={i} className={styles.graphCitation}>
+              {part}
+            </span>
+          )
+        }
+        return <span key={i}>{part}</span>
+      })}
     </p>
   )
 }
