@@ -1,167 +1,30 @@
 /* ==========================================================================
-   ADK Agentic RAG — Developer Portal Custom Theme (adk.dev inspired)
-   Bioluminescent Neural Forest + Modern Google Developer Portal Styling
+   ADK Agentic RAG — Inner Page Grid Cards, Tables & Callout Polish
+   Harmonized with adk.dev/stylesheets/custom.css and homepage.css
    ========================================================================== */
 
 :root,
 [data-md-color-scheme="default"] {
-  --md-primary-fg-color: #0b241e;
-  --md-primary-fg-color--light: #0d9488;
-  --md-primary-fg-color--dark: #061511;
-  --md-accent-fg-color: #0891b2;
-  --adk-hero-bg: linear-gradient(135deg, rgba(6, 18, 15, 0.88) 0%, rgba(10, 32, 26, 0.82) 55%, rgba(6, 18, 15, 0.92) 100%);
   --adk-card-bg: #ffffff;
-  --adk-card-border: rgba(13, 148, 136, 0.22);
-  --adk-card-hover-border: #0891b2;
-  --adk-card-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
-  --adk-badge-bg: rgba(8, 145, 178, 0.1);
-  --adk-badge-text: #0e7490;
+  --adk-card-border: #e2e8f0;
+  --adk-card-hover-border: #3b82f6;
+  --adk-card-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
 
 [data-md-color-scheme="slate"] {
-  --md-default-bg-color: #06120f;
-  --md-default-bg-color--light: #0a1d18;
-  --md-default-bg-color--lighter: #0f2922;
-  --md-primary-fg-color: #071914;
-  --md-primary-fg-color--light: #22d3ee;
-  --md-primary-fg-color--dark: #040d0b;
-  --md-accent-fg-color: #22d3ee;
-  --md-typeset-a-color: #22d3ee;
-  --md-code-bg-color: #091c17;
-  --adk-hero-bg: linear-gradient(135deg, rgba(4, 14, 11, 0.82) 0%, rgba(8, 28, 22, 0.76) 50%, rgba(4, 14, 11, 0.88) 100%);
-  --adk-card-bg: rgba(10, 29, 24, 0.78);
-  --adk-card-border: rgba(52, 211, 153, 0.22);
-  --adk-card-hover-border: rgba(34, 211, 238, 0.65);
-  --adk-card-shadow: 0 10px 30px -6px rgba(0, 0, 0, 0.55);
-  --adk-badge-bg: rgba(34, 211, 238, 0.14);
-  --adk-badge-text: #67e8f9;
+  --adk-card-bg: var(--md-code-bg-color);
+  --adk-card-border: var(--md-default-fg-color--lightest);
+  --adk-card-hover-border: #60a5fa;
+  --adk-card-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
 }
 
-/* ── Top Header & Sticky Navigation Tabs ── */
-.md-header {
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(52, 211, 153, 0.18);
-}
-
-.md-tabs {
-  border-bottom: 1px solid rgba(52, 211, 153, 0.15);
-}
-
-/* ── Hero Banner (adk.dev style) ── */
-.adk-hero {
-  position: relative;
-  border-radius: 20px;
-  overflow: hidden;
-  padding: 3.2rem 2.6rem;
-  margin-bottom: 2.2rem;
-  background-image:
-    var(--adk-hero-bg),
-    url("../assets/bg-neural-tree.jpg");
-  background-size: cover;
-  background-position: center center;
-  border: 1px solid rgba(34, 211, 238, 0.35);
-  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.55), 0 0 32px -8px rgba(34, 211, 238, 0.22);
-  color: #ecfdf5;
-}
-
-.adk-hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.3rem 0.85rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  background: rgba(34, 211, 238, 0.16);
-  border: 1px solid rgba(34, 211, 238, 0.45);
-  color: #67e8f9;
-  margin-bottom: 1rem;
-}
-
-.adk-hero h1 {
-  margin: 0 0 0.75rem 0 !important;
-  font-size: 2.35rem !important;
-  font-weight: 800 !important;
-  line-height: 1.18 !important;
-  letter-spacing: -0.03em !important;
-  background: linear-gradient(135deg, #ffffff 0%, #67e8f9 52%, #fbbf24 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.adk-hero-tagline {
-  font-size: 1.08rem;
-  font-weight: 600;
-  color: #fde68a;
-  margin-bottom: 0.75rem;
-  font-style: italic;
-}
-
-.adk-hero p {
-  font-size: 0.96rem;
-  color: #d1fae5;
-  max-width: 720px;
-  line-height: 1.65;
-  margin-bottom: 1.6rem;
-}
-
-.adk-hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-}
-
-.adk-btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.65rem 1.35rem;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 0.85rem;
-  background: linear-gradient(135deg, #22d3ee 0%, #34d399 55%, #fbbf24 100%);
-  color: #041310 !important;
-  text-decoration: none !important;
-  box-shadow: 0 4px 18px rgba(34, 211, 238, 0.35);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-}
-
-.adk-btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(34, 211, 238, 0.5);
-}
-
-.adk-btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.65rem 1.3rem;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  background: rgba(10, 29, 24, 0.82);
-  border: 1px solid rgba(52, 211, 153, 0.4);
-  color: #ecfdf5 !important;
-  text-decoration: none !important;
-  transition: all 0.18s ease;
-}
-
-.adk-btn-secondary:hover {
-  border-color: #22d3ee;
-  background: rgba(34, 211, 238, 0.15);
-  transform: translateY(-2px);
-}
-
-/* ── Grid Cards Enhancement (adk.dev style) ── */
+/* ── Grid Cards on Inner Documentation Pages ── */
 .md-typeset .grid.cards > ul > li,
 .md-typeset .grid.cards > ol > li,
 .md-typeset .grid > .card {
   background: var(--adk-card-bg);
   border: 1px solid var(--adk-card-border);
-  border-radius: 14px;
+  border-radius: 12px;
   padding: 1.25rem 1.35rem;
   box-shadow: var(--adk-card-shadow);
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
@@ -172,30 +35,18 @@
 .md-typeset .grid > .card:hover {
   border-color: var(--adk-card-hover-border);
   transform: translateY(-3px);
-  box-shadow: 0 14px 34px -6px rgba(0, 0, 0, 0.35), 0 0 22px -6px rgba(34, 211, 238, 0.22);
-}
-
-/* ── Pill Badges inside Docs ── */
-.adk-pill {
-  display: inline-block;
-  padding: 0.15rem 0.6rem;
-  border-radius: 9999px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  background: var(--adk-badge-bg);
-  color: var(--adk-badge-text);
-  border: 1px solid rgba(34, 211, 238, 0.3);
+  box-shadow: 0 10px 28px rgba(59, 130, 246, 0.14);
 }
 
 /* ── Tables & Admonitions Polish ── */
 .md-typeset table:not([class]) {
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
   border: 1px solid var(--adk-card-border);
 }
 
 .md-typeset .admonition,
-.md-typeset details {
-  border-radius: 12px;
+.md-typeset details:not(.faq-item-arrow) {
+  border-radius: 10px;
   border-width: 1px;
 }
