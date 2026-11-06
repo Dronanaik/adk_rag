@@ -1,9 +1,12 @@
 import asyncio
+from contextlib import asynccontextmanager
+import logging
 import os
 import shutil
+import tempfile
 import uuid
 
-from fastapi import FastAPI, File, Header, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, File, Header, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -12,23 +15,51 @@ from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 
 from app.agent import root_agent
-from app.ingest import ingest_document
+from app.auth import (
+    authenticate_user,
+    create_access_token,
+    get_current_user,
+    get_user_by_id,
+    register_user,
+)
+from app.database import close_all_databases, init_all_databases
+from app.graph_store import (
+    delete_document_from_graph,
+    get_entity_relationships_from_graph,
+    get_graph_stats,
+    get_user_knowledge_graph,
+    search_knowledge_graph,
+)
+from app.ingest import get_ingestion_progress, ingest_document
 from app.rag_store import (
     delete_document_chunks,
+    get_vector_store_stats,
     list_user_documents,
 )
-from app.parsers import extract_text
-from app.database import index as pc_index
+
+logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_all_databases()
+    yield
+    close_all_databases()
+
 
 app = FastAPI(
-    title="Google ADK RAG API",
-    description="Document-based RAG system powered by Google ADK, Gemini, and ChromaDB.",
-    version="1.0.0",
+    title="ADK Agentic RAG + Knowledge Graph API",
+    description=(
+        "Hybrid Agentic RAG & Knowledge Graph platform powered by Google ADK, "
+        "Gemini, Neon PostgreSQL (pgvector), and Neo4j."
+    ),
+    version="2.0.0",
+    lifespan=lifespan,
 )
 
 # ---------------------------------------------------------------------------
 # CORS — allow all origins for local development.
-# In production, replace "*" with your actual frontend domain.
+# In production, set ALLOWED_ORIGINS to your frontend domain.
 # ---------------------------------------------------------------------------
 allowed_origins_env = os.environ.get("ALLOWED_ORIGINS")
 if allowed_origins_env:
@@ -44,7 +75,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-UPLOAD_DIRECTORY = "./uploads"
+UPLOAD_DIRECTORY = os.path.join(tempfile.gettempdir(), "adk_rag_uploads")
 APP_NAME = "document_rag_app"
 
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
@@ -60,7 +91,6 @@ _runner = Runner(
     session_service=_session_service,
 )
 
-# Supported file types (for the /ingest/status endpoint)
 SUPPORTED_FILE_TYPES = [
     ".pdf",
     ".docx",
@@ -82,6 +112,18 @@ SUPPORTED_FILE_TYPES = [
 # Request / Response models
 # ---------------------------------------------------------------------------
 
+
+class SignUpRequest(BaseModel):
+    full_name: str
+    email: str
+    password: str
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
 class QueryRequest(BaseModel):
     query: str
     session_id: str | None = None
@@ -90,11 +132,13 @@ class QueryRequest(BaseModel):
 class QueryResponse(BaseModel):
     answer: str
     session_id: str
+    tools_used: list[str] = []
 
 
 # ---------------------------------------------------------------------------
 # Endpoints
 # ---------------------------------------------------------------------------
+
 
 @app.get("/health")
 async def health():
@@ -102,50 +146,142 @@ async def health():
     return {"status": "ok"}
 
 
+@app.post("/auth/signup")
+def auth_signup(request: SignUpRequest):
+    """
+    Create a new user account in Neon PostgreSQL and return a signed JWT session token.
+    """
+    try:
+        user = register_user(
+            email=request.email,
+            password=request.password,
+            full_name=request.full_name,
+        )
+        token = create_access_token(user)
+        return {
+            "success": True,
+            "user": user,
+            "access_token": token,
+            "token_type": "bearer",
+        }
+    except ValueError as err:
+        raise HTTPException(status_code=400, detail=str(err))
+    except Exception as err:
+        raise HTTPException(status_code=500, detail=f"Registration failed: {err}")
+
+
+@app.post("/auth/login")
+def auth_login(request: LoginRequest):
+    """
+    Authenticate an existing user against Neon PostgreSQL and return a signed JWT session token.
+    """
+    try:
+        user = authenticate_user(
+            email=request.email,
+            password=request.password,
+        )
+        token = create_access_token(user)
+        return {
+            "success": True,
+            "user": user,
+            "access_token": token,
+            "token_type": "bearer",
+        }
+    except ValueError as err:
+        raise HTTPException(status_code=401, detail=str(err))
+    except Exception as err:
+        raise HTTPException(status_code=500, detail=f"Authentication failed: {err}")
+
+
+@app.get("/auth/me")
+def auth_me(current_user: dict = Depends(get_current_user)):
+    """
+    Verify current Bearer JWT token and return the authenticated user's profile from Neon PostgreSQL.
+    """
+    try:
+        db_user = get_user_by_id(current_user["id"])
+        if db_user:
+            return {"success": True, "user": db_user}
+    except Exception:
+        pass
+    return {
+        "success": True,
+        "user": {
+            "id": current_user["id"],
+            "email": current_user["email"],
+            "full_name": current_user["full_name"],
+        },
+    }
+
+
 @app.get("/ingest/status")
 async def ingest_status():
     """
-    Return basic ingestion pipeline status:
-    total chunks stored, supported file types, and pipeline state.
+    Return hybrid ingestion pipeline status:
+    Neon PostgreSQL (pgvector) chunk/document counts + Neo4j entity/relationship counts.
     """
     try:
-        stats = pc_index.describe_index_stats()
-        if hasattr(stats, 'total_vector_count'):
-            total_chunks = stats.total_vector_count
-        elif isinstance(stats, dict):
-            total_chunks = stats.get("total_vector_count", 0)
-        else:
-            total_chunks = 0
-        status = "ready"
+        pg_stats = get_vector_store_stats()
+        total_chunks = pg_stats.get("total_chunks", 0)
+        total_documents = pg_stats.get("total_documents", 0)
+        postgres_status = "ready"
     except Exception as error:
-        total_chunks = -1
-        status = f"error: {error}"
+        total_chunks = 0
+        total_documents = 0
+        postgres_status = f"error: {error}"
+
+    try:
+        graph_stats = get_graph_stats()
+        neo4j_status = graph_stats.get("status", "ready")
+        total_entities = graph_stats.get("total_entities", 0)
+        total_relationships = graph_stats.get("total_relationships", 0)
+    except Exception as error:
+        neo4j_status = f"error: {error}"
+        total_entities = 0
+        total_relationships = 0
+
+    overall_status = "ready" if postgres_status == "ready" else postgres_status
 
     return {
-        "status": status,
+        "status": overall_status,
+        "postgres_status": postgres_status,
+        "neo4j_status": neo4j_status,
         "total_chunks": total_chunks,
+        "total_documents": total_documents,
+        "total_entities": total_entities,
+        "total_relationships": total_relationships,
         "supported_file_types": SUPPORTED_FILE_TYPES,
         "pipeline_steps": [
-            "1. Text extraction (parser)",
-            "2. Text normalization & chunking",
-            "3. Gemini embedding generation (gemini-embedding-001)",
-            "4. Pinecone vector storage",
+            "1. Text extraction (format-specific parser)",
+            "2. Structure-aware semantic chunking",
+            "3. Gemini embedding generation (gemini-embedding-001, 768-dim)",
+            "4. Neon PostgreSQL vector & full-text storage (pgvector + tsvector)",
+            "5. Neo4j Knowledge Graph entity & relationship extraction (Gemini Structured Outputs)",
         ],
     }
+
+
+@app.get("/ingest/progress")
+async def ingest_progress(
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Return real-time step-by-step ingestion progress (Steps 1..5) for the current user.
+    """
+    return get_ingestion_progress(current_user["user_id"])
 
 
 @app.post("/documents/upload")
 async def upload_document(
     file: UploadFile = File(...),
-    x_user_id: str = Header(..., alias="x-user-id"),
+    current_user: dict = Depends(get_current_user),
 ):
     """
-    Upload and ingest a document for the given user.
-
-    Supported formats: PDF, DOCX, XLSX, XLS, PPTX, TXT, MD, CSV, JSON, XML, HTML, HTM, LOG.
-
-    In production, replace the x-user-id header with a real authentication system.
+    Upload and ingest a document into both Neon PostgreSQL (pgvector) and Neo4j Knowledge Graph.
+    Runs the ingestion pipeline in a background worker thread so live step progress
+    (/ingest/progress) can be polled concurrently without blocking the event loop.
     """
+    user_id = current_user["user_id"]
 
     if not file.filename:
         raise HTTPException(
@@ -171,15 +307,16 @@ async def upload_document(
         with open(file_path, "wb") as output_file:
             shutil.copyfileobj(file.file, output_file)
 
-        result = ingest_document(
+        result = await asyncio.to_thread(
+            ingest_document,
             file_path=file_path,
             filename=file.filename,
-            user_id=x_user_id,
+            user_id=user_id,
         )
 
         return {
             "success": True,
-            "message": "Document ingested successfully.",
+            "message": "Document ingested into Neon PostgreSQL and Neo4j Knowledge Graph.",
             "result": result,
         }
 
@@ -202,10 +339,10 @@ async def upload_document(
 
 @app.get("/documents")
 def get_documents(
-    x_user_id: str = Header(..., alias="x-user-id"),
+    current_user: dict = Depends(get_current_user),
 ):
-    """List all documents uploaded by the given user."""
-    documents = list_user_documents(x_user_id)
+    """List all documents uploaded by the authenticated user."""
+    documents = list_user_documents(current_user["user_id"])
 
     return {
         "success": True,
@@ -216,15 +353,27 @@ def get_documents(
 @app.delete("/documents/{document_id}")
 def delete_document(
     document_id: str,
-    x_user_id: str = Header(..., alias="x-user-id"),
+    current_user: dict = Depends(get_current_user),
 ):
-    """Delete all chunks of a specific document for the given user."""
+    """
+    Delete a document's chunks from Neon PostgreSQL and its entities/relationships from Neo4j.
+    """
+    user_id = current_user["user_id"]
     deleted_chunks = delete_document_chunks(
-        user_id=x_user_id,
+        user_id=user_id,
         document_id=document_id,
     )
 
-    if deleted_chunks == 0:
+    graph_deleted = {"deleted_relationships": 0, "deleted_entities": 0}
+    try:
+        graph_deleted = delete_document_from_graph(
+            user_id=user_id,
+            document_id=document_id,
+        )
+    except Exception as exc:
+        logger.warning("Neo4j delete warning for document %s: %s", document_id, exc)
+
+    if deleted_chunks == 0 and graph_deleted.get("deleted_relationships", 0) == 0:
         raise HTTPException(
             status_code=404,
             detail="Document not found.",
@@ -234,29 +383,74 @@ def delete_document(
         "success": True,
         "document_id": document_id,
         "deleted_chunks": deleted_chunks,
+        "deleted_entities": graph_deleted.get("deleted_entities", 0),
+        "deleted_relationships": graph_deleted.get("deleted_relationships", 0),
     }
+
+
+@app.get("/graph")
+def get_graph(
+    q: str | None = Query(default=None, description="Optional search query for filtering graph"),
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Fetch the user's Neo4j Knowledge Graph nodes and relationships for the UI explorer.
+    If `q` is provided, also returns matching search results.
+    """
+    user_id = current_user["user_id"]
+    try:
+        graph_data = get_user_knowledge_graph(user_id=user_id)
+        if q and q.strip():
+            search_res = search_knowledge_graph(user_id=user_id, query=q.strip(), limit=25)
+            graph_data["search_results"] = search_res
+        return {
+            "success": True,
+            **graph_data,
+        }
+    except Exception as error:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to query Neo4j Knowledge Graph: {error}",
+        )
+
+
+@app.get("/graph/entity/{entity_name}")
+def get_entity_details(
+    entity_name: str,
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Retrieve direct relationships and connected entities for a specific entity in Neo4j.
+    """
+    try:
+        result = get_entity_relationships_from_graph(
+            user_id=current_user["user_id"],
+            entity_name=entity_name,
+            limit=30,
+        )
+        return {
+            "success": True,
+            **result,
+        }
+    except Exception as error:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to query entity relationships: {error}",
+        )
 
 
 @app.post("/chat", response_model=QueryResponse)
 async def chat(
     request: QueryRequest,
-    x_user_id: str = Header(..., alias="x-user-id"),
+    current_user: dict = Depends(get_current_user),
 ):
     """
-    Send a question to the ADK RAG agent and get an answer based on the
-    user's uploaded documents.
-
-    Optionally pass a session_id to continue an existing conversation.
-    If omitted, a new session is created automatically.
+    Send a question to the Google ADK Agentic RAG + Knowledge Graph agent.
     """
-
-    user_id = x_user_id
-
-    # Create or reuse an ADK session
+    user_id = current_user["user_id"]
     session_id = request.session_id
 
     if session_id:
-        # Try to get existing session; fall back to creating a new one
         try:
             session = await _session_service.get_session(
                 app_name=APP_NAME,
@@ -282,6 +476,7 @@ async def chat(
     )
 
     answer_text = ""
+    tools_used: list[str] = []
 
     try:
         async for event in _runner.run_async(
@@ -289,6 +484,14 @@ async def chat(
             session_id=session.id,
             new_message=message,
         ):
+            # Track which Agentic RAG / Graph tools were invoked
+            if event.content and event.content.parts:
+                for part in event.content.parts:
+                    fn_call = getattr(part, "function_call", None)
+                    if fn_call and getattr(fn_call, "name", None):
+                        if fn_call.name not in tools_used:
+                            tools_used.append(fn_call.name)
+
             if event.is_final_response() and event.content:
                 for part in event.content.parts:
                     if hasattr(part, "text") and part.text:
@@ -305,4 +508,5 @@ async def chat(
     return QueryResponse(
         answer=answer_text,
         session_id=session.id,
+        tools_used=tools_used,
     )
