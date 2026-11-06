@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://dronanaik.github.io/adk_rag/USER_GUIDE/">
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../INSTALLATION/">
       
       
         <link rel="next" href="../ARCHITECTURE/">
@@ -27,7 +27,7 @@
     
     
       
-        <title>User Guide - ADK Agentic RAG + Knowledge Graph</title>
+        <title>Interactive User Guide - ADK Agentic RAG</title>
       
     
     
@@ -48,10 +48,12 @@
         
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
       
     
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
     
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -69,7 +71,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber">
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -78,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#user-guide" class="md-skip">
+        <a href="#interactive-user-guide" class="md-skip">
           Skip to content
         </a>
       
@@ -90,12 +92,14 @@
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="ADK Agentic RAG + Knowledge Graph" class="md-header__button md-logo" aria-label="ADK Agentic RAG + Knowledge Graph" data-md-component="logo">
+    <a href=".." title="ADK Agentic RAG" class="md-header__button md-logo" aria-label="ADK Agentic RAG" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.33 12.91c.09 1.55-.62 3.04-1.89 3.95l.77 1.49c.23.45.26.98.06 1.45-.19.47-.58.84-1.06 1l-.79.25a1.687 1.687 0 0 1-1.86-.55L14.44 18c-.89-.15-1.73-.53-2.44-1.1-.5.15-1 .23-1.5.23-.88 0-1.76-.27-2.5-.79-.53.16-1.07.23-1.62.22-.79.01-1.57-.15-2.3-.45a4.1 4.1 0 0 1-2.43-3.61c-.08-.72.04-1.45.35-2.11-.29-.75-.32-1.57-.07-2.33C2.3 7.11 3 6.32 3.87 5.82c.58-1.69 2.21-2.82 4-2.7 1.6-1.5 4.05-1.66 5.83-.37.42-.11.86-.17 1.3-.17 1.36-.03 2.65.57 3.5 1.64 2.04.53 3.5 2.35 3.58 4.47.05 1.11-.25 2.2-.86 3.13.07.36.11.72.11 1.09m-5-1.41c.57.07 1.02.5 1.02 1.07a1 1 0 0 1-1 1h-.63c-.32.9-.88 1.69-1.62 2.29.25.09.51.14.77.21 5.13-.07 4.53-3.2 4.53-3.25a2.59 2.59 0 0 0-2.69-2.49 1 1 0 0 1-1-1 1 1 0 0 1 1-1c1.23.03 2.41.49 3.33 1.3.05-.29.08-.59.08-.89-.06-1.24-.62-2.32-2.87-2.53-1.25-2.96-4.4-1.32-4.4-.4-.03.23.21.72.25.75a1 1 0 0 1 1 1c0 .55-.45 1-1 1-.53-.02-1.03-.22-1.43-.56-.48.31-1.03.5-1.6.56-.57.05-1.04-.35-1.07-.9a.97.97 0 0 1 .88-1.1c.16-.02.94-.14.94-.77 0-.66.25-1.29.68-1.79-.92-.25-1.91.08-2.91 1.29C6.75 5 6 5.25 5.45 7.2 4.5 7.67 4 8 3.78 9c1.08-.22 2.19-.13 3.22.25.5.19.78.75.59 1.29-.19.52-.77.78-1.29.59-.73-.32-1.55-.34-2.3-.06-.32.27-.32.83-.32 1.27 0 .74.37 1.43 1 1.83.53.27 1.12.41 1.71.4q-.225-.39-.39-.81a1.038 1.038 0 0 1 1.96-.68c.4 1.14 1.42 1.92 2.62 2.05 1.37-.07 2.59-.88 3.19-2.13.23-1.38 1.34-1.5 2.56-1.5m2 7.47-.62-1.3-.71.16 1 1.25zm-4.65-8.61a1 1 0 0 0-.91-1.03c-.71-.04-1.4.2-1.93.67-.57.58-.87 1.38-.84 2.19a1 1 0 0 0 1 1c.57 0 1-.45 1-1 0-.27.07-.54.23-.76.12-.1.27-.15.43-.15.55.03 1.02-.38 1.02-.92"/></svg>
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -106,13 +110,13 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            ADK Agentic RAG + Knowledge Graph
+            ADK Agentic RAG
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              User Guide
+              Interactive User Guide
             
           </span>
         </div>
@@ -125,20 +129,20 @@
     
     
     
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
     
       <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
       </label>
     
   
     
     
     
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
       </label>
     
   
@@ -169,6 +173,11 @@
       </label>
       <nav class="md-search__options" aria-label="Search">
         
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
         <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
@@ -197,7 +206,7 @@
         <a href="https://github.com/Dronanaik/adk_rag" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
   </div>
   <div class="md-source__repository">
     Dronanaik/adk_rag
@@ -207,14 +216,8 @@
     
   </nav>
   
-</header>
     
-    <div class="md-container" data-md-component="container">
       
-      
-        
-          
-            
 <nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
   <div class="md-grid">
     <ul class="md-tabs__list">
@@ -245,17 +248,18 @@
     
   
   
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="./" class="md-tabs__link">
-        
-  
-  
     
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../INSTALLATION/" class="md-tabs__link">
+          
   
-  User Guide
+  
+  Get Started
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -271,7 +275,7 @@
           
   
   
-  System Design
+  Architecture & Specs
 
         </a>
       </li>
@@ -291,7 +295,7 @@
           
   
   
-  Core Subsystems
+  Core Platform
 
         </a>
       </li>
@@ -307,11 +311,11 @@
     
     
       <li class="md-tabs__item">
-        <a href="../INSTALLATION/" class="md-tabs__link">
+        <a href="../API/" class="md-tabs__link">
           
   
   
-  Operations
+  API & Operations
 
         </a>
       </li>
@@ -322,7 +326,13 @@
     </ul>
   </div>
 </nav>
-          
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
         
       
       <main class="md-main" data-md-component="main">
@@ -341,20 +351,20 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="ADK Agentic RAG + Knowledge Graph" class="md-nav__button md-logo" aria-label="ADK Agentic RAG + Knowledge Graph" data-md-component="logo">
+    <a href=".." title="ADK Agentic RAG" class="md-nav__button md-logo" aria-label="ADK Agentic RAG" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.33 12.91c.09 1.55-.62 3.04-1.89 3.95l.77 1.49c.23.45.26.98.06 1.45-.19.47-.58.84-1.06 1l-.79.25a1.687 1.687 0 0 1-1.86-.55L14.44 18c-.89-.15-1.73-.53-2.44-1.1-.5.15-1 .23-1.5.23-.88 0-1.76-.27-2.5-.79-.53.16-1.07.23-1.62.22-.79.01-1.57-.15-2.3-.45a4.1 4.1 0 0 1-2.43-3.61c-.08-.72.04-1.45.35-2.11-.29-.75-.32-1.57-.07-2.33C2.3 7.11 3 6.32 3.87 5.82c.58-1.69 2.21-2.82 4-2.7 1.6-1.5 4.05-1.66 5.83-.37.42-.11.86-.17 1.3-.17 1.36-.03 2.65.57 3.5 1.64 2.04.53 3.5 2.35 3.58 4.47.05 1.11-.25 2.2-.86 3.13.07.36.11.72.11 1.09m-5-1.41c.57.07 1.02.5 1.02 1.07a1 1 0 0 1-1 1h-.63c-.32.9-.88 1.69-1.62 2.29.25.09.51.14.77.21 5.13-.07 4.53-3.2 4.53-3.25a2.59 2.59 0 0 0-2.69-2.49 1 1 0 0 1-1-1 1 1 0 0 1 1-1c1.23.03 2.41.49 3.33 1.3.05-.29.08-.59.08-.89-.06-1.24-.62-2.32-2.87-2.53-1.25-2.96-4.4-1.32-4.4-.4-.03.23.21.72.25.75a1 1 0 0 1 1 1c0 .55-.45 1-1 1-.53-.02-1.03-.22-1.43-.56-.48.31-1.03.5-1.6.56-.57.05-1.04-.35-1.07-.9a.97.97 0 0 1 .88-1.1c.16-.02.94-.14.94-.77 0-.66.25-1.29.68-1.79-.92-.25-1.91.08-2.91 1.29C6.75 5 6 5.25 5.45 7.2 4.5 7.67 4 8 3.78 9c1.08-.22 2.19-.13 3.22.25.5.19.78.75.59 1.29-.19.52-.77.78-1.29.59-.73-.32-1.55-.34-2.3-.06-.32.27-.32.83-.32 1.27 0 .74.37 1.43 1 1.83.53.27 1.12.41 1.71.4q-.225-.39-.39-.81a1.038 1.038 0 0 1 1.96-.68c.4 1.14 1.42 1.92 2.62 2.05 1.37-.07 2.59-.88 3.19-2.13.23-1.38 1.34-1.5 2.56-1.5m2 7.47-.62-1.3-.71.16 1 1.25zm-4.65-8.61a1 1 0 0 0-.91-1.03c-.71-.04-1.4.2-1.93.67-.57.58-.87 1.38-.84 2.19a1 1 0 0 0 1 1c.57 0 1-.45 1-1 0-.27.07-.54.23-.76.12-.1.27-.15.43-.15.55.03 1.02-.38 1.02-.92"/></svg>
 
     </a>
-    ADK Agentic RAG + Knowledge Graph
+    ADK Agentic RAG
   </label>
   
     <div class="md-nav__source">
       <a href="https://github.com/Dronanaik/adk_rag" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
   </div>
   <div class="md-source__repository">
     Dronanaik/adk_rag
@@ -399,6 +409,91 @@
   
   
   
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Get Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Get Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../INSTALLATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart & Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
     <li class="md-nav__item md-nav__item--active">
       
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
@@ -414,7 +509,7 @@
   <span class="md-ellipsis">
     
   
-    User Guide
+    Interactive User Guide
   
 
     
@@ -432,7 +527,7 @@
   <span class="md-ellipsis">
     
   
-    User Guide
+    Interactive User Guide
   
 
     
@@ -458,10 +553,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#end-to-end-user-workflow" class="md-nav__link">
+  <a href="#user-journey-overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        End-to-End User Workflow
+        User Journey Overview
       
     </span>
   </a>
@@ -469,133 +564,55 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-1-sign-in-or-create-an-account" class="md-nav__link">
+  <a href="#step-1-create-an-account-or-sign-in" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 1: Sign In or Create an Account
+        Step 1: Create an Account or Sign In
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Step 1: Sign In or Create an Account">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-navigating-the-workspace-header-5-tab-bar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Navigating the Workspace Header &amp; 5-Tab Bar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-uploading-a-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Uploading a Document
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-monitoring-the-live-5-step-ingestion-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Monitoring the Live 5-Step Ingestion Pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Monitoring the Live 5-Step Ingestion Pipeline">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#creating-a-new-account" class="md-nav__link">
+  <a href="#what-happens-in-each-stage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Creating a New Account
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#signing-in-with-an-existing-account" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Signing In with an Existing Account
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#step-2-understanding-the-workspace-layout" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 2: Understanding the Workspace Layout
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Step 2: Understanding the Workspace Layout">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-top-header-bar" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Top Header Bar
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-five-tab-navigation-bar" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Five-Tab Navigation Bar
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#step-3-uploading-a-document-upload-tab" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 3: Uploading a Document (Upload Tab)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#step-4-monitoring-live-progress-ingestion-pipeline-tab" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 4: Monitoring Live Progress (Ingestion Pipeline Tab)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Step 4: Monitoring Live Progress (Ingestion Pipeline Tab)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#understanding-the-live-5-step-progress-indicators" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Understanding the Live 5-Step Progress Indicators
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#what-happens-in-each-of-the-5-steps" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What Happens in Each of the 5 Steps
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pipeline-completion-summary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pipeline Completion Summary
+        What Happens in Each Stage
       
     </span>
   </a>
@@ -619,55 +636,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-6-asking-questions-agentic-chat-tab" class="md-nav__link">
+  <a href="#step-6-asking-questions-in-agentic-chat-agentic-chat-tab" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 6: Asking Questions (Agentic Chat Tab)
+        Step 6: Asking Questions in Agentic Chat (Agentic Chat Tab)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Step 6: Asking Questions (Agentic Chat Tab)">
+    <nav class="md-nav" aria-label="Step 6: Asking Questions in Agentic Chat (Agentic Chat Tab)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#starting-a-conversation" class="md-nav__link">
+  <a href="#understanding-tool-badges-dual-citations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Starting a Conversation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#understanding-how-the-agent-answers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Understanding How the Agent Answers
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#reading-tool-badges-citations-in-responses" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Reading Tool Badges &amp; Citations in Responses
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#starting-a-fresh-conversation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Starting a Fresh Conversation
+        Understanding Tool Badges &amp; Dual Citations
       
     </span>
   </a>
@@ -680,58 +664,27 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-7-exploring-the-knowledge-graph-knowledge-graph-tab" class="md-nav__link">
+  <a href="#step-7-exploring-the-neo4j-knowledge-graph-knowledge-graph-tab" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 7: Exploring the Knowledge Graph (Knowledge Graph Tab)
+        Step 7: Exploring the Neo4j Knowledge Graph (Knowledge Graph Tab)
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Step 7: Exploring the Knowledge Graph (Knowledge Graph Tab)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-graph-overview-controls-bar" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Graph Overview &amp; Controls Bar
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-interacting-with-the-visual-network-canvas" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Interacting with the Visual Network Canvas
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-extracted-triplets-table" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Extracted Triplets Table
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
     </ul>
   
 </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
       
     </li>
   
@@ -757,7 +710,9 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -767,7 +722,7 @@
   <span class="md-ellipsis">
     
   
-    System Design
+    Architecture & Specs
   
 
     
@@ -783,7 +738,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    System Design
+    Architecture & Specs
   
 
           </label>
@@ -803,7 +758,7 @@
   <span class="md-ellipsis">
     
   
-    Architecture
+    System Architecture
   
 
     
@@ -872,7 +827,9 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
         
           
           <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
@@ -882,7 +839,7 @@
   <span class="md-ellipsis">
     
   
-    Core Subsystems
+    Core Platform
   
 
     
@@ -898,7 +855,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Core Subsystems
+    Core Platform
   
 
           </label>
@@ -918,7 +875,7 @@
   <span class="md-ellipsis">
     
   
-    Ingestion Pipeline
+    5-Step Dual Ingestion
   
 
     
@@ -974,35 +931,7 @@
   <span class="md-ellipsis">
     
   
-    Frontend Application
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../API/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    API Reference
+    Bioluminescent React UI
   
 
     
@@ -1043,7 +972,9 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -1053,7 +984,7 @@
   <span class="md-ellipsis">
     
   
-    Operations
+    API & Operations
   
 
     
@@ -1069,7 +1000,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Operations
+    API & Operations
   
 
           </label>
@@ -1082,14 +1013,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../INSTALLATION/" class="md-nav__link">
+      <a href="../API/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Installation & Setup
+    REST API Reference
   
 
     
@@ -1117,7 +1048,7 @@
   <span class="md-ellipsis">
     
   
-    Deployment Guide
+    Cloud Deployment
   
 
     
@@ -1193,10 +1124,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#end-to-end-user-workflow" class="md-nav__link">
+  <a href="#user-journey-overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        End-to-End User Workflow
+        User Journey Overview
       
     </span>
   </a>
@@ -1204,133 +1135,55 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-1-sign-in-or-create-an-account" class="md-nav__link">
+  <a href="#step-1-create-an-account-or-sign-in" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 1: Sign In or Create an Account
+        Step 1: Create an Account or Sign In
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Step 1: Sign In or Create an Account">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-navigating-the-workspace-header-5-tab-bar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Navigating the Workspace Header &amp; 5-Tab Bar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-uploading-a-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Uploading a Document
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-monitoring-the-live-5-step-ingestion-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Monitoring the Live 5-Step Ingestion Pipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Monitoring the Live 5-Step Ingestion Pipeline">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#creating-a-new-account" class="md-nav__link">
+  <a href="#what-happens-in-each-stage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Creating a New Account
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#signing-in-with-an-existing-account" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Signing In with an Existing Account
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#step-2-understanding-the-workspace-layout" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 2: Understanding the Workspace Layout
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Step 2: Understanding the Workspace Layout">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-top-header-bar" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Top Header Bar
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-five-tab-navigation-bar" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Five-Tab Navigation Bar
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#step-3-uploading-a-document-upload-tab" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 3: Uploading a Document (Upload Tab)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#step-4-monitoring-live-progress-ingestion-pipeline-tab" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 4: Monitoring Live Progress (Ingestion Pipeline Tab)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Step 4: Monitoring Live Progress (Ingestion Pipeline Tab)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#understanding-the-live-5-step-progress-indicators" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Understanding the Live 5-Step Progress Indicators
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#what-happens-in-each-of-the-5-steps" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What Happens in Each of the 5 Steps
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pipeline-completion-summary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pipeline Completion Summary
+        What Happens in Each Stage
       
     </span>
   </a>
@@ -1354,55 +1207,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-6-asking-questions-agentic-chat-tab" class="md-nav__link">
+  <a href="#step-6-asking-questions-in-agentic-chat-agentic-chat-tab" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 6: Asking Questions (Agentic Chat Tab)
+        Step 6: Asking Questions in Agentic Chat (Agentic Chat Tab)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Step 6: Asking Questions (Agentic Chat Tab)">
+    <nav class="md-nav" aria-label="Step 6: Asking Questions in Agentic Chat (Agentic Chat Tab)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#starting-a-conversation" class="md-nav__link">
+  <a href="#understanding-tool-badges-dual-citations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Starting a Conversation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#understanding-how-the-agent-answers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Understanding How the Agent Answers
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#reading-tool-badges-citations-in-responses" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Reading Tool Badges &amp; Citations in Responses
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#starting-a-fresh-conversation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Starting a Fresh Conversation
+        Understanding Tool Badges &amp; Dual Citations
       
     </span>
   </a>
@@ -1415,52 +1235,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-7-exploring-the-knowledge-graph-knowledge-graph-tab" class="md-nav__link">
+  <a href="#step-7-exploring-the-neo4j-knowledge-graph-knowledge-graph-tab" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 7: Exploring the Knowledge Graph (Knowledge Graph Tab)
+        Step 7: Exploring the Neo4j Knowledge Graph (Knowledge Graph Tab)
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Step 7: Exploring the Knowledge Graph (Knowledge Graph Tab)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-graph-overview-controls-bar" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Graph Overview &amp; Controls Bar
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-interacting-with-the-visual-network-canvas" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Interacting with the Visual Network Canvas
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-extracted-triplets-table" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Extracted Triplets Table
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1475,6 +1256,54 @@
           
             <div class="md-content" data-md-component="content">
               
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href=".." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../INSTALLATION/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Get Started
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
               <article class="md-content__inner md-typeset">
                 
                   
@@ -1484,249 +1313,219 @@
   
 
 
-<h1 id="user-guide">User Guide<a class="headerlink" href="#user-guide" title="Permanent link">&para;</a></h1>
-<p>This guide walks you step-by-step through how to interact with the <strong>ADK Agentic RAG + Knowledge Graph</strong> application—from creating an account and uploading documents to monitoring the live 5-step ingestion pipeline, chatting with the AI agent, and exploring your interactive Neo4j Knowledge Graph.</p>
+<h1 id="interactive-user-guide"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 2-5 4.5v11l5-4.5zM6.5 5C4.55 5 2.45 5.4 1 6.5v14.66c0 .25.25.5.5.5.1 0 .15-.07.25-.07 1.35-.65 3.3-1.09 4.75-1.09 1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.31 4.75 1.06.1.05.15.03.25.03.25 0 .5-.25.5-.5V6.5c-.6-.45-1.25-.75-2-1V19c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6.5C10.55 5.4 8.45 5 6.5 5"/></svg></span> Interactive User Guide<a class="headerlink" href="#interactive-user-guide" title="Permanent link">&para;</a></h1>
+<p>This step-by-step guide walks you through every screen and interaction in the <strong>ADK Agentic RAG + Knowledge Graph</strong> platform—from signing in with <strong>Neon PostgreSQL Authentication</strong> to monitoring the live 5-step ingestion pipeline, querying the <strong>Google ADK Agent</strong>, and exploring your interactive <strong>Neo4j Knowledge Graph</strong>.</p>
 <hr />
-<h2 id="end-to-end-user-workflow">End-to-End User Workflow<a class="headerlink" href="#end-to-end-user-workflow" title="Permanent link">&para;</a></h2>
+<h2 id="user-journey-overview"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 15a3 3 0 0 1 3 3 3 3 0 0 1-3 3 2.99 2.99 0 0 1-2.83-2H14v-2h1.17c.41-1.17 1.52-2 2.83-2m0 2a1 1 0 0 0-1 1 1 1 0 0 0 1 1 1 1 0 0 0 1-1 1 1 0 0 0-1-1m0-9a1.43 1.43 0 0 0 1.43-1.43 1.43 1.43 0 1 0-2.86 0A1.43 1.43 0 0 0 18 8m0-5.43a4 4 0 0 1 4 4C22 9.56 18 14 18 14s-4-4.44-4-7.43a4 4 0 0 1 4-4M8.83 17H10v2H8.83A2.99 2.99 0 0 1 6 21a3 3 0 0 1-3-3c0-1.31.83-2.42 2-2.83V14h2v1.17c.85.3 1.53.98 1.83 1.83M6 17a1 1 0 0 0-1 1 1 1 0 0 0 1 1 1 1 0 0 0 1-1 1 1 0 0 0-1-1M6 3a3 3 0 0 1 3 3c0 1.31-.83 2.42-2 2.83V10H5V8.83A2.99 2.99 0 0 1 3 6a3 3 0 0 1 3-3m0 2a1 1 0 0 0-1 1 1 1 0 0 0 1 1 1 1 0 0 0 1-1 1 1 0 0 0-1-1m5 14v-2h2v2zm-4-6H5v-2h2z"/></svg></span> User Journey Overview<a class="headerlink" href="#user-journey-overview" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>flowchart LR
-    A["1. Sign In / Create Account"] --&gt; B["2. Upload Document"]
-    B --&gt; C["3. Watch Live 5-Step Pipeline"]
-    C --&gt; D["4. Review in Documents Tab"]
-    D --&gt; E["5. Ask Questions in Agentic Chat"]
-    E --&gt; F["6. Explore Neo4j Knowledge Graph"]</code></pre>
+    A["1. Sign In / Sign Up\n(Neon Postgres Auth)"] --&gt; B["2. Upload Document\n(12 Supported Formats)"]
+    B --&gt; C["3. Watch Live Pipeline\n(5 Real-Time Stages)"]
+    C --&gt; D["4. Manage Documents\n(View Counts / Cascade Delete)"]
+    D --&gt; E["5. Agentic Chat\n(4 Tools + Dual Citations)"]
+    E --&gt; F["6. Knowledge Graph\n(Interactive SVG Topology)"]</code></pre>
+<div class="grid cards">
+<ul>
+<li>
+<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5zm0 4a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3m5.13 12A9.7 9.7 0 0 1 12 20.92 9.7 9.7 0 0 1 6.87 17c-.34-.5-.63-1-.87-1.53 0-1.65 2.71-3 6-3s6 1.32 6 3c-.24.53-.53 1.03-.87 1.53"/></svg></span> <strong>Step 1 — Authenticate</strong></p>
 <hr />
-<h2 id="step-1-sign-in-or-create-an-account">Step 1: Sign In or Create an Account<a class="headerlink" href="#step-1-sign-in-or-create-an-account" title="Permanent link">&para;</a></h2>
-<p>When you open the application in your browser (<code>http://localhost:5173</code> in local development), you are greeted by the <strong>Authentication Screen</strong> backed by <strong>Neon Console PostgreSQL</strong>.</p>
-<h3 id="creating-a-new-account">Creating a New Account<a class="headerlink" href="#creating-a-new-account" title="Permanent link">&para;</a></h3>
+<p>Sign in or register an isolated workspace backed by Neon PostgreSQL &amp; JWT tokens.</p>
+<p><a href="#step-1-create-an-account-or-sign-in"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4.97 13.22a.75.75 0 0 1 1.06 0L11 18.19V3.75a.75.75 0 0 1 1.5 0v14.44l4.97-4.97a.749.749 0 0 1 1.275.326.75.75 0 0 1-.215.734l-6.25 6.25a.75.75 0 0 1-1.06 0l-6.25-6.25a.75.75 0 0 1 0-1.06"/></svg></span> Jump to Step 1</a></p>
+</li>
+<li>
+<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 20H6.5q-2.28 0-3.89-1.57Q1 16.85 1 14.58q0-1.95 1.17-3.48 1.18-1.53 3.08-1.95.63-2.3 2.5-3.72Q9.63 4 12 4q2.93 0 4.96 2.04Q19 8.07 19 11q1.73.2 2.86 1.5 1.14 1.28 1.14 3 0 1.88-1.31 3.19T18.5 20H13v-7.15l1.6 1.55L16 13l-4-4-4 4 1.4 1.4 1.6-1.55Z"/></svg></span> <strong>Step 2 &amp; 3 — Upload &amp; Ingest</strong></p>
+<hr />
+<p>Drag and drop files and watch each of the 5 pipeline stages execute live.</p>
+<p><a href="#step-3-uploading-a-document"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4.97 13.22a.75.75 0 0 1 1.06 0L11 18.19V3.75a.75.75 0 0 1 1.5 0v14.44l4.97-4.97a.749.749 0 0 1 1.275.326.75.75 0 0 1-.215.734l-6.25 6.25a.75.75 0 0 1-1.06 0l-6.25-6.25a.75.75 0 0 1 0-1.06"/></svg></span> Jump to Step 3</a></p>
+</li>
+<li>
+<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 12V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v14l4-4h10a1 1 0 0 0 1-1m4-6h-2v9H6v2a1 1 0 0 0 1 1h11l4 4V7a1 1 0 0 0-1-1"/></svg></span> <strong>Step 5 — Agentic Chat</strong></p>
+<hr />
+<p>Ask complex questions with tool execution badges and <code>[Source]</code> / <code>[Graph]</code> citations.</p>
+<p><a href="#step-5-asking-questions-in-agentic-chat"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4.97 13.22a.75.75 0 0 1 1.06 0L11 18.19V3.75a.75.75 0 0 1 1.5 0v14.44l4.97-4.97a.749.749 0 0 1 1.275.326.75.75 0 0 1-.215.734l-6.25 6.25a.75.75 0 0 1-1.06 0l-6.25-6.25a.75.75 0 0 1 0-1.06"/></svg></span> Jump to Step 5</a></p>
+</li>
+<li>
+<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.5 17c-.13 0-.26 0-.39.04l-1.61-3.25a2.5 2.5 0 0 0-1.75-4.29c-.13 0-.25 0-.39.04l-1.63-3.25c.48-.45.77-1.08.77-1.79a2.5 2.5 0 0 0-5 0c0 .71.29 1.34.76 1.79L8.64 9.54c-.14-.04-.26-.04-.39-.04a2.5 2.5 0 0 0-1.75 4.29l-1.61 3.25C4.76 17 4.63 17 4.5 17a2.5 2.5 0 0 0 0 5A2.5 2.5 0 0 0 7 19.5c0-.7-.29-1.34-.76-1.79l1.62-3.25c.14.04.26.04.39.04s.25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0A2.5 2.5 0 0 0 12 17c-.13 0-.26 0-.39.04L10 13.79c.46-.45.75-1.08.75-1.79s-.29-1.34-.75-1.79l1.61-3.25c.13.04.26.04.39.04s.26 0 .39-.04L14 10.21c-.45.45-.75 1.09-.75 1.79a2.5 2.5 0 0 0 2.5 2.5c.13 0 .25 0 .39-.04l1.63 3.25c-.47.45-.77 1.09-.77 1.79a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0-2.5-2.5"/></svg></span> <strong>Step 6 — Knowledge Graph</strong></p>
+<hr />
+<p>Filter entity categories and click nodes to inspect 1-hop relationships.</p>
+<p><a href="#step-6-exploring-the-neo4j-knowledge-graph"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4.97 13.22a.75.75 0 0 1 1.06 0L11 18.19V3.75a.75.75 0 0 1 1.5 0v14.44l4.97-4.97a.749.749 0 0 1 1.275.326.75.75 0 0 1-.215.734l-6.25 6.25a.75.75 0 0 1-1.06 0l-6.25-6.25a.75.75 0 0 1 0-1.06"/></svg></span> Jump to Step 6</a></p>
+</li>
+</ul>
+</div>
+<hr />
+<h2 id="step-1-create-an-account-or-sign-in">Step 1: Create an Account or Sign In<a class="headerlink" href="#step-1-create-an-account-or-sign-in" title="Permanent link">&para;</a></h2>
+<p>When you open the application (<code>http://localhost:5173</code>), the <strong>Bioluminescent Neural Forest Authentication Screen</strong> appears in front of the Tree of Knowledge backdrop.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 14c-2.67 0-8 1.33-8 4v2h16v-2c0-2.67-5.33-4-8-4m-9-4V7H4v3H1v2h3v3h2v-3h3v-2m6 2a4 4 0 0 0 4-4 4 4 0 0 0-4-4 4 4 0 0 0-4 4 4 4 0 0 0 4 4"/></svg></span> Create a New Account</label><label for="__tabbed_1_2"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 7 9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8z"/></svg></span> Sign In to Existing Account</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
 <ol>
-<li>Click the <strong>Create Account</strong> tab at the top of the card.</li>
-<li>Fill in your details:</li>
-<li><strong>Full Name</strong>: Your display name (for example, <code>Alice Morgan</code>). Displayed in the top header bar once signed in.</li>
-<li><strong>Email Address</strong>: Your email address (for example, <code>alice@company.com</code>).</li>
-<li><strong>Password</strong>: A password with at least <strong>6 characters</strong>.</li>
-<li>Click <strong>Create Account →</strong>.</li>
-<li>Your account is immediately created in the Neon PostgreSQL <code>users</code> table (with a salted <code>PBKDF2-SHA256</code> password hash), and you are automatically signed in.</li>
+<li>Click the <strong>Create Account</strong> tab on the authentication card.</li>
+<li>Enter your credentials:</li>
+<li><strong>Full Name</strong>: Your display name (e.g., <code>Drona Sharma</code>), shown in the top navigation bar.</li>
+<li><strong>Email Address</strong>: Your email address (e.g., <code>drona@company.com</code>).</li>
+<li><strong>Password</strong>: At least <strong>6 characters</strong> (hashed with <code>PBKDF2-HMAC-SHA256</code> using <code>260,000</code> iterations).</li>
+<li>Click <strong>Create Account &amp; Continue →</strong>.</li>
+<li>Your user record is created in the Neon PostgreSQL <code>users</code> table and you are signed in immediately.</li>
 </ol>
-<h3 id="signing-in-with-an-existing-account">Signing In with an Existing Account<a class="headerlink" href="#signing-in-with-an-existing-account" title="Permanent link">&para;</a></h3>
+</div>
+<div class="tabbed-block">
 <ol>
 <li>Select the <strong>Sign In</strong> tab.</li>
 <li>Enter your registered <strong>Email Address</strong> and <strong>Password</strong>.</li>
-<li>Click <strong>Sign In →</strong>.</li>
+<li>Click <strong>Sign In to Workspace →</strong>.</li>
 </ol>
-<blockquote>
-<p>[!NOTE]
-<strong>Strict User Isolation:</strong> Every document you upload, every vector chunk stored in Neon PostgreSQL, and every entity/relationship extracted into Neo4j is strictly scoped to your authenticated user account. Other users cannot view, search, or modify your documents or knowledge graph.</p>
-</blockquote>
+</div>
+</div>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Strict Multi-Tenant Isolation</p>
+<p>Every document you upload, every vector chunk stored in <strong>Neon PostgreSQL</strong>, and every entity/relationship node created in <strong>Neo4j</strong> is strictly scoped to your authenticated <code>user_id</code>. No other user can view or query your workspace data.</p>
+</div>
 <hr />
-<h2 id="step-2-understanding-the-workspace-layout">Step 2: Understanding the Workspace Layout<a class="headerlink" href="#step-2-understanding-the-workspace-layout" title="Permanent link">&para;</a></h2>
-<p>Once signed in, the workspace consists of two main navigation areas:</p>
-<h3 id="1-top-header-bar">1. Top Header Bar<a class="headerlink" href="#1-top-header-bar" title="Permanent link">&para;</a></h3>
-<p>Located at the top of the screen, the header displays:
-- <strong>Application Title &amp; Subtitle</strong>: <em>ADK Agentic RAG — Neon pgvector + Neo4j Knowledge Graph</em>
-- <strong>API Status Pill</strong>:
-  - <strong>Green dot (<code>API Ready</code>)</strong>: The FastAPI backend, Neon PostgreSQL, and Neo4j are reachable.
-  - <strong>Red dot (<code>API Offline</code>)</strong>: The backend server is unreachable.
-- <strong>User Profile Pill</strong>: Shows your <strong>Full Name</strong> and <strong>Email Address</strong>.
-- <strong>Sign Out Button</strong>: Click <strong>Sign Out</strong> at any time to clear your session token and return to the Sign In screen.</p>
-<h3 id="2-five-tab-navigation-bar">2. Five-Tab Navigation Bar<a class="headerlink" href="#2-five-tab-navigation-bar" title="Permanent link">&para;</a></h3>
-<p>Below the header, five tabs organize your workflow in logical order:</p>
+<h2 id="step-2-navigating-the-workspace-header-5-tab-bar">Step 2: Navigating the Workspace Header &amp; 5-Tab Bar<a class="headerlink" href="#step-2-navigating-the-workspace-header-5-tab-bar" title="Permanent link">&para;</a></h2>
+<p>Once authenticated, the workspace presents a sticky top header and a 5-tab workflow bar:</p>
 <table>
 <thead>
 <tr>
-<th>Tab Order</th>
-<th>Tab Name</th>
-<th>Purpose</th>
+<th>UI Element</th>
+<th>Location</th>
+<th>What It Shows</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>1</strong></td>
-<td><strong>Upload</strong></td>
-<td>Select or drag-and-drop files to ingest into your workspace.</td>
+<td><strong>API Online / Offline Pill</strong></td>
+<td>Top-Right Header</td>
+<td>Real-time connectivity check against <code>GET /health</code> (<code>API Online</code> in glowing emerald when healthy).</td>
 </tr>
 <tr>
-<td><strong>2</strong></td>
-<td><strong>Ingestion Pipeline</strong></td>
-<td>Watch real-time step-by-step progress across all 5 ingestion stages and view database metrics.</td>
+<td><strong>User Profile Badge</strong></td>
+<td>Top-Right Header</td>
+<td>Displays your avatar initial, <strong>Full Name</strong>, and <strong>Email Address</strong>.</td>
 </tr>
 <tr>
-<td><strong>3</strong></td>
-<td><strong>Documents</strong></td>
-<td>View all ingested files, check chunk/entity/relationship counts, or cascade-delete files.</td>
+<td><strong>Sign Out Button</strong></td>
+<td>Top-Right Header</td>
+<td>Clears your JWT session token and returns you to the Sign In screen.</td>
 </tr>
 <tr>
-<td><strong>4</strong></td>
-<td><strong>Agentic Chat</strong></td>
-<td>Ask natural-language questions answered by the Google ADK agent using hybrid vector + graph tools.</td>
-</tr>
-<tr>
-<td><strong>5</strong></td>
-<td><strong>Knowledge Graph</strong></td>
-<td>Visually explore extracted Neo4j entities and factual relationships on an interactive canvas.</td>
+<td><strong>5-Tab Navigation Bar</strong></td>
+<td>Below Header</td>
+<td>Ordered left-to-right following your natural workflow: <strong>Upload</strong> → <strong>Ingestion Pipeline</strong> → <strong>Documents</strong> → <strong>Agentic Chat</strong> → <strong>Knowledge Graph</strong>.</td>
 </tr>
 </tbody>
 </table>
 <hr />
-<h2 id="step-3-uploading-a-document-upload-tab">Step 3: Uploading a Document (<code>Upload</code> Tab)<a class="headerlink" href="#step-3-uploading-a-document-upload-tab" title="Permanent link">&para;</a></h2>
+<h2 id="step-3-uploading-a-document">Step 3: Uploading a Document<a class="headerlink" href="#step-3-uploading-a-document" title="Permanent link">&para;</a></h2>
 <ol>
-<li>Navigate to the <strong>Upload</strong> tab (selected by default when you sign in).</li>
-<li><strong>Select a File</strong>:</li>
-<li><strong>Drag and drop</strong> a file directly onto the dashed drop zone, <strong>or</strong></li>
-<li>Click anywhere inside the drop zone to open your system file browser.</li>
-<li><strong>Supported Formats</strong>: <code>.pdf</code>, <code>.docx</code>, <code>.xlsx</code>, <code>.xls</code>, <code>.pptx</code>, <code>.txt</code>, <code>.md</code>, <code>.csv</code>, <code>.json</code>, <code>.xml</code>, <code>.html</code>, <code>.log</code>.</li>
-<li>Once a file is selected, the drop zone displays:</li>
-<li>The <strong>file name</strong></li>
-<li>The <strong>file size</strong> in KB</li>
-<li>A <strong>Remove file</strong> button if you wish to pick a different file</li>
-<li>Click <strong>Upload &amp; Ingest into Vector + Graph</strong>.</li>
-<li><strong>Automatic Redirection</strong>: As soon as the upload begins, the application automatically switches you to the <strong>Ingestion Pipeline</strong> tab so you can watch each stage of the pipeline execute in real time.</li>
+<li>Select the <strong>Upload</strong> tab (active by default upon sign-in).</li>
+<li><strong>Choose a Document</strong>:</li>
+<li><strong>Drag and drop</strong> a file onto the bioluminescent dashed drop zone, <strong>or</strong> click anywhere inside the drop zone to browse your computer.</li>
+<li><strong>Supported Formats</strong>: <code>.pdf</code>, <code>.docx</code>, <code>.xlsx</code>, <code>.xls</code>, <code>.pptx</code>, <code>.txt</code>, <code>.md</code>, <code>.csv</code>, <code>.json</code>, <code>.xml</code>, <code>.html</code>, <code>.htm</code>, <code>.log</code>.</li>
+<li>Verify the file preview card showing the <strong>filename</strong> and <strong>file size</strong> (click <strong>Remove</strong> if you want to pick a different file).</li>
+<li>Click <strong>Ingest into Neon Postgres &amp; Neo4j</strong>.</li>
 </ol>
+<div class="admonition tip">
+<p class="admonition-title">Automatic Tab Switch</p>
+<p>As soon as you click <strong>Ingest into Neon Postgres &amp; Neo4j</strong>, the UI automatically switches you to the <strong>Ingestion Pipeline</strong> tab so you can watch the live 5-step execution in real time.</p>
+</div>
 <hr />
-<h2 id="step-4-monitoring-live-progress-ingestion-pipeline-tab">Step 4: Monitoring Live Progress (<code>Ingestion Pipeline</code> Tab)<a class="headerlink" href="#step-4-monitoring-live-progress-ingestion-pipeline-tab" title="Permanent link">&para;</a></h2>
-<p>The <strong>Ingestion Pipeline</strong> tab provides complete visibility into how your document is processed and stored across <strong>Neon PostgreSQL</strong> and <strong>Neo4j</strong>.</p>
-<h3 id="understanding-the-live-5-step-progress-indicators">Understanding the Live 5-Step Progress Indicators<a class="headerlink" href="#understanding-the-live-5-step-progress-indicators" title="Permanent link">&para;</a></h3>
-<p>While a document is being ingested, only the <strong>currently executing step</strong> spins/rotates, making it clear what the system is doing at any given moment:</p>
-<table>
-<thead>
-<tr>
-<th>Visual State</th>
-<th>Badge</th>
-<th>Meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Checkmark (<code>✓</code>)</strong></td>
-<td><code>Completed</code> (Green)</td>
-<td>This stage has finished for your current document.</td>
-</tr>
-<tr>
-<td><strong>Spinning Ring</strong></td>
-<td><code>In Progress...</code> (Blue)</td>
-<td>This is the exact stage currently executing on the server.</td>
-</tr>
-<tr>
-<td><strong>Numbered Badge (<code>03</code>)</strong></td>
-<td><code>Queued</code> (Grey)</td>
-<td>This stage is waiting for the current step to finish.</td>
-</tr>
-</tbody>
-</table>
-<h3 id="what-happens-in-each-of-the-5-steps">What Happens in Each of the 5 Steps<a class="headerlink" href="#what-happens-in-each-of-the-5-steps" title="Permanent link">&para;</a></h3>
+<h2 id="step-4-monitoring-the-live-5-step-ingestion-pipeline">Step 4: Monitoring the Live 5-Step Ingestion Pipeline<a class="headerlink" href="#step-4-monitoring-the-live-5-step-ingestion-pipeline" title="Permanent link">&para;</a></h2>
+<p>In the <strong>Ingestion Pipeline</strong> tab, only the <strong>currently active step</strong> spins/rotates, so you always know the exact operation executing on the backend:</p>
+<div class="grid cards">
+<ul>
+<li>
+<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg></span> <strong><code>Completed</code> (Emerald Checkmark)</strong></p>
+<hr />
+<p>The stage has finished executing for your document and displays its concrete output (e.g., characters extracted or chunks created).</p>
+</li>
+<li>
+<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8"/></svg></span> <strong><code>Running Now…</code> (Cyan Spinner)</strong></p>
+<hr />
+<p>This is the exact stage currently executing on the FastAPI backend. The top live banner also shows the percentage progress bar.</p>
+</li>
+<li>
+<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg></span> <strong><code>Queued</code> (Muted Badge)</strong></p>
+<hr />
+<p>Upcoming stages waiting for the active step to finish.</p>
+</li>
+</ul>
+</div>
+<h3 id="what-happens-in-each-stage">What Happens in Each Stage<a class="headerlink" href="#what-happens-in-each-stage" title="Permanent link">&para;</a></h3>
 <ol>
-<li><strong>Step 01 — Format-Specific Text Extraction (<code>parsers.py</code>)</strong>:</li>
-<li>Extracts clean text from your uploaded file (PyMuPDF for PDFs, <code>python-docx</code> for Word, <code>openpyxl</code> for Excel, <code>python-pptx</code> for PowerPoint, or UTF-8 text readers).</li>
-<li>Displays the total character count extracted once complete.</li>
-<li><strong>Step 02 — Structure-Aware Semantic Chunking (<code>chunking.py</code>)</strong>:</li>
-<li>Splits the text along natural markdown headers, paragraphs, and sentence boundaries (<code>1200</code> characters per chunk with a <code>200</code>-character sliding overlap).</li>
-<li>Displays the exact number of semantic chunks created.</li>
-<li><strong>Step 03 — Gemini Embedding Generation (<code>embeddings.py</code>)</strong>:</li>
-<li>Calls <code>gemini-embedding-001</code> in batches to generate <code>768</code>-dimensional semantic vectors for every chunk.</li>
-<li><strong>Step 04 — Neon PostgreSQL Indexing (<code>rag_store.py</code>)</strong>:</li>
-<li>Stores the document metadata, text chunks, <code>VECTOR(768)</code> embeddings (indexed via <code>pgvector</code> HNSW), and <code>tsvector</code> full-text index (GIN) inside Neon PostgreSQL.</li>
-<li><strong>Step 05 — Neo4j Knowledge Graph Extraction (<code>graph_store.py</code>)</strong>:</li>
-<li>Uses <code>gemini-2.5-flash</code> with Structured Outputs to extract key domain entities (<code>Person</code>, <code>Organization</code>, <code>Technology</code>, <code>Concept</code>, <code>Location</code>, <code>Event</code>, <code>Process</code>, <code>Metric</code>, <code>Model</code>) and factual relationships (<code>RELATES_TO</code>), then merges them into Neo4j.</li>
+<li><strong>Step 1 — Text Extraction (<code>parsers.py</code>)</strong>: Extracts raw text using format-specific parsers (<code>PyMuPDF</code>, <code>python-docx</code>, <code>openpyxl</code>, <code>python-pptx</code>, etc.).</li>
+<li><strong>Step 2 — Structure-Aware Semantic Chunking (<code>chunking.py</code>)</strong>: Preserves headings and paragraphs while splitting text into <code>1,200</code>-character chunks with a <code>200</code>-character overlap.</li>
+<li><strong>Step 3 — Gemini Embedding Generation (<code>embeddings.py</code>)</strong>: Embeds chunks in batches using <code>gemini-embedding-001</code> (<code>768</code> dimensions).</li>
+<li><strong>Step 4 — Neon PostgreSQL Vector &amp; Hybrid Storage (<code>rag_store.py</code>)</strong>: Bulk-inserts chunks, <code>VECTOR(768)</code> embeddings (HNSW index), and <code>tsvector</code> full-text index (GIN) into Neon PostgreSQL.</li>
+<li><strong>Step 5 — Neo4j Knowledge Graph Extraction (<code>graph_store.py</code>)</strong>: Uses <code>gemini-2.5-flash</code> Structured Outputs to extract domain entities and factual relationships and merges them into Neo4j.</li>
 </ol>
-<h3 id="pipeline-completion-summary">Pipeline Completion Summary<a class="headerlink" href="#pipeline-completion-summary" title="Permanent link">&para;</a></h3>
-<p>When all 5 steps finish, a green <strong>All 5 Pipeline Steps Completed Successfully</strong> banner appears at the top of the tab displaying:
-- <strong>File</strong>: Name of the ingested document
-- <strong>Text Length</strong>: Total characters extracted
-- <strong>Vector Chunks</strong>: Number of chunks stored in Neon PostgreSQL
-- <strong>Graph Entities</strong>: Number of entities extracted into Neo4j
-- <strong>Relationships</strong>: Number of factual links stored in Neo4j</p>
-<p>You will also see live summary metric cards at the top of the tab showing your workspace's total <strong>Documents</strong>, <strong>Vector Chunks</strong>, <strong>Graph Entities</strong>, and <strong>Graph Relations</strong>.</p>
+<div class="admonition success">
+<p class="admonition-title">Completion Summary Banner</p>
+<p>When all 5 stages complete, an emerald banner titled <strong>All 5 Pipeline Steps Completed Successfully</strong> displays the <strong>Filename</strong>, <strong>Chunks (pgvector)</strong>, <strong>Entities (Neo4j)</strong>, <strong>Relationships (Neo4j)</strong>, and <strong>Characters</strong> extracted.</p>
+</div>
 <hr />
 <h2 id="step-5-managing-your-documents-documents-tab">Step 5: Managing Your Documents (<code>Documents</code> Tab)<a class="headerlink" href="#step-5-managing-your-documents-documents-tab" title="Permanent link">&para;</a></h2>
-<p>Click the <strong>Documents</strong> tab to inspect or clean up your ingested files.</p>
-<ol>
-<li><strong>Review Document Metadata</strong>:
-   Each document row displays:</li>
-<li><strong>File Name</strong> and file type icon</li>
-<li><strong>Ingestion Timestamp</strong></li>
-<li><strong>Chunks Badge</strong>: Number of vector chunks in Neon PostgreSQL</li>
-<li><strong>Entities Badge</strong>: Number of nodes extracted into Neo4j</li>
-<li><strong>Relations Badge</strong>: Number of relationships extracted into Neo4j</li>
-<li><strong>Refreshing the List</strong>:
-   Click the <strong>↻ Refresh</strong> button in the top-right corner of the card to reload the latest document statistics.</li>
-<li><strong>Deleting a Document (Cascade Delete)</strong>:</li>
-<li>Click the <strong>Delete</strong> button (trash icon) on the right side of a document row.</li>
-<li>Confirm the deletion in the dialog prompt.</li>
-<li><strong>What gets deleted</strong>: The backend performs a <strong>cascade deletion</strong> across both databases—removing the document and all its vector chunks from <strong>Neon PostgreSQL</strong>, detaching its <code>MENTIONED_IN</code> links and <code>RELATES_TO</code> edges in <strong>Neo4j</strong>, and pruning any orphaned entity nodes that belong solely to that document.</li>
-</ol>
+<p>Switch to the <strong>Documents</strong> tab to view or delete files in your workspace:</p>
+<ul>
+<li><strong>Per-Document Badges</strong>: Each document card shows its <strong>chunks</strong> count (in Neon Postgres), <strong>entities</strong> count (in Neo4j), and <strong>relations</strong> count (in Neo4j).</li>
+<li><strong>Cascade Delete</strong>:</li>
+<li>Click <strong>Delete</strong> on any document card.</li>
+<li>Click <strong>Yes, delete</strong> on the confirmation prompt (<code>Delete from Postgres &amp; Neo4j?</code>).</li>
+<li>The backend atomically removes the document and its vector chunks from <strong>Neon PostgreSQL</strong>, deletes its <code>RELATES_TO</code> edges and <code>Document</code> node in <strong>Neo4j</strong>, and prunes any orphaned entity nodes.</li>
+</ul>
 <hr />
-<h2 id="step-6-asking-questions-agentic-chat-tab">Step 6: Asking Questions (<code>Agentic Chat</code> Tab)<a class="headerlink" href="#step-6-asking-questions-agentic-chat-tab" title="Permanent link">&para;</a></h2>
-<p>Click the <strong>Agentic Chat</strong> tab to converse with the <strong>Google ADK (<code>LlmAgent</code>)</strong> assistant over your ingested knowledge base.</p>
-<h3 id="starting-a-conversation">Starting a Conversation<a class="headerlink" href="#starting-a-conversation" title="Permanent link">&para;</a></h3>
+<h2 id="step-6-asking-questions-in-agentic-chat-agentic-chat-tab">Step 6: Asking Questions in Agentic Chat (<code>Agentic Chat</code> Tab)<a class="headerlink" href="#step-6-asking-questions-in-agentic-chat-agentic-chat-tab" title="Permanent link">&para;</a></h2>
+<p>Switch to the <strong>Agentic Chat</strong> tab to query your documents using the <strong>Google ADK <code>LlmAgent</code></strong>.</p>
 <ol>
-<li><strong>Use a Suggested Prompt</strong> (on an empty chat screen):
-   Click any of the starter prompt chips (such as <em>"Summarize the key topics across my documents"</em> or <em>"How are the main entities and technologies connected?"</em>) to immediately send that question.</li>
-<li><strong>Type Your Own Question</strong>:</li>
-<li>Click the text input box at the bottom of the screen.</li>
-<li>Type your question (press <code>Enter</code> to send, or <code>Shift + Enter</code> to insert a new line).</li>
-<li>Click the <strong>Send</strong> button.</li>
+<li><strong>Click a Suggested Question Chip</strong> on the starter screen, <strong>or</strong> type your question in the input box at the bottom.</li>
+<li>Press <span class="keys"><kbd class="key-enter">Enter</kbd></span> to send (or <span class="keys"><kbd class="key-shift">Shift</kbd><span>+</span><kbd class="key-enter">Enter</kbd></span> to insert a newline).</li>
 </ol>
-<h3 id="understanding-how-the-agent-answers">Understanding How the Agent Answers<a class="headerlink" href="#understanding-how-the-agent-answers" title="Permanent link">&para;</a></h3>
-<p>Unlike basic RAG systems that only perform a single vector lookup, the ADK Agent dynamically selects and combines <strong>4 specialized retrieval tools</strong> depending on your question:</p>
+<h3 id="understanding-tool-badges-dual-citations">Understanding Tool Badges &amp; Dual Citations<a class="headerlink" href="#understanding-tool-badges-dual-citations" title="Permanent link">&para;</a></h3>
+<p>The ADK agent autonomously selects one or more of its 4 specialized tools and displays <strong>Tool Execution Badges</strong> at the top of its reply:</p>
 <table>
 <thead>
 <tr>
-<th>Tool Badge Shown in UI</th>
-<th>When the Agent Uses It</th>
+<th>Tool Badge</th>
+<th>Database Queried</th>
+<th>When the Agent Chooses It</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>hybrid_search</code></td>
-<td>Default tool for general questions, technical terms, names, and numbers. Combines semantic vector similarity (<code>70%</code>) with PostgreSQL full-text keyword matching (<code>30%</code>).</td>
+<td>Neon PostgreSQL (<code>pgvector</code> + FTS)</td>
+<td>Default for most questions; combines <code>70%</code> semantic similarity + <code>30%</code> keyword matching.</td>
 </tr>
 <tr>
 <td><code>vector_search</code></td>
-<td>Used for broad conceptual or thematic questions where exact keywords may not appear verbatim.</td>
+<td>Neon PostgreSQL (<code>pgvector</code>)</td>
+<td>Broad conceptual or thematic questions.</td>
 </tr>
 <tr>
 <td><code>graph_search</code></td>
-<td>Used when you ask about entities, organizations, architectures, or factual connections stored in Neo4j.</td>
+<td>Neo4j Knowledge Graph</td>
+<td>Questions about entities, technologies, people, or how concepts connect.</td>
 </tr>
 <tr>
 <td><code>get_entity_relationships</code></td>
-<td>Used when you ask how a specific entity connects to other concepts (multi-hop graph traversal in Neo4j).</td>
+<td>Neo4j Knowledge Graph</td>
+<td>Deep-dive traversal into a specific entity's 1-hop neighborhood.</td>
 </tr>
 </tbody>
 </table>
-<h3 id="reading-tool-badges-citations-in-responses">Reading Tool Badges &amp; Citations in Responses<a class="headerlink" href="#reading-tool-badges-citations-in-responses" title="Permanent link">&para;</a></h3>
-<p>Every assistant response includes:
-1. <strong>Tool Execution Badges</strong> (at the top of the message bubble): Displays which tools the agent called to answer your question (e.g., <code>hybrid_search</code> + <code>graph_search</code>).
-2. <strong>Inline Source Citations</strong>:
-   - <strong>Vector/Hybrid Chunk Citations</strong>: Rendered as <code>[Source: filename.pdf, chunk 2]</code> so you know the exact document and section where the passage came from.
-   - <strong>Knowledge Graph Citations</strong>: Rendered as <code>[Graph: EntityA -&gt; RELATION_TYPE -&gt; EntityB]</code> so you can verify factual relationships extracted from the Neo4j graph.</p>
-<h3 id="starting-a-fresh-conversation">Starting a Fresh Conversation<a class="headerlink" href="#starting-a-fresh-conversation" title="Permanent link">&para;</a></h3>
-<p>Click the <strong>New Session</strong> button in the top-right corner of the chat header to clear the current conversation history and start a fresh multi-turn session with the agent.</p>
+<p>Every assistant response includes inline verifiable citations:
+- <strong>Document Chunk Citation</strong>: <code>[Source: filename.pdf, chunk 3]</code> (highlighted in emerald)
+- <strong>Knowledge Graph Citation</strong>: <code>[Graph: Google ADK -&gt; USES -&gt; Gemini 2.5 Pro]</code> (highlighted in gold)</p>
 <hr />
-<h2 id="step-7-exploring-the-knowledge-graph-knowledge-graph-tab">Step 7: Exploring the Knowledge Graph (<code>Knowledge Graph</code> Tab)<a class="headerlink" href="#step-7-exploring-the-knowledge-graph-knowledge-graph-tab" title="Permanent link">&para;</a></h2>
-<p>Click the <strong>Knowledge Graph</strong> tab to visually inspect the entities and relationships extracted from your documents into <strong>Neo4j</strong>.</p>
-<h3 id="1-graph-overview-controls-bar">1. Graph Overview &amp; Controls Bar<a class="headerlink" href="#1-graph-overview-controls-bar" title="Permanent link">&para;</a></h3>
-<p>At the top of the Knowledge Graph tab, you can:
-- <strong>Search Entities or Facts</strong>: Type a keyword in the search box (for example, <code>Gemini</code> or <code>PostgreSQL</code>) to filter the visible graph nodes and relationships in real time.
-- <strong>Filter by Entity Category</strong>: Click any category pill (<code>All</code>, <code>Technology</code>, <code>Concept</code>, <code>Organization</code>, <code>Person</code>, <code>Model</code>, <code>Metric</code>, <code>Process</code>, <code>Location</code>, <code>Event</code>) to isolate nodes of that category.
-- <strong>Zoom Controls</strong>: Use the <strong><code>+</code></strong> (Zoom In), <strong><code>-</code></strong> (Zoom Out), and <strong><code>Reset</code></strong> buttons to adjust your view of the SVG network diagram.
-- <strong>Refresh</strong>: Click <strong>↻ Refresh</strong> to fetch the latest graph nodes and edges from Neo4j.</p>
-<h3 id="2-interacting-with-the-visual-network-canvas">2. Interacting with the Visual Network Canvas<a class="headerlink" href="#2-interacting-with-the-visual-network-canvas" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Color-Coded Nodes</strong>: Each circular node represents an extracted <code>Entity</code> colored by its category (for example, Indigo for <code>Technology</code>, Teal for <code>Concept</code>, Amber for <code>Organization</code>, Pink for <code>Person</code>).</li>
-<li><strong>Directed Edges (<code>RELATES_TO</code>)</strong>: Lines connecting nodes display the relationship label (such as <code>USES</code>, <code>INTEGRATES_WITH</code>, <code>DEPENDS_ON</code>).</li>
-<li><strong>Inspecting a Node (1-Hop Neighborhood)</strong>:</li>
-<li><strong>Click any node</strong> on the canvas.</li>
-<li>The canvas highlights that node and all its direct neighbors while dimming unrelated nodes.</li>
-<li>The <strong>Entity Inspector Drawer</strong> on the right displays:<ul>
-<li>The entity's <strong>Name</strong>, <strong>Category Badge</strong>, and <strong>Description</strong></li>
-<li>All <strong>Outgoing Relationships</strong> (<code>Selected Entity -&gt; RELATION -&gt; Target Entity</code> + supporting fact description)</li>
-<li>All <strong>Incoming Relationships</strong> (<code>Source Entity -&gt; RELATION -&gt; Selected Entity</code> + supporting fact description)</li>
-</ul>
-</li>
-<li>Click any connected entity inside the inspector drawer to jump directly to that entity in the graph.</li>
-</ul>
-<h3 id="3-extracted-triplets-table">3. Extracted Triplets Table<a class="headerlink" href="#3-extracted-triplets-table" title="Permanent link">&para;</a></h3>
-<p>Below the visual canvas, the <strong>Extracted Knowledge Graph Triplets</strong> table lists every factual relationship in structured form (<code>Source Entity</code>, <code>Relationship Type</code>, <code>Target Entity</code>, and <code>Supporting Fact</code>), allowing you to audit the exact facts discovered across your uploaded documents.</p>
+<h2 id="step-7-exploring-the-neo4j-knowledge-graph-knowledge-graph-tab">Step 7: Exploring the Neo4j Knowledge Graph (<code>Knowledge Graph</code> Tab)<a class="headerlink" href="#step-7-exploring-the-neo4j-knowledge-graph-knowledge-graph-tab" title="Permanent link">&para;</a></h2>
+<p>Switch to the <strong>Knowledge Graph</strong> tab to visually explore the entities and relationships extracted from your documents:</p>
+<ol>
+<li><strong>Filter by Category Pills</strong>: Click <code>All</code>, <code>Technology</code>, <code>Model</code>, <code>Concept</code>, <code>Organization</code>, <code>Person</code>, <code>Metric</code>, <code>Location</code>, or <code>Event</code> to isolate specific node types.</li>
+<li><strong>Real-Time Search</strong>: Type any keyword into the filter bar to highlight matching entities, relationship types, or facts.</li>
+<li><strong>Interactive SVG Topology</strong>:</li>
+<li><strong>Click any node</strong> on the glowing neural canvas to highlight its 1-hop neighborhood and inspect its description and relationships in the right-hand <strong>Entity Inspector</strong> panel.</li>
+<li>Click any entity name in the <strong>Extracted Relationship Facts</strong> list on the right to center and select that node on the graph.</li>
+<li>Click <strong>Clear</strong> on the selected entity card to return to the full graph view.</li>
+</ol>
 
 
 
@@ -1764,7 +1563,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: Home">
+          <a href="../INSTALLATION/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Quickstart &amp; Installation">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1774,20 +1573,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Home
+                Quickstart & Installation
               </div>
             </div>
           </a>
         
         
           
-          <a href="../ARCHITECTURE/" class="md-footer__link md-footer__link--next" aria-label="Next: Architecture">
+          <a href="../ARCHITECTURE/" class="md-footer__link md-footer__link--next" aria-label="Next: System Architecture">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Architecture
+                System Architecture
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -1815,6 +1614,27 @@
   
 </div>
       
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/Dronanaik/adk_rag" target="_blank" rel="noopener" title="GitHub Repository" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://adk.dev/" target="_blank" rel="noopener" title="Powered by Google ADK" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.35 0 9.25-3.67 9.25-9.09 0-1.15-.15-1.81-.15-1.81"/></svg>
+    </a>
+  
+</div>
+      
     </div>
   </div>
 </footer>
@@ -1824,14 +1644,20 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
     
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.instant.progress", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.path", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
       
     
   </body>
