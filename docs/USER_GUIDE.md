@@ -1,69 +1,69 @@
 # :material-book-open-page-variant: Interactive User Guide
 
-This step-by-step visual guide walks you through **each and every screen and interactive state** of the **ADK Agentic RAG + Knowledge Graph** platform—from signing in with **Neon PostgreSQL Authentication** to uploading documents, monitoring the live 5-step hybrid ingestion pipeline, managing indexed documents, querying the **Google ADK Agent**, and inspecting your **Neo4j Knowledge Graph**.
+This step-by-step visual guide walks you through every view and interaction in the **ADK Agentic RAG + Knowledge Graph** platform—from signing in with **Neon PostgreSQL Authentication** to uploading documents, monitoring the live 5-step hybrid ingestion pipeline, managing indexed documents, querying the **Google ADK Agent**, and inspecting your **Neo4j Knowledge Graph**.
 
 ---
 
-## :material-map-marker-path: End-to-End Application Screen Map
+## :material-map-marker-path: End-to-End User Workflow
 
 ```mermaid
 flowchart LR
-    A["Screens 1–2: Auth (Sign In / Create Account)"] --> B["Screens 3–4: Upload (Dropzone & File Selected)"]
-    B --> C["Screens 5–6: Ingestion (Live Running & Completed)"]
-    C --> D["Screens 7–8: Documents (Indexed List & Cascade Delete)"]
-    D --> E["Screens 9–10: Agentic Chat (Starter Prompts & Dual Citations)"]
-    E --> F["Screens 11–12: Knowledge Graph (Topology Overview & 1-Hop Inspector)"]
+    A["1. Authentication (Sign In / Create Account)"] --> B["2. Document Upload (Dropzone & File Preview)"]
+    B --> C["3. Hybrid Ingestion (Live Progress & Completion)"]
+    C --> D["4. Document Manager (Index Counts & Cascade Delete)"]
+    D --> E["5. Agentic Chat (4 Tools & Dual Citations)"]
+    E --> F["6. Knowledge Graph (Topology & 1-Hop Inspector)"]
 ```
 
 <div class="grid cards" markdown>
 
--   :material-shield-account:{ .lg .middle } **Screens 1 & 2 — Authentication**
+-   :material-shield-account:{ .lg .middle } **Authentication & Workspace Isolation**
 
     ---
 
     Sign in or register an isolated multi-tenant workspace backed by **Neon PostgreSQL** (`PBKDF2-HMAC-SHA256` + `HS256` JWT).
 
-    [:octicons-arrow-down-24: View Screens 1 & 2](#step-1-create-an-account-or-sign-in)
+    [:octicons-arrow-down-24: Jump to Authentication](#step-1-create-an-account-or-sign-in)
 
--   :material-cloud-upload:{ .lg .middle } **Screens 3 & 4 — Document Upload**
+-   :material-cloud-upload:{ .lg .middle } **Document Upload**
 
     ---
 
     Drag and drop files across 13 supported formats, preview file metadata, and launch hybrid ingestion.
 
-    [:octicons-arrow-down-24: View Screens 3 & 4](#step-2-uploading-a-document)
+    [:octicons-arrow-down-24: Jump to Document Upload](#step-2-uploading-a-document-upload-tab)
 
--   :material-progress-check:{ .lg .middle } **Screens 5 & 6 — Live 5-Step Pipeline**
+-   :material-progress-check:{ .lg .middle } **Live 5-Step Ingestion Pipeline**
 
     ---
 
     Watch real-time step-by-step execution across text extraction, chunking, Gemini embeddings, Neon `pgvector`, and Neo4j.
 
-    [:octicons-arrow-down-24: View Screens 5 & 6](#step-3-monitoring-the-live-5-step-ingestion-pipeline)
+    [:octicons-arrow-down-24: Jump to Ingestion Pipeline](#step-3-monitoring-the-live-5-step-ingestion-pipeline-ingestion-pipeline-tab)
 
--   :material-folder-multiple-outline:{ .lg .middle } **Screens 7 & 8 — Document Management**
+-   :material-folder-multiple-outline:{ .lg .middle } **Document Management**
 
     ---
 
     Inspect per-document vector chunk, entity, and relationship counts or trigger atomic cascade deletion across both databases.
 
-    [:octicons-arrow-down-24: View Screens 7 & 8](#step-4-managing-indexed-documents-documents-tab)
+    [:octicons-arrow-down-24: Jump to Document Management](#step-4-managing-indexed-documents-documents-tab)
 
--   :material-forum:{ .lg .middle } **Screens 9 & 10 — Agentic Chat**
+-   :material-forum:{ .lg .middle } **Agentic RAG + Graph Chat**
 
     ---
 
     Query the **Google ADK `LlmAgent`** with autonomous tool selection (`hybrid_search`, `graph_search`) and `[Source]` / `[Graph]` citations.
 
-    [:octicons-arrow-down-24: View Screens 9 & 10](#step-5-asking-questions-in-agentic-chat-agentic-chat-tab)
+    [:octicons-arrow-down-24: Jump to Agentic Chat](#step-5-asking-questions-in-agentic-chat-agentic-chat-tab)
 
--   :material-graph:{ .lg .middle } **Screens 11 & 12 — Knowledge Graph**
+-   :material-graph:{ .lg .middle } **Neo4j Knowledge Graph Explorer**
 
     ---
 
     Explore the interactive Neo4j SVG entity topology, filter by category, and click any node to inspect its 1-hop neighborhood.
 
-    [:octicons-arrow-down-24: View Screens 11 & 12](#step-6-exploring-the-neo4j-knowledge-graph-knowledge-graph-tab)
+    [:octicons-arrow-down-24: Jump to Knowledge Graph](#step-6-exploring-the-neo4j-knowledge-graph-knowledge-graph-tab)
 
 </div>
 
@@ -71,11 +71,11 @@ flowchart LR
 
 ## Step 1: Create an Account or Sign In
 
-When you open the application (`http://localhost:5173`), the **Bioluminescent Neural Forest Authentication Screen** appears in front of the Tree of Knowledge backdrop. Every account is stored in the **Neon PostgreSQL `users` table** and issues an `HS256` signed JWT Bearer token.
+When you open the application (`http://localhost:5173`), the **Bioluminescent Neural Forest Authentication Modal** appears in front of the Tree of Knowledge backdrop. Every account is stored in the **Neon PostgreSQL `users` table** and issues an `HS256` signed JWT Bearer token.
 
-### Screen 1 — Sign In to Existing Workspace
+### Sign In to an Existing Workspace
 
-![Screen 1 — Neon PostgreSQL Sign In Screen](assets/screenshots/01-auth-signin.png)
+![Neon PostgreSQL Sign In](assets/screenshots/01-auth-signin.png)
 
 1. Select the **Sign In** tab on the authentication modal.
 2. Enter your registered **Email Address** (e.g., `dronanaik1133@gmail.com`) and **Password**.
@@ -83,9 +83,9 @@ When you open the application (`http://localhost:5173`), the **Bioluminescent Ne
 
 ---
 
-### Screen 2 — Create a New Account
+### Create a New Account
 
-![Screen 2 — Neon PostgreSQL Create Account Screen](assets/screenshots/02-auth-signup.png)
+![Neon PostgreSQL Create Account](assets/screenshots/02-auth-signup.png)
 
 1. Select the **Create Account** tab on the authentication card.
 2. Fill in your registration details:
@@ -103,9 +103,9 @@ When you open the application (`http://localhost:5173`), the **Bioluminescent Ne
 
 Once signed in, the top header displays your **API Online** health indicator, your **User Profile Badge**, the **Sign Out** button, and the **5-Tab Navigation Bar** (**Upload** → **Ingestion Pipeline** → **Documents** → **Agentic Chat** → **Knowledge Graph**).
 
-### Screen 3 — Upload Document Dropzone (Empty State)
+### Upload Document Dropzone
 
-![Screen 3 — Upload Document Empty Dropzone](assets/screenshots/03-upload-dropzone.png)
+![Upload Document Dropzone](assets/screenshots/03-upload-dropzone.png)
 
 1. The **Upload** tab is active by default when you sign in.
 2. Drag and drop a file onto the dashed bioluminescent dropzone, or click **click to browse** to open your system file picker.
@@ -113,15 +113,15 @@ Once signed in, the top header displays your **API Online** health indicator, yo
 
 ---
 
-### Screen 4 — Document Selected & Ready to Ingest
+### Document Selected & Ready to Ingest
 
-![Screen 4 — Upload Document File Selected State](assets/screenshots/04-upload-file-selected.png)
+![Upload Document File Preview](assets/screenshots/04-upload-file-selected.png)
 
 1. Once a file is selected (e.g., `Drona_Resume_.pdf` — `73.4 KB`), the dropzone transforms into a **File Preview Card** displaying:
    - Format-specific file icon (red PDF badge for `.pdf` files)
    - Exact **filename** and formatted **file size**
    - A **× Remove** button if you want to clear the selection and pick a different file
-2. Click the primary gradient button **Ingest into Neon Postgres & Neo4j** at the bottom of the screen to launch the 5-step hybrid ingestion pipeline.
+2. Click the primary gradient button **Ingest into Neon Postgres & Neo4j** at the bottom of the view to launch the 5-step hybrid ingestion pipeline.
 
 ---
 
@@ -129,9 +129,9 @@ Once signed in, the top header displays your **API Online** health indicator, yo
 
 Clicking **Ingest into Neon Postgres & Neo4j** automatically transitions you to the **Ingestion Pipeline** tab (`IngestionTab.jsx`), which polls `GET /ingest/progress` every `450ms` to display real-time execution progress.
 
-### Screen 5 — Live 5-Step Hybrid Ingestion Pipeline (Running State)
+### Live 5-Step Hybrid Ingestion Execution
 
-![Screen 5 — Live 5-Step Hybrid Ingestion Pipeline Running](assets/screenshots/05-ingestion-live-running.png)
+![Live 5-Step Hybrid Ingestion Pipeline Running](assets/screenshots/05-ingestion-live-running.png)
 
 While a document is actively being processed:
 
@@ -143,9 +143,9 @@ While a document is actively being processed:
 
 ---
 
-### Screen 6 — All 5 Pipeline Steps Completed Successfully
+### Completed Ingestion Summary & Stage Logs
 
-![Screen 6 — All 5 Pipeline Steps Completed Successfully](assets/screenshots/06-ingestion-completed.png)
+![Completed 5-Step Hybrid Ingestion Pipeline](assets/screenshots/06-ingestion-completed.png)
 
 When all 5 stages finish executing:
 
@@ -169,9 +169,9 @@ When all 5 stages finish executing:
 
 Switch to the **Documents** tab (`DocumentsTab.jsx`) to audit your indexed files or remove documents from your workspace.
 
-### Screen 7 — My Documents List View
+### Indexed Documents List
 
-![Screen 7 — My Documents Indexed List View](assets/screenshots/07-documents-list.png)
+![My Documents Indexed List](assets/screenshots/07-documents-list.png)
 
 Each indexed document card displays:
 
@@ -184,9 +184,9 @@ Each indexed document card displays:
 
 ---
 
-### Screen 8 — Cascade Delete Confirmation State
+### Atomic Cascade Delete Confirmation
 
-![Screen 8 — Cascade Delete Confirmation State](assets/screenshots/08-documents-delete-confirm.png)
+![Cascade Delete Confirmation](assets/screenshots/08-documents-delete-confirm.png)
 
 1. Clicking **Delete** on any document card reveals an inline confirmation bar: **`Delete from Postgres & Neo4j?`** with **Yes, delete** and **Cancel** buttons.
 2. Clicking **Yes, delete** invokes `DELETE /documents/{doc_id}`, which atomically:
@@ -200,9 +200,9 @@ Each indexed document card displays:
 
 Switch to the **Agentic Chat** tab (`ChatTab.jsx`) to converse with the **Google ADK `LlmAgent`** powered by **Gemini 2.5 Pro**.
 
-### Screen 9 — Agentic Chat Starter Prompts (Empty State)
+### Starter Prompts & New Session View
 
-![Screen 9 — Agentic Chat Starter Prompts Screen](assets/screenshots/09-chat-starter-prompts.png)
+![Agentic Chat Starter Prompts](assets/screenshots/09-chat-starter-prompts.png)
 
 When starting a new session:
 
@@ -215,9 +215,9 @@ When starting a new session:
 
 ---
 
-### Screen 10 — Multi-Tool Agentic Response with Dual Citations
+### Multi-Tool Grounded Response with Dual Citations
 
-![Screen 10 — Agentic Chat Grounded Response with Citations](assets/screenshots/10-chat-hybrid-graph-response.png)
+![Agentic Chat Grounded Response with Citations](assets/screenshots/10-chat-hybrid-graph-response.png)
 
 When you submit a question (e.g., *"Summarize Drona's key technical skills, AI/ML projects, and entity relationships from his resume."*):
 
@@ -233,9 +233,9 @@ When you submit a question (e.g., *"Summarize Drona's key technical skills, AI/M
 
 Switch to the **Knowledge Graph** tab (`GraphTab.jsx`) to visually explore and query the domain entities and directed relationships extracted from your documents.
 
-### Screen 11 — Neo4j Knowledge Graph Topology Overview
+### Neo4j Knowledge Graph Topology Overview
 
-![Screen 11 — Neo4j Knowledge Graph Explorer Overview](assets/screenshots/11-graph-topology-overview.png)
+![Neo4j Knowledge Graph Explorer Overview](assets/screenshots/11-graph-topology-overview.png)
 
 The **Neo4j Knowledge Graph Explorer** provides four synchronized views:
 
@@ -248,9 +248,9 @@ The **Neo4j Knowledge Graph Explorer** provides four synchronized views:
 
 ---
 
-### Screen 12 — Selected Entity 1-Hop Neighborhood Inspector
+### Selected Entity 1-Hop Neighborhood Inspector
 
-![Screen 12 — Neo4j Knowledge Graph Selected Entity Inspector](assets/screenshots/12-graph-node-inspector.png)
+![Neo4j Knowledge Graph Selected Entity Inspector](assets/screenshots/12-graph-node-inspector.png)
 
 Clicking any node on the interactive SVG canvas (or clicking any entity name in the right-hand facts list) activates the **1-Hop Neighborhood Inspector**:
 
