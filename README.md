@@ -13,6 +13,16 @@
 [![Neo4j](https://img.shields.io/badge/Neo4j-Knowledge%20Graph-008CC1?logo=neo4j&logoColor=white)](https://neo4j.com)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev)
 
+<br/>
+
+## End-to-End Platform Demonstration
+
+<video src="docs/adk_rag.mp4" width="100%" controls autoplay loop muted></video>
+
+![ADK Agentic RAG + Knowledge Graph End-to-End Walkthrough](docs/assets/adk_rag_demo.gif)
+
+> **Full Recorded Video (MP4):** [`docs/adk_rag.mp4`](docs/adk_rag.mp4)
+
 ---
 
 ## Overview

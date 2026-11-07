@@ -2,6 +2,8 @@
 
 This step-by-step visual guide walks you through every view and interaction in the **ADK Agentic RAG + Knowledge Graph** platform—from signing in with **Neon PostgreSQL Authentication** to uploading documents, monitoring the live 5-step hybrid ingestion pipeline, managing indexed documents, querying the **Google ADK Agent**, and inspecting your **Neo4j Knowledge Graph**.
 
+<video src="../adk_rag.mp4" width="100%" controls autoplay loop muted style="border-radius: 12px; border: 1px solid rgba(52, 211, 153, 0.3); margin-top: 12px;"></video>
+
 ---
 
 ## :material-map-marker-path: End-to-End User Workflow
