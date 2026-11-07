@@ -15,18 +15,33 @@ import { getKnowledgeGraph } from '../api.js'
 import styles from './GraphTab.module.css'
 
 const TYPE_COLORS = {
-  Technology:   { bg: '#082f38', border: '#22d3ee', text: '#67e8f9', dot: '#22d3ee' },
-  Model:        { bg: '#093026', border: '#34d399', text: '#6ee7b7', dot: '#34d399' },
-  Concept:      { bg: '#2e2208', border: '#fbbf24', text: '#fde68a', dot: '#fbbf24' },
-  Organization: { bg: '#0c2742', border: '#38bdf8', text: '#7dd3fc', dot: '#38bdf8' },
-  Person:       { bg: '#331c08', border: '#fb923c', text: '#fdba74', dot: '#fb923c' },
-  Metric:       { bg: '#0b3323', border: '#10b981', text: '#a7f3d0', dot: '#10b981' },
-  Location:     { bg: '#321028', border: '#f472b6', text: '#f9a8d4', dot: '#f472b6' },
-  Event:        { bg: '#36111b', border: '#fb7185', text: '#fda4af', dot: '#fb7185' },
+  Technology:    { bg: '#082f38', border: '#22d3ee', text: '#67e8f9', dot: '#22d3ee' },
+  Model:         { bg: '#093026', border: '#34d399', text: '#6ee7b7', dot: '#34d399' },
+  Concept:       { bg: '#2e2208', border: '#fbbf24', text: '#fde68a', dot: '#fbbf24' },
+  Organization:  { bg: '#0c2742', border: '#38bdf8', text: '#7dd3fc', dot: '#38bdf8' },
+  Person:        { bg: '#331c08', border: '#fb923c', text: '#fdba74', dot: '#fb923c' },
+  Metric:        { bg: '#0b3323', border: '#10b981', text: '#a7f3d0', dot: '#10b981' },
+  Location:      { bg: '#321028', border: '#f472b6', text: '#f9a8d4', dot: '#f472b6' },
+  Event:         { bg: '#36111b', border: '#fb7185', text: '#fda4af', dot: '#fb7185' },
+  Skill:         { bg: '#1e1b4b', border: '#818cf8', text: '#c7d2fe', dot: '#818cf8' },
+  Project:       { bg: '#14332a', border: '#2dd4bf', text: '#99f6e4', dot: '#2dd4bf' },
+  Certification: { bg: '#2e1065', border: '#c084fc', text: '#e9d5ff', dot: '#c084fc' },
+  Education:     { bg: '#172554', border: '#60a5fa', text: '#bfdbfe', dot: '#60a5fa' },
+  Role:          { bg: '#3b1812', border: '#f87171', text: '#fecaca', dot: '#f87171' },
+  Product:       { bg: '#1a2e05', border: '#a3e635', text: '#d9f99d', dot: '#a3e635' },
+  Dataset:       { bg: '#083344', border: '#06b6d4', text: '#a5f3fc', dot: '#06b6d4' },
 }
 
+const DYNAMIC_TYPE_PALETTE = Object.values(TYPE_COLORS)
+
 function getTypeStyle(type) {
-  return TYPE_COLORS[type] || { bg: '#0d2922', border: '#34d399', text: '#a7f3d0', dot: '#34d399' }
+  if (!type) return TYPE_COLORS.Concept
+  if (TYPE_COLORS[type]) return TYPE_COLORS[type]
+  let hash = 0
+  for (let i = 0; i < type.length; i += 1) {
+    hash = (hash * 31 + type.charCodeAt(i)) >>> 0
+  }
+  return DYNAMIC_TYPE_PALETTE[hash % DYNAMIC_TYPE_PALETTE.length]
 }
 
 /**
@@ -37,6 +52,9 @@ function computeGraphLayout(nodes, edges, width = 760, height = 420) {
 
   const centerX = width / 2
   const centerY = height / 2
+  const padX = 64
+  const padTop = 34
+  const padBottom = 38
   const maxNodes = nodes.slice(0, 36)
   const nodeMap = new Map()
 
@@ -44,24 +62,24 @@ function computeGraphLayout(nodes, edges, width = 760, height = 420) {
     let x = centerX
     let y = centerY
 
-    if (idx === 0 && maxNodes.length > 1) {
-      // Highest-degree hub in center
-      x = centerX
-      y = centerY
-    } else {
+    if (idx > 0) {
       const ring = idx <= 10 ? 1 : idx <= 22 ? 2 : 3
-      const ringItems =
+      const ringItems = Math.max(
+        1,
         ring === 1
           ? Math.min(10, maxNodes.length - 1)
           : ring === 2
-          ? Math.min(12, Math.max(1, maxNodes.length - 11))
-          : Math.max(1, maxNodes.length - 23)
+          ? Math.min(12, maxNodes.length - 11)
+          : maxNodes.length - 23
+      )
       const indexInRing = ring === 1 ? idx - 1 : ring === 2 ? idx - 11 : idx - 23
       const angle = (2 * Math.PI * indexInRing) / ringItems - Math.PI / 2
-      const rx = ring === 1 ? 135 : ring === 2 ? 245 : 325
-      const ry = ring === 1 ? 95 : ring === 2 ? 155 : 185
-      x = centerX + rx * Math.cos(angle)
-      y = centerY + ry * Math.sin(angle)
+      const rx = ring === 1 ? 135 : ring === 2 ? 230 : 300
+      const ry = ring === 1 ? 90 : ring === 2 ? 140 : 168
+      const rawX = centerX + rx * Math.cos(angle)
+      const rawY = centerY + ry * Math.sin(angle)
+      x = Math.min(width - padX, Math.max(padX, rawX))
+      y = Math.min(height - padBottom, Math.max(padTop, rawY))
     }
 
     const positioned = { ...node, x, y }
@@ -163,9 +181,28 @@ export default function GraphTab({ userId }) {
     })
   }, [graphData.edges, filteredNodeNames, searchInput, selectedNode])
 
+  const canvasNodes = useMemo(() => {
+    if (selectedType === 'All' && !searchInput.trim()) {
+      return filteredNodes
+    }
+    const allByName = new Map((graphData.nodes || []).map(n => [n.name, n]))
+    const result = [...filteredNodes]
+    const seen = new Set(filteredNodes.map(n => n.name))
+
+    filteredEdges.forEach(edge => {
+      ;[edge.source, edge.target].forEach(endpoint => {
+        if (!seen.has(endpoint) && allByName.has(endpoint)) {
+          seen.add(endpoint)
+          result.push(allByName.get(endpoint))
+        }
+      })
+    })
+    return result
+  }, [filteredNodes, filteredEdges, graphData.nodes, selectedType, searchInput])
+
   const { positionedNodes, positionedEdges } = useMemo(
-    () => computeGraphLayout(filteredNodes, graphData.edges || []),
-    [filteredNodes, graphData.edges]
+    () => computeGraphLayout(canvasNodes, filteredEdges),
+    [canvasNodes, filteredEdges]
   )
 
   return (

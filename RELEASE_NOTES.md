@@ -1,3 +1,28 @@
+# Release Notes — `v2.0.1`
+
+**Release Title:** Domain-Agnostic Knowledge Graph Extraction, Tool Routing & CodeQL Hardening (`v2.0.1`)  
+**Tag:** `v2.0.1`  
+**Previous Tag:** `v2.0.0`
+
+> **Combining Agentic RAG, Knowledge Graphs, and Hybrid Vector-Graph Retrieval to transform fragmented information into connected intelligence, powered by Google ADK and Gemini 2.5.**
+
+---
+
+## Defect Fixes & Improvements in `v2.0.1`
+
+### 1. Domain-Agnostic Knowledge Graph Routing & Extraction (`app/agent.py`, `app/graph_store.py`, `frontend/src/components/GraphTab.jsx`)
+- **Unrestricted Agent Graph Tool Selection (`app/agent.py`)**: Fixed overly narrow `graph_search` and `get_entity_relationships` routing instructions that previously only listed `concepts, technologies, people, or organizations`. The agent now triggers Knowledge Graph retrieval across **any** domain entity category, attribute, hierarchy, dependency, or multi-hop relationship present in the uploaded document.
+- **Dynamic Entity Category Inference (`app/graph_store.py`)**: Removed the rigid 8-category constraint in `ExtractedEntity.entity_type` and `EXTRACTION_PROMPT`, enabling Gemini 2.5 to dynamically infer concise, singular `Title Case` entity categories tailored to the document's domain (e.g., `Skill`, `Project`, `Certification`, `Education`, `Role`, `Product`, `Policy`, `Clause`, `Regulation`, `Dataset`, `Component`, `Condition`, `Medication`, etc.) and added `entity_type` matching to Neo4j Cypher search queries (`search_knowledge_graph`).
+- **Deterministic Category Badge Palette & SVG Topology Centering (`frontend/src/components/GraphTab.jsx`)**:
+  - Fixed a division-by-zero (`NaN` coordinate) layout bug in `computeGraphLayout` when filtering down to a single entity category (where the node previously rendered clipped at `(0, 0)` in the top-left corner).
+  - Included 1-hop connected neighbor nodes in the filtered SVG canvas so selecting a category pill renders both the matching entity in the center and its connected relationships around it.
+  - Expanded `TYPE_COLORS` with cross-domain categories and added deterministic hash-based color assignment in `getTypeStyle`.
+
+### 2. CodeQL Security & Static Analysis Remediation (`app/`, `frontend/`)
+- Resolved all 16 GitHub CodeQL code scanning alerts across Python and JavaScript (`py/stack-trace-exposure`, `py/log-injection`, `py/polynomial-redos`, `py/weak-sensitive-data-hashing`, `py/path-injection`, `py/empty-except`, `py/unused-import`, and `js/empty-catch-block`).
+
+---
+
 # Release Notes — `v2.0.0`
 
 **Release Title:** ADK Agentic RAG + Knowledge Graph Platform (`v2.0.0`)  

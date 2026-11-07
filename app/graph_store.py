@@ -40,7 +40,12 @@ class ExtractedEntity(BaseModel):
         description="Canonical name of the entity (e.g., 'Transformer', 'Google', 'Self-Attention')."
     )
     entity_type: str = Field(
-        description="Category of entity: Person, Organization, Technology, Concept, Model, Metric, Location, or Event."
+        description=(
+            "Concise singular domain category dynamically inferred from the document "
+            "(e.g., Person, Organization, Technology, Concept, Model, Metric, Skill, "
+            "Project, Certification, Education, Role, Product, Policy, Clause, "
+            "Regulation, Dataset, Component, Condition, Medication, Location, Event, etc.)."
+        )
     )
     description: str = Field(
         description="Concise 1-sentence summary of what this entity is based on the document."
@@ -67,15 +72,16 @@ class KnowledgeGraphExtraction(BaseModel):
     relationships: list[ExtractedRelationship] = Field(default_factory=list)
 
 
-EXTRACTION_PROMPT = """You are an expert Knowledge Graph extraction engine.
+EXTRACTION_PROMPT = """You are an expert domain-agnostic Knowledge Graph extraction engine.
 Analyze the following text from the document "{filename}" and extract the most important domain entities and relationships.
 
 Guidelines:
-1. Extract key entities (People, Organizations, Technologies, Concepts, Models, Metrics, Locations, Events).
-2. Normalize entity names consistently (e.g., use "Transformer" instead of both "Transformer" and "the Transformer model").
-3. Extract meaningful, factual relationships connecting pairs of extracted entities.
-4. Format `relation_type` in UPPER_SNAKE_CASE (e.g., USES, REPLACES, ACHIEVES, PROPOSED_BY, PART_OF, DEPENDS_ON).
-5. Each relationship's `fact` must be a concise, factual sentence grounded strictly in the provided text.
+1. Extract key entities across all categories relevant to the document's domain (for example: Person, Organization, Technology, Concept, Model, Metric, Skill, Project, Certification, Education, Role, Product, Policy, Clause, Regulation, Dataset, Component, Condition, Medication, Location, Event, or any other concise singular category that fits the text).
+2. Assign each entity a clean, singular Title Case `entity_type` that accurately reflects its role in the document rather than forcing unrelated items into a generic bucket.
+3. Normalize entity names consistently (e.g., use "Transformer" instead of both "Transformer" and "the Transformer model").
+4. Extract meaningful, factual relationships connecting pairs of extracted entities.
+5. Format `relation_type` in UPPER_SNAKE_CASE (e.g., USES, REPLACES, ACHIEVES, PROPOSED_BY, PART_OF, DEPENDS_ON, BUILT_WITH, CERTIFIED_IN, GOVERNED_BY).
+6. Each relationship's `fact` must be a concise, factual sentence grounded strictly in the provided text.
 
 Document Excerpt:
 ---
@@ -404,10 +410,14 @@ def search_knowledge_graph(
             MATCH (src:Entity {user_id: $user_id})-[r:RELATES_TO {user_id: $user_id}]->(tgt:Entity {user_id: $user_id})
             WHERE toLower(src.name) CONTAINS $full_query
                OR toLower(tgt.name) CONTAINS $full_query
+               OR toLower(coalesce(src.entity_type, '')) CONTAINS $full_query
+               OR toLower(coalesce(tgt.entity_type, '')) CONTAINS $full_query
                OR toLower(coalesce(r.fact, '')) CONTAINS $full_query
                OR ANY(term IN $terms WHERE
                     src.name_lower CONTAINS term
                     OR tgt.name_lower CONTAINS term
+                    OR toLower(coalesce(src.entity_type, '')) CONTAINS term
+                    OR toLower(coalesce(tgt.entity_type, '')) CONTAINS term
                     OR toLower(coalesce(r.fact, '')) CONTAINS term
                     OR toLower(r.relation_type) CONTAINS term
                )
@@ -433,9 +443,11 @@ def search_knowledge_graph(
             """
             MATCH (e:Entity {user_id: $user_id})
             WHERE e.name_lower CONTAINS $full_query
+               OR toLower(coalesce(e.entity_type, '')) CONTAINS $full_query
                OR toLower(coalesce(e.description, '')) CONTAINS $full_query
                OR ANY(term IN $terms WHERE
                     e.name_lower CONTAINS term
+                    OR toLower(coalesce(e.entity_type, '')) CONTAINS term
                     OR toLower(coalesce(e.description, '')) CONTAINS term
                )
             RETURN

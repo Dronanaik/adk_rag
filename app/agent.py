@@ -124,14 +124,14 @@ def graph_search(
     tool_context: ToolContext,
 ) -> dict:
     """
-    Search the user's Neo4j Knowledge Graph for structured entities and relationship
-    facts extracted from their uploaded documents.
+    Search the user's Neo4j Knowledge Graph for structured domain entities and
+    relationship facts extracted from their uploaded documents across any category.
 
-    Best for: relational questions, architecture/system connections, comparing concepts,
-    or understanding how multiple entities interact.
+    Best for: relational questions, structural dependencies, hierarchies, attribute
+    mappings, comparisons, or understanding how any entities interact across the document.
 
     Args:
-        query: Keywords or natural language query to match against entities and facts.
+        query: Keywords or natural language query to match against entities, categories, and facts.
         tool_context: ADK context containing the current authenticated user_id.
     """
     user_id = tool_context.user_id
@@ -169,11 +169,12 @@ def get_entity_relationships(
     tool_context: ToolContext,
 ) -> dict:
     """
-    Traverse the Neo4j Knowledge Graph around a specific named entity to retrieve all
-    of its direct relationships, connected entities, and supporting facts.
+    Traverse the Neo4j Knowledge Graph around a specific named entity (of any domain
+    category) to retrieve all of its direct relationships, connected entities, and
+    supporting facts.
 
-    Best for: deep-dives into a specific concept, person, organization, model, or
-    component (e.g., 'Transformer', 'Self-Attention', 'BLEU').
+    Best for: deep-dives into any specific named entity, subject, item, metric, project,
+    skill, clause, component, or domain node to inspect everything connected to it.
 
     Args:
         entity_name: Name of the entity to inspect in the knowledge graph.
@@ -218,14 +219,14 @@ root_agent = LlmAgent(
     instruction="""
 You are an advanced Agentic RAG + Knowledge Graph assistant. You answer questions strictly using the authenticated user's uploaded documents stored across two complementary databases:
 - **Neon PostgreSQL (pgvector + Full-Text Search)** for unstructured document chunks.
-- **Neo4j Knowledge Graph** for structured entities and relationship triples.
+- **Neo4j Knowledge Graph** for structured domain-agnostic entities (across any category present in the document) and relationship triples.
 
 ### Tool Selection Strategy:
 1. **`hybrid_search`**: Use as your primary tool when a question includes specific terms, names, metrics, or requires both keyword precision and semantic context.
 2. **`vector_search`**: Use for broad, conceptual, or thematic questions over the user's documents.
-3. **`graph_search`**: Use when the user asks how concepts, technologies, people, or organizations connect, relate, or compare.
-4. **`get_entity_relationships`**: Use when the user asks about a specific entity (e.g., "How does X work and what does it connect to?") to traverse its direct relationships in Neo4j.
-5. **Combining Tools (Hybrid Agentic RAG)**: For complex questions, call both a document search tool (`hybrid_search` or `vector_search`) AND a graph tool (`graph_search` or `get_entity_relationships`) to synthesize rich unstructured passages with structured graph relationships.
+3. **`graph_search`**: Use whenever the user asks how any entities, subjects, attributes, items, processes, or domain categories connect, relate, depend on each other, or compare—regardless of the document's domain or entity category.
+4. **`get_entity_relationships`**: Use when the user asks about a specific named entity (e.g., "How does X work and what does it connect to?") to traverse its direct neighborhood and relationships in Neo4j.
+5. **Combining Tools (Hybrid Agentic RAG)**: For complex or multi-faceted questions, call both a document search tool (`hybrid_search` or `vector_search`) AND a graph tool (`graph_search` or `get_entity_relationships`) to synthesize rich unstructured passages with structured graph relationships.
 
 ### Grounding & Citation Rules:
 1. Answer ONLY using facts present in the retrieved chunks and knowledge graph triples. Do not invent facts.
