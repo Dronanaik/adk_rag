@@ -6,7 +6,7 @@ import shutil
 import tempfile
 import uuid
 
-from fastapi import Depends, FastAPI, File, Header, HTTPException, Query, UploadFile
+from fastapi import Depends, FastAPI, File, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -38,6 +38,11 @@ from app.rag_store import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _sanitize_log_value(value: str) -> str:
+    """Strip CR/LF characters from user-provided values before logging."""
+    return str(value).replace("\r", "").replace("\n", "")
 
 
 @asynccontextmanager
@@ -75,7 +80,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-UPLOAD_DIRECTORY = os.path.join(tempfile.gettempdir(), "adk_rag_uploads")
+UPLOAD_DIRECTORY = os.path.realpath(os.path.join(tempfile.gettempdir(), "adk_rag_uploads"))
 APP_NAME = "document_rag_app"
 
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
@@ -106,6 +111,7 @@ SUPPORTED_FILE_TYPES = [
     ".htm",
     ".log",
 ]
+SAFE_EXTENSION_MAP = {ext: ext for ext in SUPPORTED_FILE_TYPES}
 
 
 # ---------------------------------------------------------------------------
@@ -164,10 +170,19 @@ def auth_signup(request: SignUpRequest):
             "access_token": token,
             "token_type": "bearer",
         }
-    except ValueError as err:
-        raise HTTPException(status_code=400, detail=str(err))
-    except Exception as err:
-        raise HTTPException(status_code=500, detail=f"Registration failed: {err}")
+    except HTTPException:
+        raise
+    except ValueError:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid registration details provided.",
+        )
+    except Exception:
+        logger.exception("Unexpected error during user registration")
+        raise HTTPException(
+            status_code=500,
+            detail="Registration failed due to an internal server error.",
+        )
 
 
 @app.post("/auth/login")
@@ -187,10 +202,19 @@ def auth_login(request: LoginRequest):
             "access_token": token,
             "token_type": "bearer",
         }
-    except ValueError as err:
-        raise HTTPException(status_code=401, detail=str(err))
-    except Exception as err:
-        raise HTTPException(status_code=500, detail=f"Authentication failed: {err}")
+    except HTTPException:
+        raise
+    except ValueError:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid email or password.",
+        )
+    except Exception:
+        logger.exception("Unexpected error during user authentication")
+        raise HTTPException(
+            status_code=500,
+            detail="Authentication failed due to an internal server error.",
+        )
 
 
 @app.get("/auth/me")
@@ -203,7 +227,7 @@ def auth_me(current_user: dict = Depends(get_current_user)):
         if db_user:
             return {"success": True, "user": db_user}
     except Exception:
-        pass
+        logger.debug("Could not refresh user profile from database", exc_info=True)
     return {
         "success": True,
         "user": {
@@ -225,22 +249,24 @@ async def ingest_status():
         total_chunks = pg_stats.get("total_chunks", 0)
         total_documents = pg_stats.get("total_documents", 0)
         postgres_status = "ready"
-    except Exception as error:
+    except Exception:
+        logger.warning("Neon PostgreSQL status check failed", exc_info=True)
         total_chunks = 0
         total_documents = 0
-        postgres_status = f"error: {error}"
+        postgres_status = "error"
 
     try:
         graph_stats = get_graph_stats()
         neo4j_status = graph_stats.get("status", "ready")
         total_entities = graph_stats.get("total_entities", 0)
         total_relationships = graph_stats.get("total_relationships", 0)
-    except Exception as error:
-        neo4j_status = f"error: {error}"
+    except Exception:
+        logger.warning("Neo4j status check failed", exc_info=True)
+        neo4j_status = "error"
         total_entities = 0
         total_relationships = 0
 
-    overall_status = "ready" if postgres_status == "ready" else postgres_status
+    overall_status = "ready" if postgres_status == "ready" else "error"
 
     return {
         "status": overall_status,
@@ -289,19 +315,23 @@ async def upload_document(
             detail="Filename is required.",
         )
 
-    file_extension = os.path.splitext(file.filename)[1].lower()
+    clean_filename = os.path.basename(file.filename).replace("\r", "").replace("\n", "")
+    raw_extension = os.path.splitext(clean_filename)[1].lower()
+    safe_extension = SAFE_EXTENSION_MAP.get(raw_extension)
 
-    if file_extension not in SUPPORTED_FILE_TYPES:
+    if not safe_extension:
         raise HTTPException(
             status_code=400,
             detail=(
-                f"Unsupported file type: '{file_extension}'. "
+                f"Unsupported file type. "
                 f"Supported types: {', '.join(SUPPORTED_FILE_TYPES)}"
             ),
         )
 
-    temporary_filename = f"{uuid.uuid4()}{file_extension}"
-    file_path = os.path.join(UPLOAD_DIRECTORY, temporary_filename)
+    temporary_filename = f"{uuid.uuid4()}{safe_extension}"
+    file_path = os.path.realpath(os.path.join(UPLOAD_DIRECTORY, temporary_filename))
+    if not file_path.startswith(UPLOAD_DIRECTORY + os.sep):
+        raise HTTPException(status_code=400, detail="Invalid upload file path.")
 
     try:
         with open(file_path, "wb") as output_file:
@@ -310,7 +340,7 @@ async def upload_document(
         result = await asyncio.to_thread(
             ingest_document,
             file_path=file_path,
-            filename=file.filename,
+            filename=clean_filename,
             user_id=user_id,
         )
 
@@ -320,16 +350,20 @@ async def upload_document(
             "result": result,
         }
 
-    except ValueError as error:
+    except HTTPException:
+        raise
+
+    except ValueError:
         raise HTTPException(
             status_code=400,
-            detail=str(error),
+            detail="No readable text was found in the uploaded document.",
         )
 
-    except Exception as error:
+    except Exception:
+        logger.exception("Document ingestion failed for file %s", _sanitize_log_value(clean_filename))
         raise HTTPException(
             status_code=500,
-            detail=f"Document ingestion failed: {error}",
+            detail="Document ingestion failed due to an internal server error.",
         )
 
     finally:
@@ -370,8 +404,12 @@ def delete_document(
             user_id=user_id,
             document_id=document_id,
         )
-    except Exception as exc:
-        logger.warning("Neo4j delete warning for document %s: %s", document_id, exc)
+    except Exception:
+        logger.warning(
+            "Neo4j delete warning for document %s",
+            _sanitize_log_value(document_id),
+            exc_info=True,
+        )
 
     if deleted_chunks == 0 and graph_deleted.get("deleted_relationships", 0) == 0:
         raise HTTPException(
@@ -407,10 +445,11 @@ def get_graph(
             "success": True,
             **graph_data,
         }
-    except Exception as error:
+    except Exception:
+        logger.exception("Failed to query Neo4j Knowledge Graph")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to query Neo4j Knowledge Graph: {error}",
+            detail="Failed to query the Neo4j Knowledge Graph.",
         )
 
 
@@ -432,10 +471,11 @@ def get_entity_details(
             "success": True,
             **result,
         }
-    except Exception as error:
+    except Exception:
+        logger.exception("Failed to query entity relationships")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to query entity relationships: {error}",
+            detail="Failed to query entity relationships from the Knowledge Graph.",
         )
 
 
@@ -496,10 +536,11 @@ async def chat(
                 for part in event.content.parts:
                     if hasattr(part, "text") and part.text:
                         answer_text += part.text
-    except Exception as error:
+    except Exception:
+        logger.exception("ADK Agent execution error")
         raise HTTPException(
             status_code=500,
-            detail=f"Agent error: {error}",
+            detail="The AI agent encountered an error while processing your request.",
         )
 
     if not answer_text:

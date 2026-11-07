@@ -86,7 +86,7 @@ export default function IngestionTab({ uploadState }) {
   useEffect(() => {
     if (!isUploading) {
       if (isCompleted) {
-        getIngestProgress().then(setLiveProgress).catch(() => {})
+        getIngestProgress().then(setLiveProgress).catch((err) => { void err })
       }
       return
     }
@@ -98,7 +98,10 @@ export default function IngestionTab({ uploadState }) {
         if (!cancelled) {
           setLiveProgress(prog)
         }
-      } catch (_) {}
+      } catch (err) {
+        // Ignore transient polling errors while ingestion is in flight
+        void err
+      }
     }
 
     poll()

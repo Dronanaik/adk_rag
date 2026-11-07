@@ -5,17 +5,16 @@ from docx import Document
 
 
 def extract_from_pdf(file_path: str) -> str:
-    document = fitz.open(file_path)
-
     pages = []
 
-    for page_number, page in enumerate(document, start=1):
-        text = page.get_text()
+    with fitz.open(file_path) as document:
+        for page_number, page in enumerate(document, start=1):
+            text = page.get_text()
 
-        if text.strip():
-            pages.append(
-                f"[Page {page_number}]\n{text}"
-            )
+            if text.strip():
+                pages.append(
+                    f"[Page {page_number}]\n{text}"
+                )
 
     return "\n\n".join(pages)
 

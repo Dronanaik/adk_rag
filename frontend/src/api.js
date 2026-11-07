@@ -15,7 +15,10 @@ export function getStoredAuth() {
     if (token && user && user.email) {
       return { token, user }
     }
-  } catch (_) {}
+  } catch (err) {
+    // Ignore malformed localStorage state
+    void err
+  }
   return { token: null, user: null }
 }
 
@@ -23,14 +26,20 @@ export function setStoredAuth(token, user) {
   try {
     localStorage.setItem(TOKEN_STORAGE_KEY, token)
     localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user))
-  } catch (_) {}
+  } catch (err) {
+    // Ignore storage quota errors
+    void err
+  }
 }
 
 export function clearStoredAuth() {
   try {
     localStorage.removeItem(TOKEN_STORAGE_KEY)
     localStorage.removeItem(USER_STORAGE_KEY)
-  } catch (_) {}
+  } catch (err) {
+    // Ignore storage errors
+    void err
+  }
 }
 
 /**
@@ -60,7 +69,10 @@ async function apiFetch(path, options = {}, userId = null) {
     try {
       const body = await response.json()
       detail = body.detail || detail
-    } catch (_) {}
+    } catch (err) {
+      // Fallback to HTTP status code when response body is not JSON
+      void err
+    }
     throw new Error(detail)
   }
 

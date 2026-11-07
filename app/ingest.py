@@ -72,7 +72,8 @@ def ingest_document(
       Step 5: Neo4j Knowledge Graph entity & relationship extraction
     """
     document_id = str(uuid.uuid4())
-    _ingestion_progress[user_id] = {"step_outputs": {}, "filename": filename}
+    safe_filename = str(filename).replace("\r", "").replace("\n", "")
+    _ingestion_progress[user_id] = {"step_outputs": {}, "filename": safe_filename}
 
     try:
         # ── Step 1: Text Extraction ──
@@ -81,8 +82,8 @@ def ingest_document(
             state="running",
             current_step=1,
             step_name="Text Extraction",
-            message=f"Extracting raw text from {filename}…",
-            filename=filename,
+            message=f"Extracting raw text from {safe_filename}…",
+            filename=safe_filename,
         )
         text = extract_text(file_path)
 
@@ -96,7 +97,7 @@ def ingest_document(
             current_step=2,
             step_name="Structure-Aware Semantic Chunking",
             message=f"Splitting {char_count:,} characters into semantic paragraphs & chunks…",
-            step_outputs={"1": f"Extracted {char_count:,} characters from {filename}"},
+            step_outputs={"1": f"Extracted {char_count:,} characters from {safe_filename}"},
         )
 
         # ── Step 2: Semantic Chunking ──
@@ -130,7 +131,7 @@ def ingest_document(
         number_of_chunks = add_document_chunks(
             user_id=user_id,
             document_id=document_id,
-            filename=filename,
+            filename=safe_filename,
             chunks=chunks,
             character_count=char_count,
             precomputed_embeddings=embeddings,
@@ -152,7 +153,7 @@ def ingest_document(
             graph_result = add_document_to_graph(
                 user_id=user_id,
                 document_id=document_id,
-                filename=filename,
+                filename=safe_filename,
                 chunks=chunks,
             )
             entities_extracted = graph_result.get("entities_extracted", 0)
@@ -165,15 +166,19 @@ def ingest_document(
                     entity_count=entities_extracted,
                     relationship_count=relationships_extracted,
                 )
-        except Exception as exc:
-            logger.warning("Knowledge Graph ingestion warning for %s: %s", filename, exc)
+        except Exception:
+            logger.warning(
+                "Knowledge Graph ingestion warning for %s",
+                safe_filename,
+                exc_info=True,
+            )
 
         _update_progress(
             user_id,
             state="completed",
             current_step=5,
             step_name="Completed",
-            message=f"Finished ingesting {filename} into Neon PostgreSQL and Neo4j.",
+            message=f"Finished ingesting {safe_filename} into Neon PostgreSQL and Neo4j.",
             step_outputs={
                 "5": f"Extracted {entities_extracted} entities & {relationships_extracted} relationships in Neo4j"
             },
@@ -181,20 +186,20 @@ def ingest_document(
 
         return {
             "document_id": document_id,
-            "filename": filename,
+            "filename": safe_filename,
             "chunks_created": number_of_chunks,
             "entities_extracted": entities_extracted,
             "relationships_extracted": relationships_extracted,
             "characters_extracted": char_count,
         }
 
-    except Exception as exc:
+    except Exception:
         _update_progress(
             user_id,
             state="error",
             current_step=_ingestion_progress.get(user_id, {}).get("current_step", 1),
             step_name="Failed",
-            message=str(exc),
-            filename=filename,
+            message="Document ingestion failed. Please verify the file and try again.",
+            filename=safe_filename,
         )
         raise

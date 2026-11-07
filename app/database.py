@@ -5,7 +5,6 @@ from typing import Generator
 
 import psycopg2
 from psycopg2 import pool
-from psycopg2.extras import RealDictCursor
 from pgvector.psycopg2 import register_vector
 from neo4j import Driver, GraphDatabase, NotificationMinimumSeverity
 
@@ -131,8 +130,8 @@ def get_db_connection(register_pgvector: bool = True) -> Generator:
         except (psycopg2.OperationalError, psycopg2.InterfaceError):
             try:
                 pg_pool.putconn(conn, close=True)
-            except Exception:
-                pass
+            except Exception as close_err:
+                logger.debug("Ignored error returning stale connection: %s", close_err)
             conn = psycopg2.connect(
                 dsn=_normalize_database_url(DATABASE_URL),
                 keepalives=1,
@@ -154,8 +153,8 @@ def get_db_connection(register_pgvector: bool = True) -> Generator:
         if conn:
             try:
                 pg_pool.putconn(conn, close=conn.closed != 0)
-            except Exception:
-                pass
+            except Exception as pool_err:
+                logger.debug("Ignored error returning connection to pool: %s", pool_err)
 
 
 def init_postgres_db() -> None:
@@ -218,17 +217,17 @@ def init_all_databases() -> dict[str, str]:
         try:
             init_postgres_db()
             status["postgres"] = "ready"
-        except Exception as exc:
-            logger.warning("Neon PostgreSQL initialization warning: %s", exc)
-            status["postgres"] = f"error: {exc}"
+        except Exception:
+            logger.warning("Neon PostgreSQL initialization warning", exc_info=True)
+            status["postgres"] = "error"
 
     if NEO4J_URI and NEO4J_PASSWORD:
         try:
             init_neo4j_db()
             status["neo4j"] = "ready"
-        except Exception as exc:
-            logger.warning("Neo4j initialization warning: %s", exc)
-            status["neo4j"] = f"error: {exc}"
+        except Exception:
+            logger.warning("Neo4j initialization warning", exc_info=True)
+            status["neo4j"] = "error"
 
     return status
 
@@ -241,13 +240,13 @@ def close_all_databases() -> None:
     if _pg_pool is not None:
         try:
             _pg_pool.closeall()
-        except Exception:
-            pass
+        except Exception as pg_err:
+            logger.debug("Ignored error closing PostgreSQL pool: %s", pg_err)
         _pg_pool = None
 
     if _neo4j_driver is not None:
         try:
             _neo4j_driver.close()
-        except Exception:
-            pass
+        except Exception as neo_err:
+            logger.debug("Ignored error closing Neo4j driver: %s", neo_err)
         _neo4j_driver = None

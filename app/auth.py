@@ -16,7 +16,8 @@ from app.database import get_db_connection, init_postgres_db
 
 _auth_schema_initialized = False
 PBKDF2_ITERATIONS = 260_000
-EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+KEY_DERIVATION_ITERATIONS = 100_000
+EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@.\s]+(?:\.[^@.\s]+)+$")
 
 
 def _ensure_auth_schema() -> None:
@@ -28,12 +29,17 @@ def _ensure_auth_schema() -> None:
 
 def _get_signing_secret() -> bytes:
     """
-    Return the secret key bytes for signing JWT tokens.
-    If JWT_SECRET_KEY is not explicitly set in .env, derive a deterministic secret
-    from DATABASE_URL + GOOGLE_API_KEY so tokens remain valid across Uvicorn reloads.
+    Return the derived key bytes for signing JWT tokens using PBKDF2-HMAC-SHA256.
+    If JWT_SECRET_KEY is not explicitly set in .env, derive a deterministic key
+    so tokens remain valid across Uvicorn reloads.
     """
     raw = JWT_SECRET_KEY or f"adk-rag-neon-auth::{DATABASE_URL}::{GOOGLE_API_KEY}"
-    return hashlib.sha256(raw.encode("utf-8")).digest()
+    return hashlib.pbkdf2_hmac(
+        "sha256",
+        raw.encode("utf-8"),
+        b"adk-rag-jwt-signing-salt-v2",
+        KEY_DERIVATION_ITERATIONS,
+    )
 
 
 def _b64url_encode(data: bytes) -> str:
@@ -75,7 +81,7 @@ def verify_password(password: str, stored_hash: str) -> bool:
             iterations,
         )
         return hmac.compare_digest(derived.hex(), hex_digest)
-    except Exception:
+    except (ValueError, TypeError):
         return False
 
 
@@ -105,24 +111,31 @@ def create_access_token(user: dict[str, Any]) -> str:
 
 def decode_access_token(token: str) -> dict[str, Any]:
     """
-    Verify and decode an HS256 JWT token. Raises ValueError if invalid or expired.
+    Verify and decode an HS256 JWT token. Raises HTTPException(401) if invalid or expired.
     """
     parts = token.strip().split(".")
     if len(parts) != 3:
-        raise ValueError("Invalid authentication token format.")
+        raise HTTPException(status_code=401, detail="Invalid authentication token format.")
 
     header_b64, payload_b64, signature_b64 = parts
     signing_input = f"{header_b64}.{payload_b64}".encode("ascii")
     expected_sig = hmac.new(_get_signing_secret(), signing_input, hashlib.sha256).digest()
-    actual_sig = _b64url_decode(signature_b64)
+    try:
+        actual_sig = _b64url_decode(signature_b64)
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid authentication token encoding.")
 
     if not hmac.compare_digest(expected_sig, actual_sig):
-        raise ValueError("Invalid authentication token signature.")
+        raise HTTPException(status_code=401, detail="Invalid authentication token signature.")
 
-    payload = json.loads(_b64url_decode(payload_b64).decode("utf-8"))
+    try:
+        payload = json.loads(_b64url_decode(payload_b64).decode("utf-8"))
+    except Exception:
+        raise HTTPException(status_code=401, detail="Malformed authentication token payload.")
+
     exp = int(payload.get("exp", 0))
     if exp < int(time.time()):
-        raise ValueError("Session token has expired. Please sign in again.")
+        raise HTTPException(status_code=401, detail="Session token has expired. Please sign in again.")
 
     return payload
 
@@ -136,12 +149,12 @@ def register_user(email: str, password: str, full_name: str) -> dict[str, Any]:
     email_clean = email.strip().lower()
     name_clean = full_name.strip()
 
-    if not EMAIL_REGEX.match(email_clean):
-        raise ValueError("Please enter a valid email address.")
+    if len(email_clean) > 254 or not EMAIL_REGEX.match(email_clean):
+        raise HTTPException(status_code=400, detail="Please enter a valid email address.")
     if len(name_clean) < 2:
-        raise ValueError("Full name must be at least 2 characters.")
+        raise HTTPException(status_code=400, detail="Full name must be at least 2 characters.")
     if len(password) < 6:
-        raise ValueError("Password must be at least 6 characters.")
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters.")
 
     user_uuid = str(uuid.uuid4())
     pw_hash = hash_password(password)
@@ -153,7 +166,10 @@ def register_user(email: str, password: str, full_name: str) -> dict[str, Any]:
                 (email_clean,),
             )
             if cur.fetchone():
-                raise ValueError("An account with this email already exists. Please sign in.")
+                raise HTTPException(
+                    status_code=400,
+                    detail="An account with this email already exists. Please sign in.",
+                )
 
             cur.execute(
                 """
@@ -181,7 +197,7 @@ def authenticate_user(email: str, password: str) -> dict[str, Any]:
 
     email_clean = email.strip().lower()
     if not email_clean or not password:
-        raise ValueError("Email and password are required.")
+        raise HTTPException(status_code=401, detail="Email and password are required.")
 
     with get_db_connection(register_pgvector=False) as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
@@ -196,7 +212,7 @@ def authenticate_user(email: str, password: str) -> dict[str, Any]:
             user = cur.fetchone()
 
             if not user or not verify_password(password, user["password_hash"]):
-                raise ValueError("Invalid email or password.")
+                raise HTTPException(status_code=401, detail="Invalid email or password.")
 
             cur.execute(
                 "UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE id = %s::uuid;",
@@ -249,21 +265,18 @@ def get_current_user(
     """
     if authorization and authorization.lower().startswith("bearer "):
         token = authorization[7:].strip()
-        try:
-            payload = decode_access_token(token)
-            email = payload.get("email")
-            sub = payload.get("sub")
-            full_name = payload.get("full_name", email)
-            if not email or not sub:
-                raise ValueError("Malformed token payload.")
-            return {
-                "id": sub,
-                "email": email,
-                "full_name": full_name,
-                "user_id": email,
-            }
-        except ValueError as err:
-            raise HTTPException(status_code=401, detail=str(err))
+        payload = decode_access_token(token)
+        email = payload.get("email")
+        sub = payload.get("sub")
+        full_name = payload.get("full_name", email)
+        if not email or not sub:
+            raise HTTPException(status_code=401, detail="Malformed token payload.")
+        return {
+            "id": sub,
+            "email": email,
+            "full_name": full_name,
+            "user_id": email,
+        }
 
     # Fallback only for CLI/curl backwards compatibility if x-user-id is passed directly
     if x_user_id and x_user_id.strip():
