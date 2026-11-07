@@ -1,5 +1,5 @@
 site_name: ADK Agentic RAG
-site_description: Hybrid Document Intelligence Platform powered by Google ADK, Gemini, Neon PostgreSQL (pgvector), and Neo4j Knowledge Graph.
+site_description: Combining Agentic RAG, Knowledge Graphs, and Hybrid Vector-Graph Retrieval to transform fragmented information into connected intelligence, powered by Google ADK and Gemini 2.5.
 site_url: https://dronanaik.github.io/adk_rag/
 repo_url: https://github.com/Dronanaik/adk_rag
 repo_name: Dronanaik/adk_rag
