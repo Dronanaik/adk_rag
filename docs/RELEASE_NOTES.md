@@ -1,3 +1,23 @@
+# Release Notes — `v2.3.0`
+
+**Release Title:** Interactive Environment Variables & Connection Settings UI with Documentation Deep-Links & Default Fallback (`v2.3.0`)  
+**Tag:** `v2.3.0`  
+**Previous Tag:** `v2.2.0`
+
+> **Combining Agentic RAG, Knowledge Graphs, and Hybrid Vector-Graph Retrieval to transform fragmented information into connected intelligence, powered by Google ADK and Gemini 2.5.**
+
+---
+
+## What's New in `v2.3.0`
+
+### 1. Interactive Environment Variables & Connection Settings Page (`frontend/src/components/SettingsTab.jsx`, `frontend/src/components/UserIdModal.jsx`, `frontend/src/components/Tabs.jsx`)
+- **Dedicated `Settings` (`Env & Connections`) Workspace Tab & Pre-Login Access**: Users can now manually enter or override all 12 connection and runtime environment variables across **Google Gemini & ADK Models** (`GOOGLE_API_KEY`, `AGENT_MODEL`, `GRAPH_EXTRACTION_MODEL`, `EMBEDDING_MODEL`), **Neon Console PostgreSQL** (`DATABASE_URL`, `JWT_SECRET_KEY`, `JWT_EXPIRE_HOURS`), **Neo4j Knowledge Graph** (`NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD`, `NEO4J_DATABASE`), and **Hybrid Retrieval Tuning** (`TOP_K`)—both from the main navigation bar and directly from the Sign In / Create Account screen.
+- **Per-Variable `ⓘ How to get?` Documentation Deep-Links**: Every variable card includes a clickable **`ⓘ How to get?`** info icon that navigates directly to the exact step-by-step instructions for obtaining that credential in `https://dronanaik.github.io/adk_rag/INSTALLATION/#...`.
+- **Automatic Fallback to Default Values (`app/config.py`)**: If a user leaves any environment variable field blank (or clicks **Use Default** / **Reset All to Defaults**), the platform automatically falls back to the default configuration in `.env` or built-in system defaults (`gemini-2.5-pro`, `gemini-2.5-flash`, `gemini-embedding-001`, `neo4j`, `TOP_K=5`, `JWT_EXPIRE_HOURS=168`).
+- **Live Connection Pool Reloading (`app/api.py`, `app/database.py`, `app/embeddings.py`, `app/graph_store.py`)**: Added `GET /settings/env`, `POST /settings/env`, and `POST /settings/env/reset` endpoints that dynamically refresh the Google GenAI client, Neon PostgreSQL connection pool, Neo4j driver, and ADK agent model without restarting the server.
+
+---
+
 # Release Notes — `v2.2.0`
 
 **Release Title:** Lossless Document & Table Extraction with IBM Docling (`v2.2.0`)  

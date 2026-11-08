@@ -22,12 +22,24 @@ from app.auth import (
     get_user_by_id,
     register_user,
 )
-from app.database import close_all_databases, init_all_databases
+import app.config as config
+from app.config import (
+    get_env_settings_payload,
+    reset_runtime_config,
+    update_runtime_config,
+)
+from app.database import (
+    close_all_databases,
+    init_all_databases,
+    reload_database_connections,
+)
+from app.embeddings import reset_genai_client
 from app.graph_store import (
     delete_document_from_graph,
     get_entity_relationships_from_graph,
     get_graph_stats,
     get_user_knowledge_graph,
+    reset_neo4j_schema_flag,
     search_knowledge_graph,
 )
 from app.ingest import get_ingestion_progress, ingest_document
@@ -58,7 +70,7 @@ app = FastAPI(
         "Hybrid Agentic RAG & Knowledge Graph platform powered by Google ADK, "
         "Gemini, Neon PostgreSQL (pgvector), and Neo4j."
     ),
-    version="2.2.0",
+    version="2.3.0",
     lifespan=lifespan,
 )
 
@@ -558,3 +570,97 @@ async def chat(
         session_id=session.id,
         tools_used=tools_used,
     )
+
+
+class EnvSettingsUpdateRequest(BaseModel):
+    values: dict[str, str | None] = {}
+    persist_to_env: bool = False
+
+
+def _evaluate_connection_statuses() -> dict[str, str]:
+    gemini_status = "ready" if bool(config.GOOGLE_API_KEY) else "unconfigured"
+
+    if not config.DATABASE_URL:
+        postgres_status = "unconfigured"
+    else:
+        try:
+            get_vector_store_stats()
+            postgres_status = "ready"
+        except Exception:
+            postgres_status = "error"
+
+    if not (config.NEO4J_URI and config.NEO4J_PASSWORD):
+        neo4j_status = "unconfigured"
+    else:
+        try:
+            g_stats = get_graph_stats()
+            neo4j_status = g_stats.get("status", "ready")
+        except Exception:
+            neo4j_status = "error"
+
+    return {
+        "gemini": gemini_status,
+        "postgres": postgres_status,
+        "neo4j": neo4j_status,
+    }
+
+
+@app.get("/settings/env")
+def get_environment_settings():
+    """
+    Return all connection environment variables, their current source ('default' vs 'custom'),
+    default fallback previews, documentation anchor links, and live connection statuses.
+    """
+    return {
+        "success": True,
+        "variables": get_env_settings_payload(),
+        "connections": _evaluate_connection_statuses(),
+        "docs_url": config.DOCS_BASE_URL,
+    }
+
+
+@app.post("/settings/env")
+def update_environment_settings(request: EnvSettingsUpdateRequest):
+    """
+    Update connection environment variables manually from the UI.
+    Any variable left blank automatically falls back to the default value.
+    """
+    variables = update_runtime_config(
+        values=request.values,
+        persist_to_env=request.persist_to_env,
+    )
+    reset_genai_client()
+    reset_neo4j_schema_flag()
+    root_agent.model = config.AGENT_MODEL
+    reload_database_connections()
+
+    return {
+        "success": True,
+        "message": (
+            "Environment variables applied and saved to .env (blank fields using default fallback)."
+            if request.persist_to_env
+            else "Environment variables applied (blank fields automatically fell back to default)."
+        ),
+        "variables": variables,
+        "connections": _evaluate_connection_statuses(),
+    }
+
+
+@app.post("/settings/env/reset")
+def reset_environment_settings():
+    """
+    Reset all environment variables back to their default (.env / built-in) values.
+    """
+    variables = reset_runtime_config()
+    reset_genai_client()
+    reset_neo4j_schema_flag()
+    root_agent.model = config.AGENT_MODEL
+    reload_database_connections()
+
+    return {
+        "success": True,
+        "message": "All environment variables reset to default values.",
+        "variables": variables,
+        "connections": _evaluate_connection_statuses(),
+    }
+

@@ -196,3 +196,28 @@ export async function sendMessage(query, userId, sessionId = null) {
     userId
   )
 }
+
+// ---------------------------------------------------------------------------
+// Environment & Connection Settings
+// ---------------------------------------------------------------------------
+
+export async function getEnvSettings() {
+  return apiFetch('/settings/env')
+}
+
+export async function updateEnvSettings(values, persistToEnv = false) {
+  return apiFetch('/settings/env', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      values,
+      persist_to_env: Boolean(persistToEnv),
+    }),
+  })
+}
+
+export async function resetEnvSettings() {
+  return apiFetch('/settings/env/reset', {
+    method: 'POST',
+  })
+}

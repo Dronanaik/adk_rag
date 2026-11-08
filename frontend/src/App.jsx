@@ -7,6 +7,7 @@ import DocumentsTab from './components/DocumentsTab.jsx'
 import IngestionTab from './components/IngestionTab.jsx'
 import GraphTab from './components/GraphTab.jsx'
 import ChatTab from './components/ChatTab.jsx'
+import SettingsTab from './components/SettingsTab.jsx'
 import styles from './App.module.css'
 import {
   clearStoredAuth,
@@ -17,7 +18,7 @@ import {
 
 export default function App() {
   const [user, setUser] = useState(() => getStoredAuth().user)
-  const [activeTab, setActiveTab] = useState('upload')
+  const [activeTab, setActiveTab] = useState('settings')
   const [uploadState, setUploadState] = useState({ status: 'idle', result: null, error: null })
 
   useEffect(() => {
@@ -36,7 +37,14 @@ export default function App() {
 
   // Show the Neon PostgreSQL Sign In / Sign Up screen until authenticated
   if (!user) {
-    return <UserIdModal onConfirm={(loggedInUser) => setUser(loggedInUser)} />
+    return (
+      <UserIdModal
+        onConfirm={(loggedInUser) => {
+          setUser(loggedInUser)
+          setActiveTab('settings')
+        }}
+      />
+    )
   }
 
   const userId = user.email
@@ -48,7 +56,7 @@ export default function App() {
   function handleSignOut() {
     clearStoredAuth()
     setUser(null)
-    setActiveTab('upload')
+    setActiveTab('settings')
   }
 
   async function handleStartUpload(filesOrFile) {
@@ -140,6 +148,7 @@ export default function App() {
   }
 
   const tabContent = {
+    settings:  <SettingsTab  onContinueToUpload={() => setActiveTab('upload')} />,
     upload:    <UploadTab    userId={userId} onStartUpload={handleStartUpload} />,
     documents: <DocumentsTab userId={userId} />,
     ingestion: <IngestionTab uploadState={uploadState} />,

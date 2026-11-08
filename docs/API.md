@@ -223,3 +223,40 @@ curl -X POST http://localhost:8000/chat \
   "user_id": "user_9f8e7d6c5b4a3210"
 }
 ```
+
+---
+
+## 7. Environment & Connection Settings Endpoints (`v2.3.0`)
+
+### `GET /settings/env`
+Returns all 12 connection environment variables, their active source (`"default"` vs. `"custom"`), masked default fallback previews, documentation deep-link URLs (`doc_url`), and live connection statuses (`gemini`, `postgres`, `neo4j`).
+
+```bash
+curl http://localhost:8000/settings/env
+```
+
+---
+
+### `POST /settings/env`
+Updates connection environment variables at runtime (and optionally persists non-empty values to `.env` when `persist_to_env: true`). Any variable omitted or submitted as an empty string (`""`) automatically falls back to its default value and reloads database/LLM clients.
+
+```bash
+curl -X POST http://localhost:8000/settings/env \
+  -H "Content-Type: application/json" \
+  -d '{
+    "values": {
+      "AGENT_MODEL": "gemini-2.5-pro",
+      "TOP_K": "8"
+    },
+    "persist_to_env": false
+  }'
+```
+
+---
+
+### `POST /settings/env/reset`
+Clears all runtime overrides and restores every environment variable to its default `.env` / built-in system value.
+
+```bash
+curl -X POST http://localhost:8000/settings/env/reset
+```
