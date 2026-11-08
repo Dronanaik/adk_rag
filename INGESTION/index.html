@@ -800,10 +800,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-1-format-specific-text-extraction-appparserspy" class="md-nav__link">
+  <a href="#step-1-lossless-docling-format-specific-extraction-appparserspy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 1: Format-Specific Text Extraction (app/parsers.py)
+        Step 1: Lossless Docling &amp; Format-Specific Extraction (app/parsers.py)
       
     </span>
   </a>
@@ -811,10 +811,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-2-structure-aware-semantic-chunking-appchunkingpy" class="md-nav__link">
+  <a href="#step-2-structure-table-aware-semantic-chunking-appchunkingpy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 2: Structure-Aware Semantic Chunking (app/chunking.py)
+        Step 2: Structure &amp; Table-Aware Semantic Chunking (app/chunking.py)
       
     </span>
   </a>
@@ -1089,7 +1089,7 @@
   <span class="md-ellipsis">
     
   
-    Release Notes (v2.1.1)
+    Release Notes (v2.2.0)
   
 
     
@@ -1159,10 +1159,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-1-format-specific-text-extraction-appparserspy" class="md-nav__link">
+  <a href="#step-1-lossless-docling-format-specific-extraction-appparserspy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 1: Format-Specific Text Extraction (app/parsers.py)
+        Step 1: Lossless Docling &amp; Format-Specific Extraction (app/parsers.py)
       
     </span>
   </a>
@@ -1170,10 +1170,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-2-structure-aware-semantic-chunking-appchunkingpy" class="md-nav__link">
+  <a href="#step-2-structure-table-aware-semantic-chunking-appchunkingpy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 2: Structure-Aware Semantic Chunking (app/chunking.py)
+        Step 2: Structure &amp; Table-Aware Semantic Chunking (app/chunking.py)
       
     </span>
   </a>
@@ -1365,8 +1365,8 @@
 </tbody>
 </table>
 <hr />
-<h2 id="step-1-format-specific-text-extraction-appparserspy">Step 1: Format-Specific Text Extraction (<code>app/parsers.py</code>)<a class="headerlink" href="#step-1-format-specific-text-extraction-appparserspy" title="Permanent link">&para;</a></h2>
-<p><code>parse_file(file_path)</code> inspects the lowercase file extension and routes the file to the appropriate parser:</p>
+<h2 id="step-1-lossless-docling-format-specific-extraction-appparserspy">Step 1: Lossless Docling &amp; Format-Specific Extraction (<code>app/parsers.py</code>)<a class="headerlink" href="#step-1-lossless-docling-format-specific-extraction-appparserspy" title="Permanent link">&para;</a></h2>
+<p><code>extract_text(file_path)</code> uses <strong>IBM Docling (<code>docling.document_converter.DocumentConverter</code>)</strong> reconciled with lossless format-specific extractors so zero text, tables, headers, footers, or speaker notes are lost:</p>
 <table>
 <thead>
 <tr>
@@ -1378,59 +1378,50 @@
 <tbody>
 <tr>
 <td><code>.pdf</code></td>
-<td><code>pymupdf</code> (<code>import pymupdf as fitz</code>)</td>
-<td>Opens each page in sequence and extracts text blocks via <code>page.get_text("text")</code>.</td>
+<td><code>docling</code> (<code>DocumentConverter</code>) + <code>pymupdf</code> (<code>fitz</code>)</td>
+<td>Converts multi-column layouts, headings, and tables into structured Markdown via Docling TableFormer, reconciled page-by-page with PyMuPDF (<code>page.get_text("text", sort=True)</code> + <code>page.find_tables()</code>).</td>
 </tr>
 <tr>
 <td><code>.docx</code></td>
-<td><code>python-docx</code></td>
-<td>Extracts all non-empty paragraphs followed by all table rows formatted as <code>cell1 \| cell2</code>.</td>
+<td><code>docling</code> + <code>python-docx</code></td>
+<td>Preserves document order across headings (<code>#</code>, <code>##</code>, <code>###</code>), paragraphs, all Word tables (<code>w:tbl</code> as Markdown tables), and section headers/footers.</td>
 </tr>
 <tr>
-<td><code>.xlsx</code></td>
-<td><code>openpyxl</code></td>
-<td>Loads workbook with <code>data_only=True</code> (evaluated formula values) and formats each sheet under <code>[Sheet: Name]</code>.</td>
-</tr>
-<tr>
-<td><code>.xls</code></td>
-<td><code>xlrd</code></td>
-<td>Iterates legacy Excel sheets and formats non-empty rows.</td>
+<td><code>.xlsx</code>, <code>.xls</code></td>
+<td><code>docling</code> + <code>openpyxl</code></td>
+<td>Loads workbook with <code>data_only=True</code> and formats every sheet as a GitHub-Flavored Markdown table under <code>## [Sheet: Name]</code>.</td>
 </tr>
 <tr>
 <td><code>.pptx</code></td>
-<td><code>python-pptx</code></td>
-<td>Extracts text frames and tables slide-by-slide under <code>[Slide N]</code>.</td>
+<td><code>docling</code> + <code>python-pptx</code></td>
+<td>Recursively extracts text frames, grouped shapes (<code>shape.shapes</code>), slide tables (<code>shape.has_table</code> as Markdown tables), and speaker notes (<code>notes_slide</code>).</td>
 </tr>
 <tr>
-<td><code>.txt</code>, <code>.md</code>, <code>.log</code></td>
-<td>Built-in <code>open()</code></td>
-<td>Reads UTF-8 text directly.</td>
+<td><code>.html</code>, <code>.htm</code></td>
+<td><code>docling</code> + <code>HTMLParser</code></td>
+<td>Converts HTML headings, lists, and <code>&lt;table&gt;</code> elements into structured Markdown.</td>
 </tr>
 <tr>
 <td><code>.csv</code></td>
-<td><code>csv</code></td>
-<td>Joins each CSV row with <code>,</code>.</td>
+<td><code>csv</code> + Markdown formatter</td>
+<td>Converts CSV rows into a structured Markdown table with column headers.</td>
 </tr>
 <tr>
-<td><code>.json</code></td>
-<td><code>json</code></td>
-<td>Parses JSON and pretty-prints with <code>indent=2</code>.</td>
-</tr>
-<tr>
-<td><code>.xml</code>, <code>.html</code>, <code>.htm</code></td>
-<td><code>xml.etree.ElementTree</code> / regex</td>
-<td>Strips tags and normalizes whitespace into clean text.</td>
+<td><code>.txt</code>, <code>.md</code>, <code>.json</code>, <code>.xml</code>, <code>.log</code></td>
+<td>Built-in <code>open()</code></td>
+<td>Reads UTF-8 text directly without truncation.</td>
 </tr>
 </tbody>
 </table>
 <hr />
-<h2 id="step-2-structure-aware-semantic-chunking-appchunkingpy">Step 2: Structure-Aware Semantic Chunking (<code>app/chunking.py</code>)<a class="headerlink" href="#step-2-structure-aware-semantic-chunking-appchunkingpy" title="Permanent link">&para;</a></h2>
+<h2 id="step-2-structure-table-aware-semantic-chunking-appchunkingpy">Step 2: Structure &amp; Table-Aware Semantic Chunking (<code>app/chunking.py</code>)<a class="headerlink" href="#step-2-structure-table-aware-semantic-chunking-appchunkingpy" title="Permanent link">&para;</a></h2>
 <p>Instead of slicing text at arbitrary character offsets (which breaks sentences and tables mid-thought), <code>chunk_text(text, chunk_size=1200, overlap=200)</code> preserves document structure:</p>
 <ol>
 <li><strong>Line Normalization</strong>: Converts <code>\r\n</code> to <code>\n</code> and collapses 3+ consecutive newlines into <code>\n\n</code>.</li>
 <li><strong>Paragraph &amp; Header Segmentation</strong>: Splits along paragraph breaks (<code>\n\n</code>) and Markdown headings (<code>#</code>, <code>##</code>, <code>###</code>).</li>
 <li><strong>Greedy Paragraph Packing</strong>: Accumulates complete paragraphs into the current chunk as long as total length remains <span class="arithmatex">\(\le 1200\)</span> characters.</li>
-<li><strong>Sentence-Boundary Fallback</strong>: If a single paragraph exceeds <code>1200</code> characters, splits along sentence boundaries (<code>(?&lt;=[.!?])\s+</code>).</li>
+<li><strong>Markdown Table Header Preservation (<code>_split_markdown_table_block</code>)</strong>: If a Markdown table exceeds <code>1200</code> characters, splits cleanly along row boundaries (<code>\n</code>) and repeats the table header row (<code>| Col 1 | Col 2 |\n| --- | --- |</code>) at the top of each continuation chunk.</li>
+<li><strong>Sentence-Boundary Fallback</strong>: If a single prose paragraph exceeds <code>1200</code> characters, splits along sentence boundaries (<code>(?&lt;=[.!?])\s+</code>).</li>
 <li><strong>Contextual Overlap</strong>: Carries the trailing <code>200</code> characters of chunk <span class="arithmatex">\(i\)</span> into the start of chunk <span class="arithmatex">\(i+1\)</span> so concepts spanning chunk boundaries remain intact.</li>
 </ol>
 <hr />
