@@ -5,12 +5,7 @@ from typing import Any
 from google.genai import types
 from pydantic import BaseModel, Field
 
-from app.config import (
-    GRAPH_EXTRACTION_MODEL,
-    NEO4J_DATABASE,
-    NEO4J_PASSWORD,
-    NEO4J_URI,
-)
+import app.config as config
 from app.database import get_neo4j_driver, init_neo4j_db
 from app.embeddings import get_genai_client
 
@@ -20,7 +15,12 @@ _neo4j_initialized = False
 
 
 def is_neo4j_configured() -> bool:
-    return bool(NEO4J_URI and NEO4J_PASSWORD)
+    return bool(config.NEO4J_URI and config.NEO4J_PASSWORD)
+
+
+def reset_neo4j_schema_flag() -> None:
+    global _neo4j_initialized
+    _neo4j_initialized = False
 
 
 def _ensure_neo4j_schema() -> None:
@@ -141,7 +141,7 @@ def extract_graph_from_chunks(
     for batch_text in batches:
         try:
             response = client.models.generate_content(
-                model=GRAPH_EXTRACTION_MODEL,
+                model=config.GRAPH_EXTRACTION_MODEL,
                 contents=EXTRACTION_PROMPT.format(
                     filename=filename,
                     text_batch=batch_text,
@@ -251,7 +251,7 @@ def add_document_to_graph(
         for rel in extraction.relationships
     ]
 
-    with driver.session(database=NEO4J_DATABASE) as session:
+    with driver.session(database=config.NEO4J_DATABASE) as session:
         # 1. Merge Document node
         session.run(
             """
@@ -331,7 +331,7 @@ def delete_document_from_graph(user_id: str, document_id: str) -> dict[str, int]
     _ensure_neo4j_schema()
     driver = get_neo4j_driver()
 
-    with driver.session(database=NEO4J_DATABASE) as session:
+    with driver.session(database=config.NEO4J_DATABASE) as session:
         # Delete RELATES_TO relationships from this document
         rel_res = session.run(
             """
@@ -403,7 +403,7 @@ def search_knowledge_graph(
     full_query = query.strip().lower()
 
     driver = get_neo4j_driver()
-    with driver.session(database=NEO4J_DATABASE) as session:
+    with driver.session(database=config.NEO4J_DATABASE) as session:
         # 1. Search matching relationships and connected entities
         rel_records = session.run(
             """
@@ -484,7 +484,7 @@ def get_entity_relationships_from_graph(
     target_lower = entity_name.strip().lower()
     driver = get_neo4j_driver()
 
-    with driver.session(database=NEO4J_DATABASE) as session:
+    with driver.session(database=config.NEO4J_DATABASE) as session:
         # Match primary entity or entities matching the name
         entity_matches = session.run(
             """
@@ -550,7 +550,7 @@ def get_user_knowledge_graph(
     _ensure_neo4j_schema()
     driver = get_neo4j_driver()
 
-    with driver.session(database=NEO4J_DATABASE) as session:
+    with driver.session(database=config.NEO4J_DATABASE) as session:
         nodes = session.run(
             """
             MATCH (e:Entity {user_id: $user_id})
@@ -620,7 +620,7 @@ def get_graph_stats() -> dict[str, Any]:
 
     _ensure_neo4j_schema()
     driver = get_neo4j_driver()
-    with driver.session(database=NEO4J_DATABASE) as session:
+    with driver.session(database=config.NEO4J_DATABASE) as session:
         ent_rec = session.run("MATCH (e:Entity) RETURN count(e) AS cnt").single()
         rel_rec = session.run("MATCH ()-[r:RELATES_TO]->() RETURN count(r) AS cnt").single()
 

@@ -17,6 +17,7 @@ flowchart TD
     Tabs --> T3["3. DocumentsTab.jsx (Document List & Cascade Delete)"]
     Tabs --> T4["4. ChatTab.jsx + ChatMessage.jsx (Agentic Chat with Tool Badges & Citations)"]
     Tabs --> T5["5. GraphTab.jsx (Interactive SVG Neo4j Knowledge Graph)"]
+    Tabs --> T6["6. SettingsTab.jsx (Environment Variables, Info Docs Links & Default Fallback)"]
 ```
 
 ---
@@ -25,14 +26,15 @@ flowchart TD
 
 | Component | File | Description |
 |-----------|------|-------------|
-| **Authentication Screen** | `UserIdModal.jsx` | Full Sign In / Create Account interface backed by `/auth/login` and `/auth/signup` on Neon PostgreSQL. Stores the returned JWT in `localStorage`. |
+| **Authentication Screen** | `UserIdModal.jsx` | Full Sign In / Create Account interface backed by `/auth/login` and `/auth/signup` on Neon PostgreSQL, plus a **Configure Environment Variables & Connections** drawer for first-time setup. |
 | **Top Header** | `Header.jsx` | Sticky top bar displaying the application title, real-time `API Ready` / `API Offline` indicator, signed-in user's name and email, and a **Sign Out** button. |
-| **Tab Navigation** | `Tabs.jsx` | Five-tab bar ordered: `Upload` → `Ingestion Pipeline` → `Documents` → `Agentic Chat` → `Knowledge Graph`. Displays live count badges on **Documents** and **Knowledge Graph**. |
+| **Tab Navigation** | `Tabs.jsx` | Six-tab bar ordered: `Upload` → `Ingestion Pipeline` → `Documents` → `Agentic Chat` → `Knowledge Graph` → `Settings`. |
 | **Upload Tab** | `UploadTab.jsx` | Multi-file drag-and-drop and browser file selector supporting 13 document formats, with a numbered file queue, `+ Add More Files`, `Clear All`, individual file removal, and automatic redirection to the **Ingestion Pipeline** tab when batch ingestion begins. |
 | **Ingestion Pipeline Tab** | `IngestionTab.jsx` | Polls `GET /ingest/progress` every `450ms` during single or multi-document uploads, displaying `Selected Document X of Y • Step S of 5 • <Step Name>` as the progress bar runs for each document, and summarizing total documents ingested (`All 5 Pipeline Steps Completed Successfully (Y Documents Ingested)`) with per-file metrics upon completion. |
 | **Documents Tab** | `DocumentsTab.jsx` | Lists all documents owned by the user with chunk, entity, and relationship counts, plus one-click cascade deletion across Neon PostgreSQL and Neo4j. |
 | **Agentic Chat Tab** | `ChatTab.jsx` & `ChatMessage.jsx` | Multi-turn chat interface with suggested starter prompts, animated typing indicators, tool execution badges (`hybrid_search`, `vector_search`, `graph_search`, `get_entity_relationships`), and highlighted `[Source: ...]` / `[Graph: ...]` citations. |
 | **Knowledge Graph Tab** | `GraphTab.jsx` | Interactive SVG radial/force-layout canvas for exploring Neo4j `:Entity` nodes and `:RELATES_TO` edges, complete with category filter pills, real-time keyword search, zoom controls, a 1-hop Entity Inspector drawer, and a structured triplets table. |
+| **Settings Tab (`v2.3.0`)** | `SettingsTab.jsx` | Interactive Environment Variables & Connection Settings page with live connection health cards, per-variable **`ⓘ How to get?`** documentation deep-links, automatic fallback to default values when fields are left blank, and one-click reset. |
 
 ---
 

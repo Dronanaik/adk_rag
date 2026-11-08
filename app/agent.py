@@ -1,7 +1,7 @@
 from google.adk.agents import LlmAgent
 from google.adk.tools import ToolContext
 
-from app.config import AGENT_MODEL, TOP_K
+import app.config as config
 from app.graph_store import (
     get_entity_relationships_from_graph,
     search_knowledge_graph,
@@ -30,7 +30,7 @@ def vector_search(
     matches = search_documents(
         user_id=user_id,
         query=query,
-        top_k=TOP_K,
+        top_k=config.TOP_K,
     )
 
     if not matches:
@@ -85,7 +85,7 @@ def hybrid_search(
     matches = hybrid_search_documents(
         user_id=user_id,
         query=query,
-        top_k=TOP_K,
+        top_k=config.TOP_K,
     )
 
     if not matches:
@@ -211,7 +211,7 @@ def get_entity_relationships(
 
 root_agent = LlmAgent(
     name="agentic_rag_knowledge_graph_agent",
-    model=AGENT_MODEL,
+    model=config.AGENT_MODEL,
     description=(
         "Hybrid Agentic RAG + Knowledge Graph assistant powered by Neon PostgreSQL "
         "(pgvector) and Neo4j."

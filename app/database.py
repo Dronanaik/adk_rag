@@ -8,14 +8,8 @@ from psycopg2 import pool
 from pgvector.psycopg2 import register_vector
 from neo4j import Driver, GraphDatabase, NotificationMinimumSeverity
 
-from app.config import (
-    DATABASE_URL,
-    EMBEDDING_DIMENSIONS,
-    NEO4J_DATABASE,
-    NEO4J_PASSWORD,
-    NEO4J_URI,
-    NEO4J_USERNAME,
-)
+import app.config as config
+from app.config import EMBEDDING_DIMENSIONS
 
 logger = logging.getLogger(__name__)
 logging.getLogger("neo4j.notifications").setLevel(logging.ERROR)
@@ -97,11 +91,11 @@ def _get_pg_pool() -> pool.ThreadedConnectionPool:
     """
     global _pg_pool
     if _pg_pool is None:
-        if not DATABASE_URL:
+        if not config.DATABASE_URL:
             raise ValueError(
                 "DATABASE_URL is not configured. Please set your Neon PostgreSQL connection string in .env."
             )
-        dsn = _normalize_database_url(DATABASE_URL)
+        dsn = _normalize_database_url(config.DATABASE_URL)
         _pg_pool = pool.ThreadedConnectionPool(
             minconn=1,
             maxconn=10,
@@ -133,7 +127,7 @@ def get_db_connection(register_pgvector: bool = True) -> Generator:
             except Exception as close_err:
                 logger.debug("Ignored error returning stale connection: %s", close_err)
             conn = psycopg2.connect(
-                dsn=_normalize_database_url(DATABASE_URL),
+                dsn=_normalize_database_url(config.DATABASE_URL),
                 keepalives=1,
                 keepalives_idle=30,
                 keepalives_interval=10,
@@ -175,13 +169,13 @@ def get_neo4j_driver() -> Driver:
     """
     global _neo4j_driver
     if _neo4j_driver is None:
-        if not NEO4J_URI or not NEO4J_PASSWORD:
+        if not config.NEO4J_URI or not config.NEO4J_PASSWORD:
             raise ValueError(
                 "NEO4J_URI and NEO4J_PASSWORD must be configured in your .env file."
             )
         _neo4j_driver = GraphDatabase.driver(
-            NEO4J_URI,
-            auth=(NEO4J_USERNAME, NEO4J_PASSWORD),
+            config.NEO4J_URI,
+            auth=(config.NEO4J_USERNAME, config.NEO4J_PASSWORD),
             notifications_min_severity=NotificationMinimumSeverity.OFF,
             warn_notification_severity=NotificationMinimumSeverity.OFF,
         )
@@ -200,7 +194,7 @@ def init_neo4j_db() -> None:
         "CREATE INDEX entity_name_idx IF NOT EXISTS FOR (e:Entity) ON (e.name_lower)",
         "CREATE INDEX document_user_idx IF NOT EXISTS FOR (d:Document) ON (d.user_id)",
     ]
-    with driver.session(database=NEO4J_DATABASE) as session:
+    with driver.session(database=config.NEO4J_DATABASE) as session:
         for query in queries:
             session.run(query)
     logger.info("Neo4j Knowledge Graph constraints and indexes initialized successfully.")
@@ -213,7 +207,7 @@ def init_all_databases() -> dict[str, str]:
     """
     status = {"postgres": "unconfigured", "neo4j": "unconfigured"}
 
-    if DATABASE_URL:
+    if config.DATABASE_URL:
         try:
             init_postgres_db()
             status["postgres"] = "ready"
@@ -221,7 +215,7 @@ def init_all_databases() -> dict[str, str]:
             logger.warning("Neon PostgreSQL initialization warning", exc_info=True)
             status["postgres"] = "error"
 
-    if NEO4J_URI and NEO4J_PASSWORD:
+    if config.NEO4J_URI and config.NEO4J_PASSWORD:
         try:
             init_neo4j_db()
             status["neo4j"] = "ready"
@@ -230,6 +224,15 @@ def init_all_databases() -> dict[str, str]:
             status["neo4j"] = "error"
 
     return status
+
+
+def reload_database_connections() -> dict[str, str]:
+    """
+    Close existing PostgreSQL pool and Neo4j driver and re-initialize
+    connections with the latest active configuration.
+    """
+    close_all_databases()
+    return init_all_databases()
 
 
 def close_all_databases() -> None:

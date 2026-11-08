@@ -33,7 +33,7 @@ for arg in "$@"; do
 done
 
 echo "======================================================================"
-echo "  ADK Agentic RAG + Knowledge Graph — Environment Setup (v2.2.0)"
+echo "  ADK Agentic RAG + Knowledge Graph — Environment Setup (v2.3.0)"
 echo "======================================================================"
 
 # ------------------------------------------------------------------------------
