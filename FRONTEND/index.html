@@ -1045,7 +1045,7 @@
   <span class="md-ellipsis">
     
   
-    Release Notes (v2.2.0)
+    Release Notes (v2.3.0)
   
 
     
@@ -1230,7 +1230,8 @@
     Tabs --&gt; T2["2. IngestionTab.jsx (Live 5-Step Progress &amp; DB Metrics)"]
     Tabs --&gt; T3["3. DocumentsTab.jsx (Document List &amp; Cascade Delete)"]
     Tabs --&gt; T4["4. ChatTab.jsx + ChatMessage.jsx (Agentic Chat with Tool Badges &amp; Citations)"]
-    Tabs --&gt; T5["5. GraphTab.jsx (Interactive SVG Neo4j Knowledge Graph)"]</code></pre>
+    Tabs --&gt; T5["5. GraphTab.jsx (Interactive SVG Neo4j Knowledge Graph)"]
+    Tabs --&gt; T6["6. SettingsTab.jsx (Environment Variables, Info Docs Links &amp; Default Fallback)"]</code></pre>
 <hr />
 <h2 id="component-reference-frontendsrccomponents">Component Reference (<code>frontend/src/components/</code>)<a class="headerlink" href="#component-reference-frontendsrccomponents" title="Permanent link">&para;</a></h2>
 <table>
@@ -1245,7 +1246,7 @@
 <tr>
 <td><strong>Authentication Screen</strong></td>
 <td><code>UserIdModal.jsx</code></td>
-<td>Full Sign In / Create Account interface backed by <code>/auth/login</code> and <code>/auth/signup</code> on Neon PostgreSQL. Stores the returned JWT in <code>localStorage</code>.</td>
+<td>Full Sign In / Create Account interface backed by <code>/auth/login</code> and <code>/auth/signup</code> on Neon PostgreSQL, plus a <strong>Configure Environment Variables &amp; Connections</strong> drawer for first-time setup.</td>
 </tr>
 <tr>
 <td><strong>Top Header</strong></td>
@@ -1255,7 +1256,7 @@
 <tr>
 <td><strong>Tab Navigation</strong></td>
 <td><code>Tabs.jsx</code></td>
-<td>Five-tab bar ordered: <code>Upload</code> → <code>Ingestion Pipeline</code> → <code>Documents</code> → <code>Agentic Chat</code> → <code>Knowledge Graph</code>. Displays live count badges on <strong>Documents</strong> and <strong>Knowledge Graph</strong>.</td>
+<td>Six-tab bar ordered: <code>Upload</code> → <code>Ingestion Pipeline</code> → <code>Documents</code> → <code>Agentic Chat</code> → <code>Knowledge Graph</code> → <code>Settings</code>.</td>
 </tr>
 <tr>
 <td><strong>Upload Tab</strong></td>
@@ -1281,6 +1282,11 @@
 <td><strong>Knowledge Graph Tab</strong></td>
 <td><code>GraphTab.jsx</code></td>
 <td>Interactive SVG radial/force-layout canvas for exploring Neo4j <code>:Entity</code> nodes and <code>:RELATES_TO</code> edges, complete with category filter pills, real-time keyword search, zoom controls, a 1-hop Entity Inspector drawer, and a structured triplets table.</td>
+</tr>
+<tr>
+<td><strong>Settings Tab (<code>v2.3.0</code>)</strong></td>
+<td><code>SettingsTab.jsx</code></td>
+<td>Interactive Environment Variables &amp; Connection Settings page with live connection health cards, per-variable <strong><code>ⓘ How to get?</code></strong> documentation deep-links, automatic fallback to default values when fields are left blank, and one-click reset.</td>
 </tr>
 </tbody>
 </table>

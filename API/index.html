@@ -1156,6 +1156,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#7-environment-connection-settings-endpoints-v230" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Environment &amp; Connection Settings Endpoints (v2.3.0)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Environment &amp; Connection Settings Endpoints (v2.3.0)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-settingsenv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /settings/env
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-settingsenv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /settings/env
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-settingsenvreset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /settings/env/reset
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1235,7 +1285,7 @@
   <span class="md-ellipsis">
     
   
-    Release Notes (v2.2.0)
+    Release Notes (v2.3.0)
   
 
     
@@ -1516,6 +1566,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#7-environment-connection-settings-endpoints-v230" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Environment &amp; Connection Settings Endpoints (v2.3.0)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Environment &amp; Connection Settings Endpoints (v2.3.0)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-settingsenv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /settings/env
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-settingsenv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /settings/env
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-settingsenvreset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /settings/env/reset
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1755,6 +1855,30 @@
 </span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="w">  </span><span class="nt">"user_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user_9f8e7d6c5b4a3210"</span>
 </span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="p">}</span>
 </span></code></pre></div></p>
+<hr />
+<h2 id="7-environment-connection-settings-endpoints-v230">7. Environment &amp; Connection Settings Endpoints (<code>v2.3.0</code>)<a class="headerlink" href="#7-environment-connection-settings-endpoints-v230" title="Permanent link">&para;</a></h2>
+<h3 id="get-settingsenv"><code>GET /settings/env</code><a class="headerlink" href="#get-settingsenv" title="Permanent link">&para;</a></h3>
+<p>Returns all 12 connection environment variables, their active source (<code>"default"</code> vs. <code>"custom"</code>), masked default fallback previews, documentation deep-link URLs (<code>doc_url</code>), and live connection statuses (<code>gemini</code>, <code>postgres</code>, <code>neo4j</code>).</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>curl<span class="w"> </span>http://localhost:8000/settings/env
+</span></code></pre></div>
+<hr />
+<h3 id="post-settingsenv"><code>POST /settings/env</code><a class="headerlink" href="#post-settingsenv" title="Permanent link">&para;</a></h3>
+<p>Updates connection environment variables at runtime (and optionally persists non-empty values to <code>.env</code> when <code>persist_to_env: true</code>). Any variable omitted or submitted as an empty string (<code>""</code>) automatically falls back to its default value and reloads database/LLM clients.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/settings/env<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{</span>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="s1">    "values": {</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="s1">      "AGENT_MODEL": "gemini-2.5-pro",</span>
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="s1">      "TOP_K": "8"</span>
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="s1">    },</span>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="s1">    "persist_to_env": false</span>
+</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a><span class="s1">  }'</span>
+</span></code></pre></div>
+<hr />
+<h3 id="post-settingsenvreset"><code>POST /settings/env/reset</code><a class="headerlink" href="#post-settingsenvreset" title="Permanent link">&para;</a></h3>
+<p>Clears all runtime overrides and restores every environment variable to its default <code>.env</code> / built-in system value.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/settings/env/reset
+</span></code></pre></div>
 
 
 
