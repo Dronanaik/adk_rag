@@ -41,7 +41,16 @@ Before committing on the `development` branch, update `X.Y.Z` (and `vX.Y.Z`) acr
 
 ## 3. Mandatory Two-Step Tagging & PR Release Flow
 
-### Step 1: Create & Push the Git Tag (`vX.Y.Z`) on `development` FIRST
+### Step 1: Sync `development` with `main`, Create & Push the Git Tag (`vX.Y.Z`) FIRST
+
+Before starting or pushing any work on `development`, **always pull both `origin/development` AND `origin/main`** (because every PR merged on GitHub creates a merge commit on `origin/main`; if you only pull `origin/development`, GitHub will report `development` as behind `main` by those merge commits):
+
+0. **Sync `development` with `origin/development` and `origin/main`**:
+   ```bash
+   git checkout development
+   git pull origin development
+   git pull origin main --no-edit
+   ```
 
 After completing the implementation and updating all 8 versioned files on the `development` branch:
 
