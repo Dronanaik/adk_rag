@@ -43,13 +43,14 @@ Before committing on the `development` branch, update `X.Y.Z` (and `vX.Y.Z`) acr
 
 ### Step 1: Sync `development` with `main`, Create & Push the Git Tag (`vX.Y.Z`) FIRST
 
-Before starting or pushing any work on `development`, **always pull both `origin/development` AND `origin/main`** (because every PR merged on GitHub creates a merge commit on `origin/main`; if you only pull `origin/development`, GitHub will report `development` as behind `main` by those merge commits):
+- **Expected Resting State After a PR Merge**: Once a PR from `development` → `main` is merged on GitHub, `main` receives 1 merge commit (`Merge pull request #...`), so `development` sits **1 commit behind `main`** (because `main` is the most updated branch with the merge commit).
+- **Before Starting the Next Feature / Defect Fix**: Always fast-forward `development` from `origin/main` first so that previous merge commit is absorbed and `development` never accumulates 2+ commits behind `main`:
 
-0. **Sync `development` with `origin/development` and `origin/main`**:
+0. **Sync `development` with `origin/main` before starting new work**:
    ```bash
    git checkout development
    git pull origin development
-   git pull origin main --no-edit
+   git pull origin main --ff-only
    ```
 
 After completing the implementation and updating all 8 versioned files on the `development` branch:
