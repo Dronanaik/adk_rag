@@ -23,6 +23,8 @@ def _update_progress(
     step_name: str,
     message: str,
     filename: str = "",
+    doc_index: int | None = None,
+    total_docs: int | None = None,
     step_outputs: dict[str, str] | None = None,
 ) -> None:
     prev = _ingestion_progress.get(user_id, {})
@@ -36,6 +38,8 @@ def _update_progress(
         "step_name": step_name,
         "message": message,
         "filename": filename or prev.get("filename", ""),
+        "doc_index": doc_index if doc_index is not None else prev.get("doc_index", 1),
+        "total_docs": total_docs if total_docs is not None else prev.get("total_docs", 1),
         "step_outputs": merged_outputs,
         "updated_at": time.time(),
     }
@@ -53,6 +57,8 @@ def get_ingestion_progress(user_id: str) -> dict[str, Any]:
             "step_name": "Idle",
             "message": "Ready to ingest documents.",
             "filename": "",
+            "doc_index": 1,
+            "total_docs": 1,
             "step_outputs": {},
         },
     )
@@ -62,6 +68,8 @@ def ingest_document(
     file_path: str,
     filename: str,
     user_id: str,
+    doc_index: int = 1,
+    total_docs: int = 1,
 ) -> dict:
     """
     Dual ingestion pipeline with real-time step tracking:
@@ -73,7 +81,12 @@ def ingest_document(
     """
     document_id = str(uuid.uuid4())
     safe_filename = str(filename).replace("\r", "").replace("\n", "")
-    _ingestion_progress[user_id] = {"step_outputs": {}, "filename": safe_filename}
+    _ingestion_progress[user_id] = {
+        "step_outputs": {},
+        "filename": safe_filename,
+        "doc_index": max(1, int(doc_index)),
+        "total_docs": max(1, int(total_docs)),
+    }
 
     try:
         # ── Step 1: Text Extraction ──

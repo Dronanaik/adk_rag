@@ -43,8 +43,69 @@
 
 .hasFile {
   cursor: default;
+  padding: 24px 26px;
   border-color: rgba(52, 211, 153, 0.55) !important;
   background: rgba(12, 36, 28, 0.88) !important;
+}
+
+.filesQueueWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.queueHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.queueSummary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.queueTotalSize {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.queueActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filesList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.fileIndexBadge {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(34, 211, 238, 0.16);
+  border: 1px solid rgba(34, 211, 238, 0.45);
+  color: #67e8f9;
+  font-size: 0.75rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
 }
 
 .hiddenInput { display: none; }

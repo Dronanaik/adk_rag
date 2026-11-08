@@ -51,6 +51,49 @@
   color: var(--text-primary);
 }
 
+.liveRightMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.batchSummaryList {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(52, 211, 153, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.batchDocItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 8px 12px;
+  background: rgba(6, 20, 16, 0.72);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  border-radius: var(--radius-sm);
+}
+
+.batchDocName {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #ecfdf5;
+}
+
+.batchDocStats {
+  font-size: 0.76rem;
+  color: #a7f3d0;
+  font-family: var(--font-mono);
+}
+
 .progressTrack {
   width: 100%;
   height: 8px;

@@ -64,6 +64,9 @@ export default function IngestionTab({ uploadState }) {
   const isUploading = uploadState?.status === 'uploading'
   const isCompleted = uploadState?.status === 'success'
   const isError = uploadState?.status === 'error'
+  const totalDocs = uploadState?.totalDocs || liveProgress?.total_docs || 1
+  const currentDocIndex = uploadState?.currentDocIndex || liveProgress?.doc_index || 1
+  const currentFilename = uploadState?.currentFilename || liveProgress?.filename || ''
 
   const fetchStatus = useCallback(async () => {
     setLoading(true)
@@ -80,7 +83,14 @@ export default function IngestionTab({ uploadState }) {
 
   useEffect(() => {
     fetchStatus()
-  }, [fetchStatus, uploadState?.status])
+  }, [fetchStatus, uploadState?.status, uploadState?.currentDocIndex])
+
+  // Reset per-document step progress when moving to the next document in a multi-file batch
+  useEffect(() => {
+    if (isUploading) {
+      setLiveProgress(null)
+    }
+  }, [isUploading, uploadState?.currentDocIndex])
 
   // Poll live step-by-step progress while uploading
   useEffect(() => {
@@ -110,10 +120,15 @@ export default function IngestionTab({ uploadState }) {
       cancelled = true
       clearInterval(timer)
     }
-  }, [isUploading, isCompleted])
+  }, [isUploading, isCompleted, uploadState?.currentDocIndex])
+
+  const isMatchingDocProgress =
+    !liveProgress?.doc_index || liveProgress.doc_index === currentDocIndex
+
+  const activeProgress = isMatchingDocProgress ? liveProgress : null
 
   const activeStepNumber = isUploading
-    ? liveProgress?.current_step || 1
+    ? activeProgress?.current_step || 1
     : isCompleted
     ? 6
     : 0
@@ -123,6 +138,9 @@ export default function IngestionTab({ uploadState }) {
     : isCompleted
     ? 100
     : 0
+
+  const ingestedCount =
+    uploadState?.result?.documents_count || uploadState?.results?.length || 1
 
   return (
     <div className={`${styles.wrap} fade-in`}>
@@ -142,15 +160,30 @@ export default function IngestionTab({ uploadState }) {
               <Activity className="spinner" size={20} color="#22d3ee" />
               <div>
                 <div className={styles.liveStepBadge}>
+                  {totalDocs > 1 && (
+                    <>
+                      Selected Document {currentDocIndex} of {totalDocs} &bull;{' '}
+                    </>
+                  )}
                   Step {activeStepNumber} of {PIPELINE_STEPS.length} &bull;{' '}
-                  {liveProgress?.step_name || PIPELINE_STEPS[activeStepNumber - 1]?.name}
+                  {activeProgress?.step_name || PIPELINE_STEPS[activeStepNumber - 1]?.name}
                 </div>
                 <h3 className={styles.liveMessage}>
-                  {liveProgress?.message || 'Starting document ingestion pipeline…'}
+                  {activeProgress?.message ||
+                    (totalDocs > 1
+                      ? `Starting document ingestion pipeline (${currentFilename}) — Document ${currentDocIndex} of ${totalDocs}…`
+                      : 'Starting document ingestion pipeline…')}
                 </h3>
               </div>
             </div>
-            <span className="badge badge-purple">{Math.round(progressPercent)}%</span>
+            <div className={styles.liveRightMeta}>
+              {totalDocs > 1 && (
+                <span className="badge badge-teal">
+                  Doc {currentDocIndex} / {totalDocs}
+                </span>
+              )}
+              <span className="badge badge-purple">{Math.round(progressPercent)}%</span>
+            </div>
           </div>
 
           <div className={styles.progressTrack}>
@@ -180,7 +213,9 @@ export default function IngestionTab({ uploadState }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
             <CheckCircle2 size={22} color="#34d399" />
             <h3 style={{ margin: 0, color: '#6ee7b7', fontSize: '1.05rem' }}>
-              All 5 Pipeline Steps Completed Successfully
+              {ingestedCount > 1
+                ? `All 5 Pipeline Steps Completed Successfully (${ingestedCount} Documents Ingested)`
+                : 'All 5 Pipeline Steps Completed Successfully'}
             </h3>
           </div>
           <div
@@ -190,7 +225,13 @@ export default function IngestionTab({ uploadState }) {
               gap: '16px',
             }}
           >
-            <ResultRow label="Filename" value={uploadState.result.filename} />
+            {ingestedCount > 1 && (
+              <ResultRow label="Documents Ingested" value={ingestedCount} />
+            )}
+            <ResultRow
+              label={ingestedCount > 1 ? 'Filenames' : 'Filename'}
+              value={uploadState.result.filename}
+            />
             <ResultRow label="Chunks (pgvector)" value={uploadState.result.chunks_created} />
             <ResultRow label="Entities (Neo4j)" value={uploadState.result.entities_extracted ?? 0} />
             <ResultRow
@@ -202,6 +243,22 @@ export default function IngestionTab({ uploadState }) {
               value={uploadState.result.characters_extracted?.toLocaleString()}
             />
           </div>
+
+          {ingestedCount > 1 && uploadState.result.documents?.length > 1 && (
+            <div className={styles.batchSummaryList}>
+              {uploadState.result.documents.map((doc, idx) => (
+                <div key={doc.document_id || `${doc.filename}-${idx}`} className={styles.batchDocItem}>
+                  <span className={styles.batchDocName}>
+                    <Check size={13} color="#34d399" /> {idx + 1}. {doc.filename}
+                  </span>
+                  <span className={styles.batchDocStats}>
+                    {doc.chunks_created} chunks &bull; {doc.entities_extracted ?? 0} entities &bull;{' '}
+                    {doc.relationships_extracted ?? 0} relationships
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -272,8 +329,8 @@ export default function IngestionTab({ uploadState }) {
             const stepCurrent = isUploading && step.step === activeStepNumber
             const stepPending = isUploading && step.step > activeStepNumber
             const stepFailed =
-              isError && liveProgress?.current_step === step.step
-            const stepOutput = liveProgress?.step_outputs?.[String(step.step)]
+              isError && activeProgress?.current_step === step.step
+            const stepOutput = activeProgress?.step_outputs?.[String(step.step)]
 
             return (
               <div key={step.step} className={styles.pipelineStep}>
@@ -358,8 +415,8 @@ export default function IngestionTab({ uploadState }) {
                   </div>
 
                   <p className={styles.stepDesc}>
-                    {stepCurrent && liveProgress?.message
-                      ? liveProgress.message
+                    {stepCurrent && activeProgress?.message
+                      ? activeProgress.message
                       : step.description}
                   </p>
 
@@ -425,7 +482,7 @@ function ResultRow({ label, value, mono = false }) {
           color: '#ecfdf5',
           fontWeight: 700,
           fontFamily: mono ? 'var(--font-mono)' : undefined,
-          wordBreak: 'break-all',
+          wordBreak: 'break-word',
         }}
       >
         {value}

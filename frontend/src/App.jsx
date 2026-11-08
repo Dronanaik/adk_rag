@@ -51,15 +51,78 @@ export default function App() {
     setActiveTab('upload')
   }
 
-  async function handleStartUpload(file) {
+  async function handleStartUpload(filesOrFile) {
+    const files = Array.isArray(filesOrFile) ? filesOrFile : [filesOrFile]
+    if (!files.length) return
+
+    const totalDocs = files.length
+    const completedResults = []
     setActiveTab('ingestion')
-    setUploadState({ status: 'uploading', result: null, error: null })
-    try {
-      const data = await uploadDocument(file, userId)
-      setUploadState({ status: 'success', result: data.result, error: null })
-    } catch (err) {
-      setUploadState({ status: 'error', result: null, error: err.message })
+
+    for (let idx = 0; idx < totalDocs; idx += 1) {
+      const file = files[idx]
+      const docIndex = idx + 1
+
+      setUploadState({
+        status: 'uploading',
+        currentDocIndex: docIndex,
+        totalDocs,
+        currentFilename: file.name,
+        results: [...completedResults],
+        result: null,
+        error: null,
+      })
+
+      try {
+        const data = await uploadDocument(file, userId, { docIndex, totalDocs })
+        if (data?.result) {
+          completedResults.push(data.result)
+        }
+      } catch (err) {
+        setUploadState({
+          status: 'error',
+          currentDocIndex: docIndex,
+          totalDocs,
+          currentFilename: file.name,
+          results: [...completedResults],
+          result: null,
+          error:
+            totalDocs > 1
+              ? `Document ${docIndex} of ${totalDocs} (${file.name}): ${err.message}`
+              : err.message,
+        })
+        return
+      }
     }
+
+    const summaryResult = {
+      documents_count: completedResults.length,
+      filename:
+        completedResults.length === 1
+          ? completedResults[0]?.filename
+          : completedResults.map((r) => r.filename).join(', '),
+      chunks_created: completedResults.reduce((s, r) => s + (r.chunks_created || 0), 0),
+      entities_extracted: completedResults.reduce((s, r) => s + (r.entities_extracted || 0), 0),
+      relationships_extracted: completedResults.reduce(
+        (s, r) => s + (r.relationships_extracted || 0),
+        0
+      ),
+      characters_extracted: completedResults.reduce(
+        (s, r) => s + (r.characters_extracted || 0),
+        0
+      ),
+      documents: completedResults,
+    }
+
+    setUploadState({
+      status: 'success',
+      currentDocIndex: totalDocs,
+      totalDocs,
+      currentFilename: '',
+      results: completedResults,
+      result: summaryResult,
+      error: null,
+    })
   }
 
   const tabContent = {

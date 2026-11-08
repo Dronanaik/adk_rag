@@ -146,12 +146,12 @@ export async function listDocuments(userId) {
   return apiFetch('/documents', {}, userId)
 }
 
-export async function uploadDocument(file, userId) {
+export async function uploadDocument(file, userId, { docIndex = 1, totalDocs = 1 } = {}) {
   const formData = new FormData()
   formData.append('file', file)
 
   return apiFetch(
-    '/documents/upload',
+    `/documents/upload?doc_index=${encodeURIComponent(docIndex)}&total_docs=${encodeURIComponent(totalDocs)}`,
     {
       method: 'POST',
       body: formData,

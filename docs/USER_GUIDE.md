@@ -101,69 +101,64 @@ When you open the application (`http://localhost:5173`), the **Bioluminescent Ne
 
 ---
 
-## Step 2: Uploading a Document (`Upload` Tab)
+## Step 2: Uploading One or Multiple Documents (`Upload` Tab)
 
 Once signed in, the top header displays your **API Online** health indicator, your **User Profile Badge**, the **Sign Out** button, and the **5-Tab Navigation Bar** (**Upload** → **Ingestion Pipeline** → **Documents** → **Agentic Chat** → **Knowledge Graph**).
 
-### Upload Document Dropzone
+### Upload Documents Dropzone
 
 ![Upload Document Dropzone](assets/screenshots/03-upload-dropzone.png)
 
 1. The **Upload** tab is active by default when you sign in.
-2. Drag and drop a file onto the dashed bioluminescent dropzone, or click **click to browse** to open your system file picker.
+2. Drag and drop **one or multiple files** onto the dashed bioluminescent dropzone, or click **click to browse multiple files** to open your system file picker.
 3. All **13 supported file extensions** are displayed as badges below the dropzone: `.pdf`, `.docx`, `.xlsx`, `.xls`, `.pptx`, `.txt`, `.md`, `.csv`, `.json`, `.xml`, `.html`, `.htm`, and `.log`.
 
 ---
 
-### Document Selected & Ready to Ingest
+### Multi-Document Queue Selected & Ready to Ingest
 
 ![Upload Document File Preview](assets/screenshots/04-upload-file-selected.png)
 
-1. Once a file is selected (e.g., `Drona_Resume_.pdf` — `73.4 KB`), the dropzone transforms into a **File Preview Card** displaying:
-   - Format-specific file icon (red PDF badge for `.pdf` files)
-   - Exact **filename** and formatted **file size**
-   - A **× Remove** button if you want to clear the selection and pick a different file
-2. Click the primary gradient button **Ingest into Neon Postgres & Neo4j** at the bottom of the view to launch the 5-step hybrid ingestion pipeline.
+1. Once one or more files are selected (e.g., `doc1_openai_funding.md`, `doc2_anthropic_amazon.md`, and `doc6_google_ai_strategy.md`), the dropzone transforms into an interactive **Multi-Document Queue Card** displaying:
+   - **Selected Count & Total Size Badge**: e.g., `3 Documents Selected` (`Total: 10.9 KB`).
+   - **Queue Controls**: Click **+ Add More Files** to append additional documents to the batch, or **Clear All** to reset the queue.
+   - **Numbered File Preview Rows**: Each queued document shows its batch order (`1`, `2`, `3`…), format-specific icon, exact **filename**, formatted **file size**, and an individual **× Remove** button.
+2. Click the primary gradient button **Ingest 3 Documents into Neon Postgres & Neo4j** (or **Ingest into Neon Postgres & Neo4j** for a single file) at the bottom of the view to launch the 5-step hybrid ingestion pipeline.
 
 ---
 
 ## Step 3: Monitoring the Live 5-Step Ingestion Pipeline (`Ingestion Pipeline` Tab)
 
-Clicking **Ingest into Neon Postgres & Neo4j** automatically transitions you to the **Ingestion Pipeline** tab (`IngestionTab.jsx`), which polls `GET /ingest/progress` every `450ms` to display real-time execution progress.
+Clicking the **Ingest** button automatically transitions you to the **Ingestion Pipeline** tab (`IngestionTab.jsx`), which processes each queued document sequentially through all 5 stages while polling `GET /ingest/progress` every `450ms`.
 
-### Live 5-Step Hybrid Ingestion Execution
+### Live Per-Document 5-Step Hybrid Ingestion Execution
 
 ![Live 5-Step Hybrid Ingestion Pipeline Running](assets/screenshots/05-ingestion-live-running.png)
 
-While a document is actively being processed:
+While documents are actively being processed:
 
-- **Top Live Progress Banner**: Displays the active step number (`STEP 1 OF 5 • TEXT EXTRACTION`), live status message (`Starting document ingestion pipeline...`), percentage badge (`15%`), and animated progress bar.
-- **Database Status Cards**: Real-time counters for **Neon Postgres Status** (`Ready`), **Vector Chunks Stored**, **Neo4j Entities**, and **Neo4j Relationships**.
+- **Per-Document Live Progress Banner**:
+  - When multiple documents are selected, the header badge displays **`SELECTED DOCUMENT 2 OF 3 • STEP S OF 5 • <STEP NAME>`** along with a **`Doc 2 / 3`** indicator and the per-document percentage progress bar (`0%` → `100%` for each file).
+  - For a single document, it displays **`STEP S OF 5 • <STEP NAME>`**.
+- **Database Status Cards**: Real-time counters for **Neon Postgres Status** (`Ready`), **Vector Chunks Stored**, **Neo4j Entities**, and **Neo4j Relationships** update as each document finishes.
 - **Active vs. Queued Step Badges**:
   - The currently executing stage highlights with a glowing cyan border and a **`Running Now...`** spinner badge.
   - Upcoming stages remain in the **`Queued`** state until the active stage completes.
 
 ---
 
-### Completed Ingestion Summary & Stage Logs
+### Completed Batch Ingestion Summary & Stage Logs
 
 ![Completed 5-Step Hybrid Ingestion Pipeline](assets/screenshots/06-ingestion-completed.png)
 
-When all 5 stages finish executing:
+When all queued documents finish executing all 5 stages:
 
-1. **Emerald Completion Banner (`All 5 Pipeline Steps Completed Successfully`)**: Summarizes the exact ingestion metrics for your file:
-   - **Filename**: `Drona_Resume_.pdf`
-   - **Chunks (pgvector)**: `6`
-   - **Entities (Neo4j)**: `66`
-   - **Relationships (Neo4j)**: `85`
-   - **Characters**: `5,509`
+1. **Emerald Completion Banner (`All 5 Pipeline Steps Completed Successfully (3 Documents Ingested)`)**:
+   - Explicitly displays the total number of ingested documents when a multi-file batch completes.
+   - Summarizes aggregated metrics across the batch (**Documents Ingested: `3`**, **Filenames**, **Chunks (pgvector): `13`**, **Entities (Neo4j): `126`**, **Relationships (Neo4j): `118`**, and **Characters: `11,205`**).
+   - Lists a **Per-Document Breakdown** (`✓ 1. doc1_openai_funding.md`, `✓ 2. doc2_anthropic_amazon.md`, `✓ 3. doc6_google_ai_strategy.md`) with each file's individual chunk, entity, and relationship counts.
 2. **Updated Database Counters**: The 4 workspace metric cards immediately reflect the updated totals in Neon PostgreSQL and Neo4j.
-3. **Per-Stage Output Logs**: All 5 pipeline cards show green **`✓ Completed`** badges along with their concrete stage output:
-   - **Step 1 — Text Extraction**: `✓ Extracted 5,509 characters from Drona_Resume_.pdf`
-   - **Step 2 — Structure-Aware Semantic Chunking**: `✓ Created 6 overlapping semantic chunks`
-   - **Step 3 — Gemini Embedding Generation**: `✓ Generated 6 × 768-dim embedding vectors`
-   - **Step 4 — Neon PostgreSQL Vector & Hybrid Storage**: `✓ Indexed 6 chunks in Neon pgvector + FTS`
-   - **Step 5 — Neo4j Knowledge Graph Extraction**: `✓ Extracted 66 entities & 85 relationships in Neo4j`
+3. **Per-Stage Output Logs**: All 5 pipeline cards show green **`✓ Completed`** badges along with their concrete stage output for the completed run.
 
 ---
 
@@ -177,11 +172,11 @@ Switch to the **Documents** tab (`DocumentsTab.jsx`) to audit your indexed files
 
 Each indexed document card displays:
 
-- **Filename & Format Icon**: e.g., `Drona_Resume_.pdf`
-- **Neon PostgreSQL Vector Count Badge**: `6 chunks` (cyan badge)
-- **Neo4j Entity Count Badge**: `66 entities` (gold badge)
-- **Neo4j Relationship Count Badge**: `85 relations` (emerald badge)
-- **Document UUID**: Truncated `doc_id` (`ID: a3b110e5-301...`)
+- **Filename & Format Icon**: e.g., `doc6_google_ai_strategy.md`, `doc2_anthropic_amazon.md`, and `doc1_openai_funding.md`
+- **Neon PostgreSQL Vector Count Badge**: e.g., `7 chunks`, `3 chunks` (cyan badge)
+- **Neo4j Entity Count Badge**: e.g., `55 entities`, `31 entities`, `33 entities` (gold badge)
+- **Neo4j Relationship Count Badge**: e.g., `52 relations`, `31 relations`, `33 relations` (emerald badge)
+- **Document UUID**: Truncated `doc_id` (`ID: 3cff2396-097...`)
 - **Refresh & Delete Controls**: Top-right **Refresh** button and per-document **Delete** button.
 
 ---
@@ -221,19 +216,19 @@ When starting a new session:
 
 ![Agentic Chat Grounded Response with Citations](assets/screenshots/10-chat-hybrid-graph-response.png)
 
-When you submit a question (e.g., *"Summarize Drona's key technical skills, AI/ML projects, and entity relationships from his resume."*):
+When you submit a cross-document question (e.g., *"How do OpenAI, Anthropic, Amazon, and Google compare in their AI funding and strategic partnerships?"*):
 
 1. **Session Management Controls**: The header displays a glowing **`Session active`** badge (preserving multi-turn ADK `InMemorySessionService` memory) and a **`New session`** button to reset the conversation.
 2. **Tool Execution Badges**: At the top of the assistant bubble, tool chips show the exact backend tools the ADK agent autonomously executed (`hybrid_search`, `graph_search`, `get_entity_relationships`, or `vector_search`).
 3. **Inline Dual Citations**:
-   - **Document Chunk Citations** (`[Source: Drona_Resume_.pdf, chunk N]`) highlight in **cyan/emerald**, linking claims directly to semantic vector chunks in **Neon PostgreSQL**.
-   - **Knowledge Graph Citations** (`[Graph: DRONA L -> BUILDS -> Agentic AI]`, `[Graph: DRONA L -> ARCHITECTS -> Retrieval-Augmented Generation (RAG)]`, `[Graph: DRONA L -> USES -> Google Agent Development Kit (ADK)]`) highlight in **gold**, tracing multi-hop entity relationships in **Neo4j**.
+   - **Document Chunk Citations** (`[Source: doc2_anthropic_amazon.md, chunk 1]`) highlight in **cyan/emerald**, linking claims directly to semantic vector chunks in **Neon PostgreSQL**.
+   - **Knowledge Graph Citations** (`[Graph: Latest Funding Round -> HAS_AMOUNT -> $6.6 Billion]`) highlight in **gold**, tracing multi-hop entity relationships in **Neo4j**.
 
 ---
 
 ## Step 6: Exploring the Neo4j Knowledge Graph (`Knowledge Graph` Tab)
 
-Switch to the **Knowledge Graph** tab (`GraphTab.jsx`) to visually explore and query the domain entities and directed relationships extracted from your documents.
+Switch to the **Knowledge Graph** tab (`GraphTab.jsx`) to visually explore and query the domain-agnostic entities and directed relationships extracted from your documents.
 
 ### Neo4j Knowledge Graph Topology Overview
 
@@ -241,12 +236,12 @@ Switch to the **Knowledge Graph** tab (`GraphTab.jsx`) to visually explore and q
 
 The **Neo4j Knowledge Graph Explorer** provides four synchronized views:
 
-1. **Graph Summary Cards**: Displays **Total Entities** (`89`), **Relationships** (`194`), and **Entity Categories** (`7`).
-2. **Real-Time Search & Category Filter Pills**:
+1. **Graph Summary Cards**: Displays **Total Entities** (`179`), **Relationships** (`209`), and **Entity Categories** (`23`).
+2. **Real-Time Search & Dynamic Category Filter Pills**:
    - Type any keyword into the search bar to filter entities, relationship types, or facts in real time.
-   - Click any category pill (`All`, `Person`, `Technology`, `Event`, `Concept`, `Organization`, `Model`, `Location`) to isolate specific node types.
-3. **Interactive Entity Topology (Left Panel)**: Renders a radial SVG neural network where hub entities (such as `DRONA L`) sit at the center connected to surrounding technology, model, and organization nodes color-coded by category.
-4. **Extracted Relationship Facts (Right Panel)**: Lists all extracted `(Source) -[RELATION]-> (Target)` triples (e.g., `DRONA L [BUILDS ->] Agentic AI`) along with their natural-language fact sentence and source document attribution (`Drona_Resume_.pdf`).
+   - Click any dynamically inferred category pill (`All`, `Organization`, `Event`, `Model`, `Agreement`, `Funding Round`, `Metric`, `Product`, `Service`, `Person`, `Partnership`, `Document`, `Location`, `Infrastructure`, `AI Model`, `Initiative`, `Concept`, `Feature`, `Platform`, `Technology`, `Alliance`, `Year`, `Strategy`, `Market`) to isolate specific node types and their 1-hop neighbors.
+3. **Interactive Entity Topology (Left Panel)**: Renders a radial SVG neural network where hub entities (such as `Google`, `OpenAI`, and `Anthropic`) sit at the center connected to surrounding domain nodes color-coded by category.
+4. **Extracted Relationship Facts (Right Panel)**: Lists all extracted `(Source) -[RELATION]-> (Target)` triples along with their natural-language fact sentence and source document attribution (`doc1_openai_funding.md`, `doc2_anthropic_amazon.md`, `doc6_google_ai_strategy.md`).
 
 ---
 
@@ -256,6 +251,6 @@ The **Neo4j Knowledge Graph Explorer** provides four synchronized views:
 
 Clicking any node on the interactive SVG canvas (or clicking any entity name in the right-hand facts list) activates the **1-Hop Neighborhood Inspector**:
 
-1. **Gold Neighborhood Highlighting**: All edges directly connected to the selected entity (`DRONA L`) illuminate in gold (`#fbbf24`) with relationship labels (`BUILDS`, `DESIGNS`, `HAS_SKILL`, `USES`, `DEVELOPED`, `STUDIED_AT`) rendered along the connecting paths, while unconnected nodes dim.
-2. **Selected Entity Detail Card (Top-Right)**: Displays the entity's category badge (`PERSON`), canonical name (`DRONA L`), Gemini-extracted summary description (*"DRONA L is an Associate Consultant and AI engineer with hands-on experience in agentic AI systems, RAG solutions, and LLM-powered test automation."*), and a **`× Clear`** button to return to the full graph view.
-3. **Filtered Entity Relationships List (Bottom-Right)**: Automatically filters the right-hand panel (`Relationships for "DRONA L"`) to show only the relationship triples involving the selected node.
+1. **Gold Neighborhood Highlighting**: All edges directly connected to the selected entity (`Google`) illuminate in gold (`#fbbf24`) with relationship labels (`HAS_MARKET_SHARE_IN`, `HAS_LONG_TERM_VISION`, `HAS_INTEGRATED_CAPABILITY`, `DEVELOPS`, `ANALYZES`) rendered along the connecting paths, while unconnected nodes dim.
+2. **Selected Entity Detail Card (Top-Right)**: Displays the entity's category badge (`ORGANIZATION`), canonical name (`Google`), Gemini-extracted summary description (*"Google's approach to the AI competitive landscape reveals a sophisticated multi-front strategy that simultaneously develops internal capabilities while investing in potential competitors."*), and a **`× Clear`** button to return to the full graph view.
+3. **Filtered Entity Relationships List (Bottom-Right)**: Automatically filters the right-hand panel (`Relationships for "Google"`) to show only the `38 triples` involving the selected node.

@@ -88,24 +88,26 @@ Batching up to `50` chunks per API request significantly reduces ingestion laten
 
 ---
 
-## Live Per-User Progress Tracking (`app/ingest.py`)
+## Live Per-User & Multi-Document Progress Tracking (`app/ingest.py`)
 
-During ingestion, `ingest_document()` updates an in-memory per-user state dictionary (`_user_ingestion_progress[user_id]`) before and after each of the 5 steps.
+When a user selects multiple files in `UploadTab.jsx`, `App.jsx` orchestrates sequential batch ingestion (`doc_index = 1..N`, `total_docs = N`) so each document runs through Steps 1–5 (`0%` → `100%`) cleanly.
 
-The frontend polls `GET /ingest/progress` every `800ms` while an upload is active, receiving:
+During ingestion, `ingest_document(file_path, filename, user_id, doc_index, total_docs)` updates `_ingestion_progress[user_id]` before and after each of the 5 stages. The frontend polls `GET /ingest/progress` every `450ms` while an upload is active, receiving:
 
 ```json
 {
-  "active": true,
-  "filename": "architecture_overview.pdf",
-  "current_step": 3,
-  "error": null,
-  "steps": {
-    "1": { "status": "completed", "detail": "Extracted 14,820 characters" },
-    "2": { "status": "completed", "detail": "Created 15 semantic chunks" },
-    "3": { "status": "running", "detail": "Generating 768-dim vectors for 15 chunks..." },
-    "4": { "status": "pending", "detail": "Waiting" },
-    "5": { "status": "pending", "detail": "Waiting" }
+  "state": "running",
+  "filename": "ADK_Architecture_Brief.md",
+  "doc_index": 2,
+  "total_docs": 2,
+  "current_step": 5,
+  "step_name": "Neo4j Knowledge Graph Extraction",
+  "message": "Extracting domain entities & relationships with Gemini into Neo4j…",
+  "step_outputs": {
+    "1": "Extracted 1,142 characters from ADK_Architecture_Brief.md",
+    "2": "Created 2 overlapping semantic chunks",
+    "3": "Generated 2 × 768-dim embedding vectors",
+    "4": "Indexed 2 chunks in Neon pgvector + FTS"
   }
 }
 ```

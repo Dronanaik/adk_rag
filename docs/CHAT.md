@@ -35,15 +35,15 @@ flowchart TD
 - **How It Works**: Queries `document_chunks` ordered purely by `pgvector` cosine distance (`embedding <=> query_vec`).
 - **Best For**: Conceptual, thematic, or paraphrased queries where exact keywords may not appear in the source text.
 
-### 3. `graph_search(query, user_id, limit=15)`
+### 3. `graph_search(query, tool_context)`
 - **Backend Function**: `app/graph_store.py -> search_knowledge_graph()`
-- **How It Works**: Tokenizes the query and searches Neo4j `(:Entity)` names, categories, descriptions, and `[:RELATES_TO]` facts scoped to `user_id`.
-- **Best For**: Discovering how people, organizations, technologies, models, and concepts connect across one or more documents.
+- **How It Works**: Tokenizes the query and searches Neo4j `(:Entity)` names, dynamically inferred domain categories (`entity_type`), descriptions, and `[:RELATES_TO]` facts scoped to `user_id`.
+- **Best For**: Discovering how any domain entities, subjects, attributes, items, processes, or categories connect, relate, depend on each other, or compare across one or more documents.
 
-### 4. `get_entity_relationships(entity_name, user_id, depth=1)`
+### 4. `get_entity_relationships(entity_name, tool_context)`
 - **Backend Function**: `app/graph_store.py -> get_entity_relationships_from_graph()`
-- **How It Works**: Finds the matching `(:Entity)` node in Neo4j and traverses all incoming and outgoing `[:RELATES_TO]` edges plus `[:MENTIONED_IN]` document links.
-- **Best For**: Deep-diving into a specific entity's direct connections and dependencies.
+- **How It Works**: Finds the matching `(:Entity)` node in Neo4j (regardless of category) and traverses all incoming and outgoing `[:RELATES_TO]` edges.
+- **Best For**: Deep-diving into a specific named entity's direct neighborhood, dependencies, and supporting facts.
 
 ---
 

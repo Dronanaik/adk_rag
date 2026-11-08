@@ -124,10 +124,10 @@ curl http://localhost:8000/ingest/progress \
 ---
 
 ### `POST /documents/upload`
-Uploads a file and runs the 5-step dual ingestion pipeline into Neon PostgreSQL and Neo4j.
+Uploads a file and runs the 5-step dual ingestion pipeline into Neon PostgreSQL and Neo4j. Accepts optional `doc_index` and `total_docs` query parameters for multi-document batch telemetry in `GET /ingest/progress`.
 
 ```bash
-curl -X POST http://localhost:8000/documents/upload \
+curl -X POST "http://localhost:8000/documents/upload?doc_index=1&total_docs=2" \
   -H "Authorization: Bearer <TOKEN>" \
   -F "file=@/path/to/document.pdf"
 ```

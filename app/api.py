@@ -58,7 +58,7 @@ app = FastAPI(
         "Hybrid Agentic RAG & Knowledge Graph platform powered by Google ADK, "
         "Gemini, Neon PostgreSQL (pgvector), and Neo4j."
     ),
-    version="2.0.1",
+    version="2.1.0",
     lifespan=lifespan,
 )
 
@@ -300,6 +300,8 @@ async def ingest_progress(
 @app.post("/documents/upload")
 async def upload_document(
     file: UploadFile = File(...),
+    doc_index: int = Query(default=1, ge=1),
+    total_docs: int = Query(default=1, ge=1),
     current_user: dict = Depends(get_current_user),
 ):
     """
@@ -342,6 +344,8 @@ async def upload_document(
             file_path=file_path,
             filename=clean_filename,
             user_id=user_id,
+            doc_index=doc_index,
+            total_docs=total_docs,
         )
 
         return {
