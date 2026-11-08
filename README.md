@@ -6,7 +6,7 @@
 
 <br/>
 
-[![Documentation Portal](https://img.shields.io/badge/📖_Explore_Full_Documentation-dronanaik.github.io%2Fadk__rag-10b981?style=for-the-badge&labelColor=0d1117)](https://dronanaik.github.io/adk_rag/)
+[![Explore Documentation](https://img.shields.io/badge/Explore_Documentation_↗-4285F4?style=for-the-badge&logo=readthedocs&logoColor=white)](https://dronanaik.github.io/adk_rag/)
 
 <br/>
 
