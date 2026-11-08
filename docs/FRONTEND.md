@@ -11,13 +11,13 @@ flowchart TD
     Main["main.jsx"] --> App["App.jsx (Root Auth & Tab State)"]
     App -->|Unauthenticated| AuthModal["UserIdModal.jsx (Neon PostgreSQL Sign In / Create Account)"]
     App -->|Authenticated| Header["Header.jsx (Status Pill, User Profile, Sign Out)"]
-    App -->|Authenticated| Tabs["Tabs.jsx (5-Tab Navigation Bar)"]
-    Tabs --> T1["1. UploadTab.jsx (Drag & Drop File Upload)"]
-    Tabs --> T2["2. IngestionTab.jsx (Live 5-Step Progress & DB Metrics)"]
-    Tabs --> T3["3. DocumentsTab.jsx (Document List & Cascade Delete)"]
-    Tabs --> T4["4. ChatTab.jsx + ChatMessage.jsx (Agentic Chat with Tool Badges & Citations)"]
-    Tabs --> T5["5. GraphTab.jsx (Interactive SVG Neo4j Knowledge Graph)"]
-    Tabs --> T6["6. SettingsTab.jsx (Environment Variables, Info Docs Links & Default Fallback)"]
+    App -->|Authenticated| Tabs["Tabs.jsx (6-Tab Navigation Bar)"]
+    Tabs --> T0["1. SettingsTab.jsx (Minimalist Env Variables, Info Icon Links & Save & Continue)"]
+    Tabs --> T1["2. UploadTab.jsx (Drag & Drop Multi-File Upload)"]
+    Tabs --> T2["3. IngestionTab.jsx (Live 5-Step Progress & DB Metrics)"]
+    Tabs --> T3["4. DocumentsTab.jsx (Document List, Single Delete & Delete All Modal)"]
+    Tabs --> T4["5. ChatTab.jsx + ChatMessage.jsx (Agentic Chat with Icon-Only Send & Citations)"]
+    Tabs --> T5["6. GraphTab.jsx (Interactive SVG Neo4j Knowledge Graph)"]
 ```
 
 ---
@@ -26,15 +26,15 @@ flowchart TD
 
 | Component | File | Description |
 |-----------|------|-------------|
-| **Authentication Screen** | `UserIdModal.jsx` | Full Sign In / Create Account interface backed by `/auth/login` and `/auth/signup` on Neon PostgreSQL, plus a **Configure Environment Variables & Connections** drawer for first-time setup. |
+| **Authentication Screen** | `UserIdModal.jsx` | Full Sign In / Create Account interface backed by `/auth/login` and `/auth/signup` on Neon PostgreSQL. |
 | **Top Header** | `Header.jsx` | Sticky top bar displaying the application title, real-time `API Ready` / `API Offline` indicator, signed-in user's name and email, and a **Sign Out** button. |
-| **Tab Navigation** | `Tabs.jsx` | Six-tab bar ordered: `Upload` → `Ingestion Pipeline` → `Documents` → `Agentic Chat` → `Knowledge Graph` → `Settings`. |
+| **Tab Navigation** | `Tabs.jsx` | Six-tab bar ordered: `Settings` → `Upload` → `Ingestion Pipeline` → `Documents` → `Agentic Chat` → `Knowledge Graph`. |
+| **Settings Tab (`v2.3.0` / `v2.3.3`)** | `SettingsTab.jsx` | Post-login landing screen displaying a minimalist grid of environment variable keys, input fields, and icon-only (`ⓘ`) documentation deep-links. Blank fields silently fall back to server defaults; clicking **Save & Continue** navigates to the **Upload** tab. |
 | **Upload Tab** | `UploadTab.jsx` | Multi-file drag-and-drop and browser file selector supporting 13 document formats, with a numbered file queue, `+ Add More Files`, `Clear All`, individual file removal, and automatic redirection to the **Ingestion Pipeline** tab when batch ingestion begins. |
 | **Ingestion Pipeline Tab** | `IngestionTab.jsx` | Polls `GET /ingest/progress` every `450ms` during single or multi-document uploads, displaying `Selected Document X of Y • Step S of 5 • <Step Name>` as the progress bar runs for each document, and summarizing total documents ingested (`All 5 Pipeline Steps Completed Successfully (Y Documents Ingested)`) with per-file metrics upon completion. |
-| **Documents Tab** | `DocumentsTab.jsx` | Lists all documents owned by the user with chunk, entity, and relationship counts, plus one-click cascade deletion across Neon PostgreSQL and Neo4j. |
-| **Agentic Chat Tab** | `ChatTab.jsx` & `ChatMessage.jsx` | Multi-turn chat interface with suggested starter prompts, animated typing indicators, tool execution badges (`hybrid_search`, `vector_search`, `graph_search`, `get_entity_relationships`), and highlighted `[Source: ...]` / `[Graph: ...]` citations. |
+| **Documents Tab (`v2.3.3`)** | `DocumentsTab.jsx` | Lists all documents owned by the user with chunk, entity, and relationship counts, per-document cascade delete, and a **Delete All** button that opens a confirmation modal requiring the user to type `Delete`. |
+| **Agentic Chat Tab (`v2.3.3`)** | `ChatTab.jsx` & `ChatMessage.jsx` | Multi-turn chat interface with suggested starter prompts, an icon-only `<Send />` button, animated typing indicators, tool execution badges (`hybrid_search`, `vector_search`, `graph_search`, `get_entity_relationships`), and highlighted `[Source: ...]` / `[Graph: ...]` citations. |
 | **Knowledge Graph Tab** | `GraphTab.jsx` | Interactive SVG radial/force-layout canvas for exploring Neo4j `:Entity` nodes and `:RELATES_TO` edges, complete with category filter pills, real-time keyword search, zoom controls, a 1-hop Entity Inspector drawer, and a structured triplets table. |
-| **Settings Tab (`v2.3.0`)** | `SettingsTab.jsx` | Interactive Environment Variables & Connection Settings page with live connection health cards, per-variable **`ⓘ How to get?`** documentation deep-links, automatic fallback to default values when fields are left blank, and one-click reset. |
 
 ---
 
