@@ -20,10 +20,11 @@ import styles from './IngestionTab.module.css'
 const PIPELINE_STEPS = [
   {
     step: 1,
-    name: 'Text Extraction',
-    description: 'Reads the uploaded file and extracts raw text using format-specific parsers.',
+    name: 'Lossless Text & Table Extraction (Docling)',
+    description:
+      'Uses IBM Docling (DocumentConverter + TableFormer) and lossless format parsers to preserve layout reading order, headings, tables, and notes as structured Markdown.',
     icon: BookOpen,
-    detail: 'PyMuPDF, python-docx, openpyxl, python-pptx, plain reader',
+    detail: 'Docling DocumentConverter + PyMuPDF, python-docx, openpyxl, python-pptx',
   },
   {
     step: 2,

@@ -96,13 +96,13 @@ def ingest_document(
     }
 
     try:
-        # ── Step 1: Text Extraction ──
+        # ── Step 1: Lossless Docling & Format-Aware Extraction ──
         _update_progress(
             user_id,
             state="running",
             current_step=1,
-            step_name="Text Extraction",
-            message=f"Extracting raw text from {safe_filename}…",
+            step_name="Lossless Text & Table Extraction (Docling)",
+            message=f"Extracting layout-aware Markdown, tables & text from {safe_filename}…",
             filename=safe_filename,
         )
         text = extract_text(file_path)
@@ -116,8 +116,10 @@ def ingest_document(
             state="running",
             current_step=2,
             step_name="Structure-Aware Semantic Chunking",
-            message=f"Splitting {char_count:,} characters into semantic paragraphs & chunks…",
-            step_outputs={"1": f"Extracted {char_count:,} characters from {safe_filename}"},
+            message=f"Splitting {char_count:,} characters into semantic paragraphs & table-aware chunks…",
+            step_outputs={
+                "1": f"Losslessly extracted {char_count:,} characters (Markdown + tables) from {safe_filename}"
+            },
         )
 
         # ── Step 2: Semantic Chunking ──

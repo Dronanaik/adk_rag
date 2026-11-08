@@ -21,11 +21,54 @@ def normalize_text(text: str) -> str:
     return "\n\n".join(cleaned_paragraphs)
 
 
+def _split_markdown_table_block(block: str, chunk_size: int) -> list[str]:
+    """
+    Split a large Markdown table along row boundaries while preserving the
+    table header and separator rows on every continuation chunk so column
+    context is never lost.
+    """
+    lines = [ln.strip() for ln in block.splitlines() if ln.strip()]
+    if len(lines) <= 2:
+        return [block]
+
+    header_prefix = ""
+    data_start = 0
+    if lines[0].startswith("|") and len(lines) >= 2 and "---" in lines[1]:
+        header_candidate = f"{lines[0]}\n{lines[1]}"
+        if len(header_candidate) < chunk_size // 2:
+            header_prefix = header_candidate
+            data_start = 2
+
+    chunks: list[str] = []
+    current_lines: list[str] = [header_prefix] if header_prefix else []
+
+    for row in lines[data_start:]:
+        candidate = "\n".join(current_lines + [row]) if current_lines else row
+        if len(candidate) <= chunk_size:
+            current_lines.append(row)
+        else:
+            if current_lines and (not header_prefix or len(current_lines) > 1):
+                chunks.append("\n".join(current_lines))
+            current_lines = [header_prefix, row] if header_prefix else [row]
+            if len("\n".join(current_lines)) > chunk_size:
+                chunks.append("\n".join(current_lines)[:chunk_size])
+                current_lines = [header_prefix] if header_prefix else []
+
+    if current_lines and (not header_prefix or len(current_lines) > 1):
+        chunks.append("\n".join(current_lines))
+
+    return chunks or [block[:chunk_size]]
+
+
 def _split_long_block(block: str, chunk_size: int, overlap: int) -> list[str]:
     """
-    Split a single oversized paragraph along sentence boundaries when possible,
-    falling back to character windows with overlap.
+    Split a single oversized paragraph or Markdown table along row/sentence
+    boundaries when possible, falling back to character windows with overlap.
     """
+    block_lines = [ln.strip() for ln in block.splitlines() if ln.strip()]
+    if len(block_lines) >= 3 and sum(1 for ln in block_lines if ln.startswith("|")) >= 2:
+        return _split_markdown_table_block(block, chunk_size=chunk_size)
+
     sentences = re.split(r"(?<=[.!?])\s+", block)
     chunks: list[str] = []
     current = ""

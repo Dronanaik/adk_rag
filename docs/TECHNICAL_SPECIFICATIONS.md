@@ -16,6 +16,7 @@ Complete engineering specifications for the **ADK Agentic RAG + Knowledge Graph*
 | **Embeddings** | Embedding Model | Google Gemini (`google-genai`) | `gemini-embedding-001` (`768` dimensions) | Dense semantic vector representation of chunks & queries |
 | **Relational + Vector DB** | Primary Database | Neon Console Serverless PostgreSQL | PostgreSQL 15/16 + `pgvector` (`vector` extension) | User auth, document metadata, vector search, full-text search |
 | **Postgres Driver** | DB Client | `psycopg2-binary` + `pgvector` | `psycopg2-binary >= 2.9`, `pgvector >= 0.2.5` | Threaded connection pooling & vector type registration |
+| **Document Extraction** | Layout & Table Parser | IBM Docling + PyMuPDF / Office | `docling` (`DocumentConverter`), `pymupdf`, `python-docx`, `openpyxl`, `python-pptx` | Lossless layout-aware Markdown & table extraction across 13 formats |
 | **Knowledge Graph DB** | Graph Database | Neo4j AuraDB / Neo4j 5+ | Neo4j `5.x` (`neo4j >= 5.18`) | Entity nodes, relationship triplets, multi-hop Cypher traversal |
 | **Authentication** | Password + Token | Python `hashlib` + `hmac` | `PBKDF2-HMAC-SHA256` + `HS256` JWT | Stateless Bearer authentication backed by Neon PostgreSQL |
 | **Frontend UI** | Web Client | React + Vite | React `18.3`, Vite `5.x`, `lucide-react` | Bioluminescent Neural Forest UI & interactive SVG Knowledge Graph |

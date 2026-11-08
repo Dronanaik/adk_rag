@@ -1,3 +1,29 @@
+# Release Notes — `v2.2.0`
+
+**Release Title:** Lossless Document & Table Extraction with IBM Docling (`v2.2.0`)  
+**Tag:** `v2.2.0`  
+**Previous Tag:** `v2.1.1`
+
+> **Combining Agentic RAG, Knowledge Graphs, and Hybrid Vector-Graph Retrieval to transform fragmented information into connected intelligence, powered by Google ADK and Gemini 2.5.**
+
+---
+
+## What's New & Improved in `v2.2.0`
+
+### 1. Lossless Layout & Table Extraction Engine with IBM Docling (`app/parsers.py`, `requirements.txt`)
+- **IBM Docling Integration (`docling.document_converter.DocumentConverter`)**: Integrated `docling` as the primary layout-aware document converter in Step 1 (`extract_with_docling`), exporting `.pdf`, `.docx`, `.pptx`, `.xlsx`, `.html`, `.htm`, `.md`, and `.csv` documents into structured GitHub-Flavored Markdown (`export_to_markdown()`).
+- **Zero-Content-Loss Reconciliation Across All 13 File Formats**:
+  - **PDF (`.pdf`)**: Combines Docling's layout & TableFormer conversion with PyMuPDF (`page.get_text("text", sort=True)` + `page.find_tables()`) page-coverage reconciliation so no page, multi-column text block, or embedded table is ever dropped.
+  - **Word (`.docx`)**: Traverses the full Word XML body (`w:p` paragraphs with `#`/`##`/`###` heading hierarchy + `w:tbl` tables rendered as Markdown tables) as well as section `header` and `footer` paragraphs.
+  - **PowerPoint (`.pptx`)**: Recursively extracts slide text frames, nested grouped shapes (`shape.shapes`), slide tables (`shape.has_table` formatted as Markdown tables), and presenter speaker notes (`slide.notes_slide.notes_text_frame`).
+  - **Excel & CSV (`.xlsx`, `.xls`, `.csv`)**: Converts every worksheet and CSV table into structured Markdown tables (`| Header 1 | Header 2 |`) so column headers stay bound to cell values.
+  - **HTML (`.html`, `.htm`)**: Converts HTML headings, lists, and `<table>` elements into structured Markdown via Docling + `_LosslessHTMLParser`.
+
+### 2. Table-Header-Preserving Semantic Chunking (`app/chunking.py`)
+- Added `_split_markdown_table_block` to `app/chunking.py` so that when a large Markdown table spans multiple `1,200`-character chunks, it splits cleanly along table row boundaries (`\n`) and repeats the Markdown table header (`| Col 1 | Col 2 |\n| --- | --- |`) at the top of each continuation chunk.
+
+---
+
 # Release Notes — `v2.1.1`
 
 **Release Title:** SHA-256 Content Deduplication & Atomic Document Version Replacement (`v2.1.1`)  

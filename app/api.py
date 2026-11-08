@@ -58,7 +58,7 @@ app = FastAPI(
         "Hybrid Agentic RAG & Knowledge Graph platform powered by Google ADK, "
         "Gemini, Neon PostgreSQL (pgvector), and Neo4j."
     ),
-    version="2.1.1",
+    version="2.2.0",
     lifespan=lifespan,
 )
 

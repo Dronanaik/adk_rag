@@ -35,33 +35,32 @@ After Step 2, `ingest_document` computes a normalized **SHA-256 content fingerpr
 
 ---
 
-## Step 1: Format-Specific Text Extraction (`app/parsers.py`)
+## Step 1: Lossless Docling & Format-Specific Extraction (`app/parsers.py`)
 
-`parse_file(file_path)` inspects the lowercase file extension and routes the file to the appropriate parser:
+`extract_text(file_path)` uses **IBM Docling (`docling.document_converter.DocumentConverter`)** reconciled with lossless format-specific extractors so zero text, tables, headers, footers, or speaker notes are lost:
 
 | Extension | Library | Extraction Details |
 |-----------|---------|--------------------|
-| `.pdf` | `pymupdf` (`import pymupdf as fitz`) | Opens each page in sequence and extracts text blocks via `page.get_text("text")`. |
-| `.docx` | `python-docx` | Extracts all non-empty paragraphs followed by all table rows formatted as `cell1 \| cell2`. |
-| `.xlsx` | `openpyxl` | Loads workbook with `data_only=True` (evaluated formula values) and formats each sheet under `[Sheet: Name]`. |
-| `.xls` | `xlrd` | Iterates legacy Excel sheets and formats non-empty rows. |
-| `.pptx` | `python-pptx` | Extracts text frames and tables slide-by-slide under `[Slide N]`. |
-| `.txt`, `.md`, `.log` | Built-in `open()` | Reads UTF-8 text directly. |
-| `.csv` | `csv` | Joins each CSV row with `, `. |
-| `.json` | `json` | Parses JSON and pretty-prints with `indent=2`. |
-| `.xml`, `.html`, `.htm` | `xml.etree.ElementTree` / regex | Strips tags and normalizes whitespace into clean text. |
+| `.pdf` | `docling` (`DocumentConverter`) + `pymupdf` (`fitz`) | Converts multi-column layouts, headings, and tables into structured Markdown via Docling TableFormer, reconciled page-by-page with PyMuPDF (`page.get_text("text", sort=True)` + `page.find_tables()`). |
+| `.docx` | `docling` + `python-docx` | Preserves document order across headings (`#`, `##`, `###`), paragraphs, all Word tables (`w:tbl` as Markdown tables), and section headers/footers. |
+| `.xlsx`, `.xls` | `docling` + `openpyxl` | Loads workbook with `data_only=True` and formats every sheet as a GitHub-Flavored Markdown table under `## [Sheet: Name]`. |
+| `.pptx` | `docling` + `python-pptx` | Recursively extracts text frames, grouped shapes (`shape.shapes`), slide tables (`shape.has_table` as Markdown tables), and speaker notes (`notes_slide`). |
+| `.html`, `.htm` | `docling` + `HTMLParser` | Converts HTML headings, lists, and `<table>` elements into structured Markdown. |
+| `.csv` | `csv` + Markdown formatter | Converts CSV rows into a structured Markdown table with column headers. |
+| `.txt`, `.md`, `.json`, `.xml`, `.log` | Built-in `open()` | Reads UTF-8 text directly without truncation. |
 
 ---
 
-## Step 2: Structure-Aware Semantic Chunking (`app/chunking.py`)
+## Step 2: Structure & Table-Aware Semantic Chunking (`app/chunking.py`)
 
 Instead of slicing text at arbitrary character offsets (which breaks sentences and tables mid-thought), `chunk_text(text, chunk_size=1200, overlap=200)` preserves document structure:
 
 1. **Line Normalization**: Converts `\r\n` to `\n` and collapses 3+ consecutive newlines into `\n\n`.
 2. **Paragraph & Header Segmentation**: Splits along paragraph breaks (`\n\n`) and Markdown headings (`#`, `##`, `###`).
 3. **Greedy Paragraph Packing**: Accumulates complete paragraphs into the current chunk as long as total length remains $\le 1200$ characters.
-4. **Sentence-Boundary Fallback**: If a single paragraph exceeds `1200` characters, splits along sentence boundaries (`(?<=[.!?])\s+`).
-5. **Contextual Overlap**: Carries the trailing `200` characters of chunk $i$ into the start of chunk $i+1$ so concepts spanning chunk boundaries remain intact.
+4. **Markdown Table Header Preservation (`_split_markdown_table_block`)**: If a Markdown table exceeds `1200` characters, splits cleanly along row boundaries (`\n`) and repeats the table header row (`| Col 1 | Col 2 |\n| --- | --- |`) at the top of each continuation chunk.
+5. **Sentence-Boundary Fallback**: If a single prose paragraph exceeds `1200` characters, splits along sentence boundaries (`(?<=[.!?])\s+`).
+6. **Contextual Overlap**: Carries the trailing `200` characters of chunk $i$ into the start of chunk $i+1$ so concepts spanning chunk boundaries remain intact.
 
 ---
 
