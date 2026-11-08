@@ -36,17 +36,24 @@ The **ADK Agentic RAG + Knowledge Graph** platform is engineered as a modular, m
 
 ---
 
-## 1. High-Level System Topology
+## 1. End-to-End Visual Architecture (`v2.3.3`)
+
+![ADK Agentic RAG End-to-End Architecture](assets/e2e_architecture.svg)
+
+---
+
+## 2. High-Level System Topology
 
 ```mermaid
 flowchart TB
     subgraph Client["React 18 + Vite Frontend (Port 5173)"]
         AuthUI["Sign In / Create Account (UserIdModal.jsx)"]
-        UploadUI["1. Upload Tab (UploadTab.jsx)"]
-        PipelineUI["2. Live 5-Step Pipeline Tab (IngestionTab.jsx)"]
-        DocsUI["3. Documents Manager Tab (DocumentsTab.jsx)"]
-        ChatUI["4. Agentic Chat Tab (ChatTab.jsx)"]
-        GraphUI["5. Interactive SVG Knowledge Graph (GraphTab.jsx)"]
+        SettingsUI["1. Settings Tab (SettingsTab.jsx)"]
+        UploadUI["2. Upload Tab (UploadTab.jsx)"]
+        PipelineUI["3. Live 5-Step Pipeline Tab (IngestionTab.jsx)"]
+        DocsUI["4. Documents Manager Tab + Delete All Modal (DocumentsTab.jsx)"]
+        ChatUI["5. Agentic Chat Tab (ChatTab.jsx)"]
+        GraphUI["6. Interactive SVG Knowledge Graph (GraphTab.jsx)"]
     end
 
     subgraph Backend["FastAPI Backend (Port 8000)"]

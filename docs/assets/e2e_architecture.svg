@@ -1,0 +1,571 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 1120" width="1440" height="1120" font-family="'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <!-- Background & Card Gradients -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#040d0b"/>
+      <stop offset="50%" stop-color="#071914"/>
+      <stop offset="100%" stop-color="#04100d"/>
+    </linearGradient>
+
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0d261f" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#071712" stop-opacity="0.98"/>
+    </linearGradient>
+
+    <linearGradient id="cardCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0c2d2c" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#071a18" stop-opacity="0.98"/>
+    </linearGradient>
+
+    <linearGradient id="cardGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#27210d" stop-opacity="0.92"/>
+      <stop offset="100%" stop-color="#121812" stop-opacity="0.98"/>
+    </linearGradient>
+
+    <linearGradient id="cardPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1c1833" stop-opacity="0.92"/>
+      <stop offset="100%" stop-color="#0b1518" stop-opacity="0.98"/>
+    </linearGradient>
+
+    <linearGradient id="cyanEmerald" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="50%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+
+    <linearGradient id="iconCyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#0891b2" stop-opacity="0.1"/>
+    </linearGradient>
+
+    <linearGradient id="iconEmerald" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#059669" stop-opacity="0.1"/>
+    </linearGradient>
+
+    <linearGradient id="iconGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#d97706" stop-opacity="0.1"/>
+    </linearGradient>
+
+    <linearGradient id="iconPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#6d28d9" stop-opacity="0.1"/>
+    </linearGradient>
+
+    <linearGradient id="iconRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f87171" stop-opacity="0.26"/>
+      <stop offset="100%" stop-color="#b91c1c" stop-opacity="0.1"/>
+    </linearGradient>
+
+    <!-- Arrow Markers -->
+    <marker id="arrowCyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrowEmerald" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrowGold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#fbbf24"/>
+    </marker>
+    <marker id="arrowPurple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8.5 5 L 0 8.5 z" fill="#a78bfa"/>
+    </marker>
+
+    <!-- Subtle Grid Pattern -->
+    <pattern id="dotGrid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#34d399" fill-opacity="0.10"/>
+    </pattern>
+  </defs>
+
+  <!-- Main Canvas Background -->
+  <rect width="1440" height="1120" rx="20" fill="url(#bgGrad)" stroke="#1e4638" stroke-width="2"/>
+  <rect width="1440" height="1120" rx="20" fill="url(#dotGrid)"/>
+
+  <!-- Top Header Banner -->
+  <rect x="36" y="24" width="1368" height="74" rx="14" fill="#091f19" stroke="#22d3ee" stroke-opacity="0.35" stroke-width="1.5"/>
+  <rect x="36" y="24" width="1368" height="4" rx="2" fill="url(#cyanEmerald)"/>
+
+  <!-- Header Brain + Hub Icon -->
+  <g transform="translate(58, 41)">
+    <rect x="0" y="0" width="42" height="42" rx="11" fill="url(#iconCyan)" stroke="#22d3ee" stroke-width="1.5"/>
+    <circle cx="21" cy="14" r="4" fill="none" stroke="#22d3ee" stroke-width="1.8"/>
+    <circle cx="12" cy="27" r="4" fill="none" stroke="#34d399" stroke-width="1.8"/>
+    <circle cx="30" cy="27" r="4" fill="none" stroke="#fbbf24" stroke-width="1.8"/>
+    <line x1="18.5" y1="17.2" x2="14.2" y2="23.8" stroke="#22d3ee" stroke-width="1.6"/>
+    <line x1="23.5" y1="17.2" x2="27.8" y2="23.8" stroke="#34d399" stroke-width="1.6"/>
+    <line x1="16" y1="27" x2="26" y2="27" stroke="#fbbf24" stroke-width="1.6"/>
+  </g>
+  <text x="114" y="56" fill="#ecfdf5" font-size="20" font-weight="800" letter-spacing="0.4">ADK AGENTIC RAG + KNOWLEDGE GRAPH — END-TO-END SYSTEM ARCHITECTURE</text>
+  <text x="114" y="79" fill="#99cfb8" font-size="12.5" font-weight="500">Complete E2E Lifecycle: Neon Auth → Minimalist Env Settings → Multi-Doc Upload → 5-Step Lossless Docling + Gemini Vision Pipeline → ADK 4-Tool Agentic Retrieval</text>
+  <rect x="1282" y="45" width="100" height="30" rx="15" fill="#0d3328" stroke="#34d399" stroke-width="1.2"/>
+  <text x="1332" y="65" fill="#34d399" font-size="12" font-weight="700" text-anchor="middle">v2.3.3 E2E</text>
+
+  <!-- ===================================================================== -->
+  <!-- SECTION 1: AUTHENTICATION, ENV SETTINGS & MULTI-DOCUMENT UPLOAD       -->
+  <!-- ===================================================================== -->
+  <rect x="36" y="114" width="1368" height="218" rx="16" fill="#071713" fill-opacity="0.7" stroke="#1e4638" stroke-dasharray="5,5" stroke-width="1.2"/>
+  <rect x="54" y="104" width="380" height="22" rx="6" fill="#0b241d" stroke="#22d3ee" stroke-opacity="0.4"/>
+  <text x="66" y="119" fill="#22d3ee" font-size="11" font-weight="800" letter-spacing="1">PHASE 1 · USER AUTHENTICATION, ENV SETTINGS &amp; UPLOAD</text>
+
+  <!-- Card 1: Neon PostgreSQL Auth -->
+  <g transform="translate(56, 138)">
+    <rect width="400" height="174" rx="14" fill="url(#cardGrad)" stroke="#22d3ee" stroke-opacity="0.45" stroke-width="1.5"/>
+    <rect x="18" y="16" width="68" height="22" rx="11" fill="#0e363c" stroke="#22d3ee" stroke-width="1"/>
+    <text x="52" y="31" fill="#22d3ee" font-size="10.5" font-weight="800" text-anchor="middle">STEP 01</text>
+    <text x="98" y="31" fill="#99cfb8" font-size="11" font-weight="600">UserIdModal.jsx · app/auth.py</text>
+
+    <!-- Vector Icon: Shield + Lock + User -->
+    <g transform="translate(18, 50)">
+      <rect width="58" height="58" rx="14" fill="url(#iconCyan)" stroke="#22d3ee" stroke-width="1.5"/>
+      <path d="M29 10 L44 16 V28 C44 38 37.5 45.5 29 49 C20.5 45.5 14 38 14 28 V16 L29 10 Z" fill="none" stroke="#22d3ee" stroke-width="2"/>
+      <circle cx="29" cy="24" r="4.2" fill="none" stroke="#fbbf24" stroke-width="1.8"/>
+      <path d="M21 37 C21 32.5 24.5 30 29 30 C33.5 30 37 32.5 37 37" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round"/>
+    </g>
+
+    <text x="90" y="67" fill="#ecfdf5" font-size="15.5" font-weight="800">Neon PostgreSQL Authentication</text>
+    <text x="90" y="88" fill="#a7d7c5" font-size="12">• Sign In &amp; Create Account backed by Neon</text>
+    <text x="90" y="106" fill="#a7d7c5" font-size="12">• PBKDF2-HMAC-SHA256 password hashing</text>
+    <text x="90" y="124" fill="#a7d7c5" font-size="12">• Signed HS256 JWT Bearer Token session</text>
+
+    <!-- Bottom Tech Pills -->
+    <rect x="18" y="139" width="174" height="22" rx="6" fill="#061511" stroke="#34d399" stroke-opacity="0.4"/>
+    <text x="105" y="154" fill="#34d399" font-size="10.5" font-weight="700" text-anchor="middle">Multi-Tenant user_id Scope</text>
+    <rect x="202" y="139" width="180" height="22" rx="6" fill="#061511" stroke="#22d3ee" stroke-opacity="0.4"/>
+    <text x="292" y="154" fill="#22d3ee" font-size="10.5" font-weight="700" text-anchor="middle">POST /auth/login · /signup</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <path d="M 456 225 L 512 225" fill="none" stroke="#22d3ee" stroke-width="2.5" marker-end="url(#arrowCyan)"/>
+  <text x="484" y="215" fill="#22d3ee" font-size="10" font-weight="700" text-anchor="middle">JWT</text>
+
+  <!-- Card 2: Minimalist Environment Settings -->
+  <g transform="translate(520, 138)">
+    <rect width="400" height="174" rx="14" fill="url(#cardGrad)" stroke="#34d399" stroke-opacity="0.45" stroke-width="1.5"/>
+    <rect x="18" y="16" width="68" height="22" rx="11" fill="#0c3426" stroke="#34d399" stroke-width="1"/>
+    <text x="52" y="31" fill="#34d399" font-size="10.5" font-weight="800" text-anchor="middle">STEP 02</text>
+    <text x="98" y="31" fill="#99cfb8" font-size="11" font-weight="600">SettingsTab.jsx · app/config.py</text>
+
+    <!-- Vector Icon: Sliders + Info Icon (i) -->
+    <g transform="translate(18, 50)">
+      <rect width="58" height="58" rx="14" fill="url(#iconEmerald)" stroke="#34d399" stroke-width="1.5"/>
+      <line x1="14" y1="20" x2="44" y2="20" stroke="#34d399" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="23" cy="20" r="4" fill="#071914" stroke="#22d3ee" stroke-width="2"/>
+      <line x1="14" y1="31" x2="44" y2="31" stroke="#34d399" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="35" cy="31" r="4" fill="#071914" stroke="#fbbf24" stroke-width="2"/>
+      <line x1="14" y1="42" x2="32" y2="42" stroke="#34d399" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="21" cy="42" r="4" fill="#071914" stroke="#34d399" stroke-width="2"/>
+      <circle cx="42" cy="42" r="7" fill="#0c2d2c" stroke="#22d3ee" stroke-width="1.5"/>
+      <text x="42" y="45.5" fill="#22d3ee" font-size="10" font-weight="800" text-anchor="middle">i</text>
+    </g>
+
+    <text x="90" y="67" fill="#ecfdf5" font-size="15.5" font-weight="800">Environment Variables Setup</text>
+    <text x="90" y="88" fill="#a7d7c5" font-size="12">• Post-login landing tab (Key + Input + (i) Icon)</text>
+    <text x="90" y="106" fill="#a7d7c5" font-size="12">• Click (i) to open exact Setup Docs anchor</text>
+    <text x="90" y="124" fill="#a7d7c5" font-size="12">• Blank inputs silently fallback to server defaults</text>
+
+    <rect x="18" y="139" width="176" height="22" rx="6" fill="#061511" stroke="#fbbf24" stroke-opacity="0.4"/>
+    <text x="106" y="154" fill="#fbbf24" font-size="10.5" font-weight="700" text-anchor="middle">Live Pool &amp; Client Reload</text>
+    <rect x="204" y="139" width="178" height="22" rx="6" fill="#061511" stroke="#34d399" stroke-opacity="0.4"/>
+    <text x="293" y="154" fill="#34d399" font-size="10.5" font-weight="700" text-anchor="middle">Save &amp; Continue → Upload</text>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <path d="M 920 225 L 976 225" fill="none" stroke="#34d399" stroke-width="2.5" marker-end="url(#arrowEmerald)"/>
+  <text x="948" y="215" fill="#34d399" font-size="10" font-weight="700" text-anchor="middle">Ready</text>
+
+  <!-- Card 3: Multi-Document Upload -->
+  <g transform="translate(984, 138)">
+    <rect width="400" height="174" rx="14" fill="url(#cardGrad)" stroke="#fbbf24" stroke-opacity="0.45" stroke-width="1.5"/>
+    <rect x="18" y="16" width="68" height="22" rx="11" fill="#33260d" stroke="#fbbf24" stroke-width="1"/>
+    <text x="52" y="31" fill="#fbbf24" font-size="10.5" font-weight="800" text-anchor="middle">STEP 03</text>
+    <text x="98" y="31" fill="#99cfb8" font-size="11" font-weight="600">UploadTab.jsx · POST /documents/upload</text>
+
+    <!-- Vector Icon: Cloud Upload + Multi-File Stack -->
+    <g transform="translate(18, 50)">
+      <rect width="58" height="58" rx="14" fill="url(#iconGold)" stroke="#fbbf24" stroke-width="1.5"/>
+      <path d="M18 36 H40 C44 36 46 33 46 29.5 C46 26.2 43.5 23.5 40.2 23.2 C39 17.5 34 14 28.5 14 C22.5 14 17.8 18.2 17.2 24 C14.2 24.6 12 27.2 12 30.5 C12 33.8 14.5 36 18 36 Z" fill="none" stroke="#fbbf24" stroke-width="2"/>
+      <path d="M29 46 V26 M24 31 L29 26 L34 31" fill="none" stroke="#22d3ee" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <text x="90" y="67" fill="#ecfdf5" font-size="15.5" font-weight="800">Multi-Document Batch Upload</text>
+    <text x="90" y="88" fill="#a7d7c5" font-size="12">• Drag &amp; Drop 1 or multiple files simultaneously</text>
+    <text x="90" y="106" fill="#a7d7c5" font-size="12">• 13 Formats: PDF, DOCX, PPTX, XLSX, CSV, HTML, MD</text>
+    <text x="90" y="124" fill="#a7d7c5" font-size="12">• Sequential batch queue (Doc 1..N) with live polling</text>
+
+    <rect x="18" y="139" width="182" height="22" rx="6" fill="#061511" stroke="#fbbf24" stroke-opacity="0.4"/>
+    <text x="109" y="154" fill="#fbbf24" font-size="10.5" font-weight="700" text-anchor="middle">PDF · DOCX · PPTX · XLSX</text>
+    <rect x="208" y="139" width="174" height="22" rx="6" fill="#061511" stroke="#22d3ee" stroke-opacity="0.4"/>
+    <text x="295" y="154" fill="#22d3ee" font-size="10.5" font-weight="700" text-anchor="middle">CSV · JSON · XML · HTML · MD</text>
+  </g>
+
+  <!-- Connector from Phase 1 (Upload) down to Phase 2 (5-Step Ingestion Pipeline) -->
+  <path d="M 1184 312 L 1184 344 L 180 344 L 180 374" fill="none" stroke="#fbbf24" stroke-width="2.5" marker-end="url(#arrowGold)"/>
+  <rect x="540" y="333" width="360" height="22" rx="11" fill="#0c261f" stroke="#fbbf24" stroke-width="1"/>
+  <text x="720" y="348" fill="#fbbf24" font-size="10.5" font-weight="700" text-anchor="middle">Triggers 5-Step Hybrid Ingestion Pipeline (Polled every 450ms)</text>
+
+  <!-- ===================================================================== -->
+  <!-- SECTION 2: 5-STEP LOSSLESS HYBRID INGESTION PIPELINE                  -->
+  <!-- ===================================================================== -->
+  <rect x="36" y="366" width="1368" height="310" rx="16" fill="#071713" fill-opacity="0.78" stroke="#34d399" stroke-opacity="0.4" stroke-width="1.5"/>
+  <rect x="54" y="356" width="465" height="22" rx="6" fill="#0b241d" stroke="#34d399" stroke-opacity="0.5"/>
+  <text x="66" y="371" fill="#34d399" font-size="11" font-weight="800" letter-spacing="1">PHASE 2 · LIVE 5-STEP LOSSLESS HYBRID INGESTION PIPELINE (app/ingest.py)</text>
+
+  <!-- Pipeline Step 1: IBM Docling + Gemini 2.5 Vision -->
+  <g transform="translate(52, 392)">
+    <rect width="248" height="262" rx="14" fill="url(#cardCyan)" stroke="#22d3ee" stroke-opacity="0.55" stroke-width="1.5"/>
+    <rect x="14" y="14" width="74" height="20" rx="10" fill="#0e363c" stroke="#22d3ee"/>
+    <text x="51" y="28" fill="#22d3ee" font-size="10" font-weight="800" text-anchor="middle">STAGE 1 / 5</text>
+    <text x="100" y="28" fill="#99cfb8" font-size="10.5" font-weight="600">app/parsers.py</text>
+
+    <!-- Vector Icon: Document + Table + Vision Eye -->
+    <g transform="translate(14, 44)">
+      <rect width="52" height="52" rx="12" fill="url(#iconCyan)" stroke="#22d3ee" stroke-width="1.5"/>
+      <rect x="11" y="10" width="22" height="28" rx="3" fill="none" stroke="#22d3ee" stroke-width="1.8"/>
+      <line x1="15" y1="16" x2="29" y2="16" stroke="#34d399" stroke-width="1.6"/>
+      <line x1="15" y1="22" x2="29" y2="22" stroke="#34d399" stroke-width="1.6"/>
+      <ellipse cx="33" cy="34" rx="10" ry="6.5" fill="#071914" stroke="#fbbf24" stroke-width="1.8"/>
+      <circle cx="33" cy="34" r="2.8" fill="#fbbf24"/>
+    </g>
+
+    <text x="76" y="62" fill="#ecfdf5" font-size="14" font-weight="800">Lossless Docling +</text>
+    <text x="76" y="80" fill="#22d3ee" font-size="14" font-weight="800">Gemini Vision</text>
+    <text x="76" y="96" fill="#99cfb8" font-size="10.5">Zero Content Loss</text>
+
+    <line x1="14" y1="108" x2="234" y2="108" stroke="#1e4638" stroke-width="1"/>
+    <text x="14" y="128" fill="#d1fae5" font-size="11.5" font-weight="600">• IBM Docling TableFormer</text>
+    <text x="22" y="144" fill="#99cfb8" font-size="11">Layout &amp; GFM Markdown tables</text>
+    <text x="14" y="164" fill="#fbbf24" font-size="11.5" font-weight="700">• Fixes &lt;!-- image --&gt; Loss</text>
+    <text x="22" y="180" fill="#99cfb8" font-size="11">Gemini 2.5 Flash Vision transcribes</text>
+    <text x="22" y="195" fill="#99cfb8" font-size="11">charts, diagrams &amp; figures in-place</text>
+    <text x="14" y="215" fill="#d1fae5" font-size="11.5" font-weight="600">• PyMuPDF Reconciliation</text>
+
+    <rect x="14" y="228" width="220" height="22" rx="6" fill="#061511" stroke="#22d3ee" stroke-opacity="0.4"/>
+    <text x="124" y="243" fill="#22d3ee" font-size="10" font-weight="700" text-anchor="middle">Docling + Gemini 2.5 Vision + Fitz</text>
+  </g>
+
+  <!-- Arrow Stage 1 -> Stage 2 -->
+  <path d="M 300 523 L 320 523" fill="none" stroke="#22d3ee" stroke-width="2.2" marker-end="url(#arrowCyan)"/>
+
+  <!-- Pipeline Step 2: Semantic Chunking & SHA-256 Dedup -->
+  <g transform="translate(324, 392)">
+    <rect width="248" height="262" rx="14" fill="url(#cardGrad)" stroke="#34d399" stroke-opacity="0.55" stroke-width="1.5"/>
+    <rect x="14" y="14" width="74" height="20" rx="10" fill="#0c3426" stroke="#34d399"/>
+    <text x="51" y="28" fill="#34d399" font-size="10" font-weight="800" text-anchor="middle">STAGE 2 / 5</text>
+    <text x="100" y="28" fill="#99cfb8" font-size="10.5" font-weight="600">app/chunking.py</text>
+
+    <!-- Vector Icon: Layers + SHA-256 Hash -->
+    <g transform="translate(14, 44)">
+      <rect width="52" height="52" rx="12" fill="url(#iconEmerald)" stroke="#34d399" stroke-width="1.5"/>
+      <polygon points="26,11 42,19 26,27 10,19" fill="none" stroke="#34d399" stroke-width="1.8"/>
+      <polyline points="10,26 26,34 42,26" fill="none" stroke="#22d3ee" stroke-width="1.8"/>
+      <polyline points="10,33 26,41 42,33" fill="none" stroke="#fbbf24" stroke-width="1.8"/>
+    </g>
+
+    <text x="76" y="62" fill="#ecfdf5" font-size="14" font-weight="800">Semantic Chunking</text>
+    <text x="76" y="80" fill="#34d399" font-size="14" font-weight="800">&amp; SHA-256 Dedup</text>
+    <text x="76" y="96" fill="#99cfb8" font-size="10.5">1,200 Chars · 200 Overlap</text>
+
+    <line x1="14" y1="108" x2="234" y2="108" stroke="#1e4638" stroke-width="1"/>
+    <text x="14" y="128" fill="#d1fae5" font-size="11.5" font-weight="600">• Structure-Aware Splitting</text>
+    <text x="22" y="144" fill="#99cfb8" font-size="11">Preserves headings &amp; paragraphs</text>
+    <text x="14" y="164" fill="#d1fae5" font-size="11.5" font-weight="600">• Table Header Repetition</text>
+    <text x="22" y="180" fill="#99cfb8" font-size="11">Repeats | Col | headers across chunks</text>
+    <text x="14" y="200" fill="#fbbf24" font-size="11.5" font-weight="700">• SHA-256 Content Hash</text>
+    <text x="22" y="215" fill="#99cfb8" font-size="11">Skips duplicates &amp; updates versions</text>
+
+    <rect x="14" y="228" width="220" height="22" rx="6" fill="#061511" stroke="#34d399" stroke-opacity="0.4"/>
+    <text x="124" y="243" fill="#34d399" font-size="10" font-weight="700" text-anchor="middle">SHA-256 Fingerprint · Zero Redundancy</text>
+  </g>
+
+  <!-- Arrow Stage 2 -> Stage 3 -->
+  <path d="M 572 523 L 592 523" fill="none" stroke="#34d399" stroke-width="2.2" marker-end="url(#arrowEmerald)"/>
+
+  <!-- Pipeline Step 3: Gemini Embedding Generation -->
+  <g transform="translate(596, 392)">
+    <rect width="248" height="262" rx="14" fill="url(#cardPurple)" stroke="#a78bfa" stroke-opacity="0.55" stroke-width="1.5"/>
+    <rect x="14" y="14" width="74" height="20" rx="10" fill="#231942" stroke="#a78bfa"/>
+    <text x="51" y="28" fill="#a78bfa" font-size="10" font-weight="800" text-anchor="middle">STAGE 3 / 5</text>
+    <text x="100" y="28" fill="#c4b5fd" font-size="10.5" font-weight="600">app/embeddings.py</text>
+
+    <!-- Vector Icon: Gemini Sparkle + Vector Matrix -->
+    <g transform="translate(14, 44)">
+      <rect width="52" height="52" rx="12" fill="url(#iconPurple)" stroke="#a78bfa" stroke-width="1.5"/>
+      <path d="M26 10 C26 20 20 26 10 26 C20 26 26 32 26 42 C26 32 32 26 42 26 C32 26 26 20 26 10 Z" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="26" cy="26" r="2.5" fill="#22d3ee"/>
+    </g>
+
+    <text x="76" y="62" fill="#ecfdf5" font-size="14" font-weight="800">Batched Gemini</text>
+    <text x="76" y="80" fill="#a78bfa" font-size="14" font-weight="800">Embeddings</text>
+    <text x="76" y="96" fill="#c4b5fd" font-size="10.5">768-Dim Dense Vectors</text>
+
+    <line x1="14" y1="108" x2="234" y2="108" stroke="#2e2559" stroke-width="1"/>
+    <text x="14" y="128" fill="#ede9fe" font-size="11.5" font-weight="600">• Model: gemini-embedding-001</text>
+    <text x="22" y="144" fill="#c4b5fd" font-size="11">Google GenAI SDK (v1.0+)</text>
+    <text x="14" y="164" fill="#ede9fe" font-size="11.5" font-weight="600">• Output Dimensionality: 768</text>
+    <text x="22" y="180" fill="#c4b5fd" font-size="11">Normalized cosine vector space</text>
+    <text x="14" y="200" fill="#ede9fe" font-size="11.5" font-weight="600">• Batched API Execution</text>
+    <text x="22" y="215" fill="#c4b5fd" font-size="11">Up to 50 chunks per request</text>
+
+    <rect x="14" y="228" width="220" height="22" rx="6" fill="#0b0914" stroke="#a78bfa" stroke-opacity="0.45"/>
+    <text x="124" y="243" fill="#a78bfa" font-size="10" font-weight="700" text-anchor="middle">gemini-embedding-001 (768-dim)</text>
+  </g>
+
+  <!-- Arrow Stage 3 -> Stage 4 -->
+  <path d="M 844 523 L 864 523" fill="none" stroke="#a78bfa" stroke-width="2.2" marker-end="url(#arrowPurple)"/>
+
+  <!-- Pipeline Step 4: Neon PostgreSQL (pgvector + FTS) -->
+  <g transform="translate(868, 392)">
+    <rect width="248" height="262" rx="14" fill="url(#cardCyan)" stroke="#22d3ee" stroke-opacity="0.55" stroke-width="1.5"/>
+    <rect x="14" y="14" width="74" height="20" rx="10" fill="#0e363c" stroke="#22d3ee"/>
+    <text x="51" y="28" fill="#22d3ee" font-size="10" font-weight="800" text-anchor="middle">STAGE 4 / 5</text>
+    <text x="100" y="28" fill="#99cfb8" font-size="10.5" font-weight="600">app/rag_store.py</text>
+
+    <!-- Vector Icon: PostgreSQL Database Cylinder + Vector Index -->
+    <g transform="translate(14, 44)">
+      <rect width="52" height="52" rx="12" fill="url(#iconCyan)" stroke="#22d3ee" stroke-width="1.5"/>
+      <ellipse cx="26" cy="15" rx="14" ry="5" fill="none" stroke="#22d3ee" stroke-width="1.8"/>
+      <path d="M12 15 V37 C12 40 18.3 42 26 42 C33.7 42 40 40 40 37 V15" fill="none" stroke="#22d3ee" stroke-width="1.8"/>
+      <path d="M12 26 C12 29 18.3 31 26 31 C33.7 31 40 29 40 26" fill="none" stroke="#34d399" stroke-width="1.6"/>
+    </g>
+
+    <text x="76" y="62" fill="#ecfdf5" font-size="14" font-weight="800">Neon PostgreSQL</text>
+    <text x="76" y="80" fill="#22d3ee" font-size="14" font-weight="800">pgvector + GIN FTS</text>
+    <text x="76" y="96" fill="#99cfb8" font-size="10.5">Hybrid Dual Indexing</text>
+
+    <line x1="14" y1="108" x2="234" y2="108" stroke="#1e4638" stroke-width="1"/>
+    <text x="14" y="128" fill="#d1fae5" font-size="11.5" font-weight="600">• pgvector HNSW Index</text>
+    <text x="22" y="144" fill="#99cfb8" font-size="11">vector_cosine_ops (&lt;=&gt; operator)</text>
+    <text x="14" y="164" fill="#d1fae5" font-size="11.5" font-weight="600">• PostgreSQL GIN Index</text>
+    <text x="22" y="180" fill="#99cfb8" font-size="11">to_tsvector('english', content)</text>
+    <text x="14" y="200" fill="#d1fae5" font-size="11.5" font-weight="600">• Cascade Foreign Key</text>
+    <text x="22" y="215" fill="#99cfb8" font-size="11">documents → document_chunks</text>
+
+    <rect x="14" y="228" width="220" height="22" rx="6" fill="#061511" stroke="#22d3ee" stroke-opacity="0.4"/>
+    <text x="124" y="243" fill="#22d3ee" font-size="10" font-weight="700" text-anchor="middle">Neon Serverless Postgres (Pool)</text>
+  </g>
+
+  <!-- Arrow Stage 4 -> Stage 5 -->
+  <path d="M 1116 523 L 1136 523" fill="none" stroke="#fbbf24" stroke-width="2.2" marker-end="url(#arrowGold)"/>
+
+  <!-- Pipeline Step 5: Neo4j Knowledge Graph Extraction -->
+  <g transform="translate(1140, 392)">
+    <rect width="248" height="262" rx="14" fill="url(#cardGold)" stroke="#fbbf24" stroke-opacity="0.6" stroke-width="1.5"/>
+    <rect x="14" y="14" width="74" height="20" rx="10" fill="#33260d" stroke="#fbbf24"/>
+    <text x="51" y="28" fill="#fbbf24" font-size="10" font-weight="800" text-anchor="middle">STAGE 5 / 5</text>
+    <text x="100" y="28" fill="#fde68a" font-size="10.5" font-weight="600">app/graph_store.py</text>
+
+    <!-- Vector Icon: Knowledge Graph Nodes & Directed Edges -->
+    <g transform="translate(14, 44)">
+      <rect width="52" height="52" rx="12" fill="url(#iconGold)" stroke="#fbbf24" stroke-width="1.5"/>
+      <circle cx="16" cy="18" r="5" fill="#071914" stroke="#fbbf24" stroke-width="2"/>
+      <circle cx="38" cy="16" r="5" fill="#071914" stroke="#22d3ee" stroke-width="2"/>
+      <circle cx="28" cy="37" r="5.5" fill="#071914" stroke="#34d399" stroke-width="2"/>
+      <line x1="21" y1="17.5" x2="33" y2="16.5" stroke="#fbbf24" stroke-width="1.6"/>
+      <line x1="19" y1="22" x2="25" y2="32.5" stroke="#34d399" stroke-width="1.6"/>
+      <line x1="35.5" y1="20.5" x2="30.5" y2="32.5" stroke="#22d3ee" stroke-width="1.6"/>
+    </g>
+
+    <text x="76" y="62" fill="#ecfdf5" font-size="14" font-weight="800">Neo4j Knowledge</text>
+    <text x="76" y="80" fill="#fbbf24" font-size="14" font-weight="800">Graph Extraction</text>
+    <text x="76" y="96" fill="#fde68a" font-size="10.5">Gemini Structured Outputs</text>
+
+    <line x1="14" y1="108" x2="234" y2="108" stroke="#423513" stroke-width="1"/>
+    <text x="14" y="128" fill="#fef3c7" font-size="11.5" font-weight="600">• gemini-2.5-flash JSON Schema</text>
+    <text x="22" y="144" fill="#fde68a" font-size="11">Domain-agnostic Entity &amp; Fact extraction</text>
+    <text x="14" y="164" fill="#fef3c7" font-size="11.5" font-weight="600">• Cypher Graph Persistence</text>
+    <text x="22" y="180" fill="#fde68a" font-size="11">(Entity)-[:RELATES_TO]-&gt;(Entity)</text>
+    <text x="14" y="200" fill="#fef3c7" font-size="11.5" font-weight="600">• Provenance Attribution</text>
+    <text x="22" y="215" fill="#fde68a" font-size="11">(Entity)-[:MENTIONED_IN]-&gt;(Document)</text>
+
+    <rect x="14" y="228" width="220" height="22" rx="6" fill="#141107" stroke="#fbbf24" stroke-opacity="0.5"/>
+    <text x="124" y="243" fill="#fbbf24" font-size="10" font-weight="700" text-anchor="middle">Neo4j AuraDB Bolt / Cypher</text>
+  </g>
+
+  <!-- Connectors from Stage 4 (Neon) & Stage 5 (Neo4j) down to Phase 3 -->
+  <path d="M 992 654 L 992 708" fill="none" stroke="#22d3ee" stroke-width="2.5" marker-end="url(#arrowCyan)"/>
+  <path d="M 1264 654 L 1264 686 L 720 686 L 720 708" fill="none" stroke="#fbbf24" stroke-width="2.5" marker-end="url(#arrowGold)"/>
+  <path d="M 992 686 L 236 686 L 236 708" fill="none" stroke="#34d399" stroke-width="2.2" marker-end="url(#arrowEmerald)"/>
+
+  <!-- ===================================================================== -->
+  <!-- SECTION 3: DOCUMENT MANAGER, GOOGLE ADK AGENT & INTERACTIVE UI        -->
+  <!-- ===================================================================== -->
+  <rect x="36" y="700" width="1368" height="394" rx="16" fill="#071713" fill-opacity="0.78" stroke="#22d3ee" stroke-opacity="0.4" stroke-width="1.5"/>
+  <rect x="54" y="690" width="540" height="22" rx="6" fill="#0b241d" stroke="#22d3ee" stroke-opacity="0.5"/>
+  <text x="66" y="705" fill="#22d3ee" font-size="11" font-weight="800" letter-spacing="1">PHASE 3 · DOCUMENT GOVERNANCE, GOOGLE ADK 4-TOOL AGENT &amp; GRAPH EXPLORER</text>
+
+  <!-- Bottom Left Card: Document Manager & Delete All Modal -->
+  <g transform="translate(52, 726)">
+    <rect width="368" height="344" rx="14" fill="url(#cardGrad)" stroke="#f87171" stroke-opacity="0.45" stroke-width="1.5"/>
+    <rect x="18" y="16" width="110" height="22" rx="11" fill="#3b1419" stroke="#f87171" stroke-width="1"/>
+    <text x="73" y="31" fill="#fca5a5" font-size="10.5" font-weight="800" text-anchor="middle">DOCUMENTS TAB</text>
+    <text x="140" y="31" fill="#99cfb8" font-size="11" font-weight="600">DocumentsTab.jsx</text>
+
+    <!-- Vector Icon: Folder + Trash Shield -->
+    <g transform="translate(18, 50)">
+      <rect width="56" height="56" rx="14" fill="url(#iconRed)" stroke="#f87171" stroke-width="1.5"/>
+      <path d="M12 20 C12 17.8 13.8 16 16 16 H24 L28 20 H40 C42.2 20 44 21.8 44 24 V38 C44 40.2 42.2 42 40 42 H16 C13.8 42 12 40.2 12 38 V20 Z" fill="none" stroke="#fca5a5" stroke-width="1.8"/>
+      <line x1="22" y1="28" x2="34" y2="28" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"/>
+      <line x1="22" y1="34" x2="30" y2="34" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/>
+    </g>
+
+    <text x="88" y="68" fill="#ecfdf5" font-size="15.5" font-weight="800">Document Index &amp; Governance</text>
+    <text x="88" y="88" fill="#a7d7c5" font-size="11.5">Per-File Chunks, Entities &amp; Relations</text>
+
+    <!-- Mini Document Card Preview -->
+    <rect x="18" y="118" width="332" height="58" rx="10" fill="#061410" stroke="#1e4638"/>
+    <rect x="28" y="126" width="12" height="15" rx="2" fill="none" stroke="#22d3ee" stroke-width="1.4"/>
+    <text x="46" y="138" fill="#ecfdf5" font-size="12" font-weight="700">doc6_google_ai_strategy.md</text>
+    <rect x="32" y="146" width="66" height="18" rx="9" fill="#0e363c"/>
+    <text x="65" y="159" fill="#22d3ee" font-size="10" font-weight="700" text-anchor="middle">7 chunks</text>
+    <rect x="104" y="146" width="72" height="18" rx="9" fill="#33260d"/>
+    <text x="140" y="159" fill="#fbbf24" font-size="10" font-weight="700" text-anchor="middle">45 entities</text>
+    <rect x="182" y="146" width="78" height="18" rx="9" fill="#0c3426"/>
+    <text x="221" y="159" fill="#34d399" font-size="10" font-weight="700" text-anchor="middle">48 relations</text>
+
+    <!-- Delete All Type-to-Confirm Box -->
+    <rect x="18" y="190" width="332" height="104" rx="10" fill="#231115" stroke="#f87171" stroke-opacity="0.55" stroke-width="1.2"/>
+    <path d="M34 202 L41 205 V211 C41 215 38 218 34 219.5 C30 218 27 215 27 211 V205 L34 202 Z" fill="none" stroke="#fca5a5" stroke-width="1.5"/>
+    <text x="48" y="214" fill="#fca5a5" font-size="12.5" font-weight="800">"Delete All" Safety Popup Modal (v2.3.3)</text>
+    <text x="32" y="232" fill="#e2e8f0" font-size="11">Requires typing exact keyword before execution:</text>
+    <rect x="32" y="241" width="188" height="26" rx="6" fill="#081310" stroke="#22d3ee" stroke-width="1.2"/>
+    <text x="44" y="258" fill="#ecfdf5" font-size="11.5" font-family="monospace" font-weight="700">Delete</text>
+    <rect x="228" y="241" width="108" height="26" rx="6" fill="#7f1d1d" stroke="#f87171"/>
+    <text x="282" y="258" fill="#fecaca" font-size="11" font-weight="700" text-anchor="middle">Delete All</text>
+    <text x="32" y="284" fill="#99cfb8" font-size="10.5">Atomically wipes user data in Postgres &amp; Neo4j</text>
+
+    <rect x="18" y="306" width="332" height="24" rx="6" fill="#061511" stroke="#f87171" stroke-opacity="0.4"/>
+    <text x="184" y="322" fill="#fca5a5" font-size="10.5" font-weight="700" text-anchor="middle">DELETE /documents/{id}  ·  DELETE /documents</text>
+  </g>
+
+  <!-- Center Card: Google ADK LlmAgent & 4 Autonomous Tools -->
+  <g transform="translate(444, 726)">
+    <rect width="516" height="344" rx="14" fill="url(#cardCyan)" stroke="#22d3ee" stroke-opacity="0.65" stroke-width="1.8"/>
+    <rect x="18" y="16" width="134" height="22" rx="11" fill="#0e363c" stroke="#22d3ee" stroke-width="1"/>
+    <text x="85" y="31" fill="#22d3ee" font-size="10.5" font-weight="800" text-anchor="middle">GOOGLE ADK AGENT</text>
+    <text x="164" y="31" fill="#99cfb8" font-size="11" font-weight="600">app/agent.py · LlmAgent (gemini-2.5-pro)</text>
+
+    <!-- Vector Icon: AI Agent Core CPU/Brain -->
+    <g transform="translate(18, 50)">
+      <rect width="56" height="56" rx="14" fill="url(#iconCyan)" stroke="#22d3ee" stroke-width="1.5"/>
+      <rect x="16" y="16" width="24" height="24" rx="5" fill="none" stroke="#22d3ee" stroke-width="2"/>
+      <circle cx="28" cy="28" r="5" fill="#fbbf24"/>
+      <line x1="22" y1="10" x2="22" y2="16" stroke="#34d399" stroke-width="2"/>
+      <line x1="34" y1="10" x2="34" y2="16" stroke="#34d399" stroke-width="2"/>
+      <line x1="22" y1="40" x2="22" y2="46" stroke="#34d399" stroke-width="2"/>
+      <line x1="34" y1="40" x2="34" y2="46" stroke="#34d399" stroke-width="2"/>
+      <line x1="10" y1="22" x2="16" y2="22" stroke="#22d3ee" stroke-width="2"/>
+      <line x1="10" y1="34" x2="16" y2="34" stroke="#22d3ee" stroke-width="2"/>
+      <line x1="40" y1="22" x2="46" y2="22" stroke="#22d3ee" stroke-width="2"/>
+      <line x1="40" y1="34" x2="46" y2="34" stroke="#22d3ee" stroke-width="2"/>
+    </g>
+
+    <text x="88" y="68" fill="#ecfdf5" font-size="16" font-weight="800">Autonomous 4-Tool Reasoning Engine</text>
+    <text x="88" y="88" fill="#a7d7c5" font-size="11.5">Dynamically selects &amp; combines Vector + Graph tools per query</text>
+
+    <!-- 2x2 Grid of ADK Tools with Pure Vector Icons -->
+    <!-- Tool 1: hybrid_search -->
+    <g transform="translate(18, 118)">
+      <rect width="232" height="82" rx="10" fill="#061714" stroke="#22d3ee" stroke-opacity="0.5"/>
+      <circle cx="26" cy="26" r="14" fill="#0e363c" stroke="#22d3ee" stroke-width="1.2"/>
+      <!-- Magnifying Glass Vector Icon -->
+      <circle cx="24" cy="24" r="5.5" fill="none" stroke="#22d3ee" stroke-width="1.8"/>
+      <line x1="28" y1="28" x2="33" y2="33" stroke="#34d399" stroke-width="2" stroke-linecap="round"/>
+      <text x="48" y="24" fill="#22d3ee" font-size="12.5" font-weight="800" font-family="monospace">hybrid_search</text>
+      <text x="48" y="40" fill="#34d399" font-size="10.5" font-weight="700">Neon PostgreSQL</text>
+      <text x="14" y="60" fill="#a7d7c5" font-size="10.5">70% pgvector cosine similarity +</text>
+      <text x="14" y="74" fill="#a7d7c5" font-size="10.5">30% GIN full-text ts_rank_cd</text>
+    </g>
+
+    <!-- Tool 2: graph_search -->
+    <g transform="translate(266, 118)">
+      <rect width="232" height="82" rx="10" fill="#061714" stroke="#fbbf24" stroke-opacity="0.5"/>
+      <circle cx="26" cy="26" r="14" fill="#33260d" stroke="#fbbf24" stroke-width="1.2"/>
+      <!-- Graph Triplet Vector Icon -->
+      <circle cx="21" cy="22" r="2.6" fill="#fbbf24"/>
+      <circle cx="31" cy="21" r="2.6" fill="#22d3ee"/>
+      <circle cx="26" cy="31" r="2.6" fill="#34d399"/>
+      <line x1="23.5" y1="22" x2="28.5" y2="21" stroke="#fbbf24" stroke-width="1.4"/>
+      <line x1="22" y1="24.5" x2="25" y2="29" stroke="#34d399" stroke-width="1.4"/>
+      <line x1="30" y1="23.5" x2="27" y2="29" stroke="#22d3ee" stroke-width="1.4"/>
+      <text x="48" y="24" fill="#fbbf24" font-size="12.5" font-weight="800" font-family="monospace">graph_search</text>
+      <text x="48" y="40" fill="#fde68a" font-size="10.5" font-weight="700">Neo4j Knowledge Graph</text>
+      <text x="14" y="60" fill="#a7d7c5" font-size="10.5">Matches (:Entity) nodes, types &amp;</text>
+      <text x="14" y="74" fill="#a7d7c5" font-size="10.5">[:RELATES_TO] factual triples</text>
+    </g>
+
+    <!-- Tool 3: vector_search -->
+    <g transform="translate(18, 210)">
+      <rect width="232" height="82" rx="10" fill="#061714" stroke="#34d399" stroke-opacity="0.5"/>
+      <circle cx="26" cy="26" r="14" fill="#0c3426" stroke="#34d399" stroke-width="1.2"/>
+      <!-- Compass / Vector Arrow Icon -->
+      <circle cx="26" cy="26" r="7.5" fill="none" stroke="#34d399" stroke-width="1.5"/>
+      <polygon points="26,20 29,26 26,32 23,26" fill="#22d3ee"/>
+      <text x="48" y="24" fill="#34d399" font-size="12.5" font-weight="800" font-family="monospace">vector_search</text>
+      <text x="48" y="40" fill="#99cfb8" font-size="10.5" font-weight="700">pgvector HNSW</text>
+      <text x="14" y="60" fill="#a7d7c5" font-size="10.5">Pure 768-dim semantic cosine</text>
+      <text x="14" y="74" fill="#a7d7c5" font-size="10.5">lookup for conceptual queries</text>
+    </g>
+
+    <!-- Tool 4: get_entity_relationships -->
+    <g transform="translate(266, 210)">
+      <rect width="232" height="82" rx="10" fill="#061714" stroke="#a78bfa" stroke-opacity="0.5"/>
+      <circle cx="26" cy="26" r="14" fill="#231942" stroke="#a78bfa" stroke-width="1.2"/>
+      <!-- 1-Hop Link Traversal Vector Icon -->
+      <circle cx="20" cy="30" r="3" fill="none" stroke="#a78bfa" stroke-width="1.8"/>
+      <circle cx="32" cy="22" r="3" fill="none" stroke="#22d3ee" stroke-width="1.8"/>
+      <line x1="22.5" y1="28" x2="29.5" y2="24" stroke="#fbbf24" stroke-width="1.8"/>
+      <text x="48" y="24" fill="#a78bfa" font-size="11.5" font-weight="800" font-family="monospace">get_entity_relationships</text>
+      <text x="48" y="40" fill="#c4b5fd" font-size="10.5" font-weight="700">Neo4j 1-Hop / 2-Hop</text>
+      <text x="14" y="60" fill="#a7d7c5" font-size="10.5">Traverses incoming &amp; outgoing</text>
+      <text x="14" y="74" fill="#a7d7c5" font-size="10.5">edges around target entities</text>
+    </g>
+
+    <rect x="18" y="306" width="480" height="24" rx="6" fill="#061511" stroke="#22d3ee" stroke-opacity="0.4"/>
+    <text x="258" y="322" fill="#22d3ee" font-size="10.5" font-weight="700" text-anchor="middle">InMemorySessionService · Multi-Turn Context · ReadonlyContext user_id Injection</text>
+  </g>
+
+  <!-- Arrow from ADK Agent -> Chat & Graph Explorer -->
+  <path d="M 960 898 L 984 898" fill="none" stroke="#22d3ee" stroke-width="2.5" marker-end="url(#arrowCyan)"/>
+
+  <!-- Bottom Right Card: Agentic Chat (Icon-Only Send) & Neo4j Graph Explorer -->
+  <g transform="translate(988, 726)">
+    <rect width="396" height="344" rx="14" fill="url(#cardGrad)" stroke="#34d399" stroke-opacity="0.55" stroke-width="1.5"/>
+    <rect x="18" y="16" width="128" height="22" rx="11" fill="#0c3426" stroke="#34d399" stroke-width="1"/>
+    <text x="82" y="31" fill="#34d399" font-size="10.5" font-weight="800" text-anchor="middle">CHAT &amp; GRAPH UI</text>
+    <text x="156" y="31" fill="#99cfb8" font-size="11" font-weight="600">ChatTab.jsx · GraphTab.jsx</text>
+
+    <!-- Vector Icon: Chat Bubble + Paper Plane Send Icon -->
+    <g transform="translate(18, 50)">
+      <rect width="56" height="56" rx="14" fill="url(#iconEmerald)" stroke="#34d399" stroke-width="1.5"/>
+      <path d="M14 18 C14 14.7 16.7 12 20 12 H36 C39.3 12 42 14.7 42 18 V30 C42 33.3 39.3 36 36 36 H24 L16 42 V36 C14.9 36 14 35.1 14 34 V18 Z" fill="none" stroke="#34d399" stroke-width="1.8"/>
+      <path d="M22 24 L34 19 L29 31 L26.5 26.5 L22 24 Z" fill="none" stroke="#22d3ee" stroke-width="1.6" stroke-linejoin="round"/>
+    </g>
+
+    <text x="88" y="68" fill="#ecfdf5" font-size="15.5" font-weight="800">Grounded Chat &amp; Graph Explorer</text>
+    <text x="88" y="88" fill="#a7d7c5" font-size="11.5">Dual Citations &amp; 1-Hop Topology Inspector</text>
+
+    <!-- Chat Preview Box with Icon-Only Send Button -->
+    <rect x="18" y="118" width="360" height="92" rx="10" fill="#061410" stroke="#1e4638"/>
+    <text x="30" y="138" fill="#ecfdf5" font-size="11.5" font-weight="700">Agentic Chat Response Badges &amp; Citations:</text>
+    <rect x="30" y="146" width="175" height="20" rx="5" fill="#0e363c" stroke="#22d3ee" stroke-width="0.8"/>
+    <text x="117" y="160" fill="#22d3ee" font-size="10" font-weight="700" text-anchor="middle">[Source: filename.pdf, chunk 2]</text>
+    <rect x="212" y="146" width="154" height="20" rx="5" fill="#33260d" stroke="#fbbf24" stroke-width="0.8"/>
+    <text x="289" y="160" fill="#fbbf24" font-size="10" font-weight="700" text-anchor="middle">[Graph: A -&gt; REL -&gt; B]</text>
+    <!-- Mini Input bar + Icon-only Send button -->
+    <rect x="30" y="174" width="298" height="26" rx="6" fill="#040d0a" stroke="#1e4638"/>
+    <text x="42" y="191" fill="#649683" font-size="10.5">Ask about concepts or entity relationships...</text>
+    <rect x="334" y="174" width="32" height="26" rx="6" fill="url(#cyanEmerald)"/>
+    <path d="M344 187 L356 181 L351 193 L348.5 188.5 Z" fill="none" stroke="#04100d" stroke-width="1.6" stroke-linejoin="round"/>
+
+    <!-- Interactive Knowledge Graph Preview Box -->
+    <rect x="18" y="220" width="360" height="74" rx="10" fill="#061410" stroke="#fbbf24" stroke-opacity="0.45"/>
+    <circle cx="35" cy="236" r="4" fill="none" stroke="#fbbf24" stroke-width="1.6"/>
+    <text x="45" y="240" fill="#fbbf24" font-size="11.5" font-weight="800">Interactive Neo4j Knowledge Graph Canvas</text>
+    <text x="30" y="258" fill="#a7d7c5" font-size="10.5">• Dynamic Category Filter Pills &amp; Real-Time Search</text>
+    <text x="30" y="274" fill="#a7d7c5" font-size="10.5">• Click any Entity Node → 1-Hop Gold Neighborhood</text>
+
+    <rect x="18" y="306" width="360" height="24" rx="6" fill="#061511" stroke="#34d399" stroke-opacity="0.4"/>
+    <text x="198" y="322" fill="#34d399" font-size="10.5" font-weight="700" text-anchor="middle">POST /chat  ·  GET /graph  ·  GET /graph/entity/{name}</text>
+  </g>
+</svg>
