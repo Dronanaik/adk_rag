@@ -672,10 +672,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#1-high-level-system-topology" class="md-nav__link">
+  <a href="#1-end-to-end-visual-architecture-v233" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. High-Level System Topology
+        1. End-to-End Visual Architecture (v2.3.3)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-high-level-system-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. High-Level System Topology
       
     </span>
   </a>
@@ -1115,10 +1126,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#1-high-level-system-topology" class="md-nav__link">
+  <a href="#1-end-to-end-visual-architecture-v233" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. High-Level System Topology
+        1. End-to-End Visual Architecture (v2.3.3)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-high-level-system-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. High-Level System Topology
       
     </span>
   </a>
@@ -1268,15 +1290,19 @@
 </ul>
 </div>
 <hr />
-<h2 id="1-high-level-system-topology">1. High-Level System Topology<a class="headerlink" href="#1-high-level-system-topology" title="Permanent link">&para;</a></h2>
+<h2 id="1-end-to-end-visual-architecture-v233">1. End-to-End Visual Architecture (<code>v2.3.3</code>)<a class="headerlink" href="#1-end-to-end-visual-architecture-v233" title="Permanent link">&para;</a></h2>
+<p><img alt="ADK Agentic RAG End-to-End Architecture" src="../assets/e2e_architecture.svg" /></p>
+<hr />
+<h2 id="2-high-level-system-topology">2. High-Level System Topology<a class="headerlink" href="#2-high-level-system-topology" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>flowchart TB
     subgraph Client["React 18 + Vite Frontend (Port 5173)"]
         AuthUI["Sign In / Create Account (UserIdModal.jsx)"]
-        UploadUI["1. Upload Tab (UploadTab.jsx)"]
-        PipelineUI["2. Live 5-Step Pipeline Tab (IngestionTab.jsx)"]
-        DocsUI["3. Documents Manager Tab (DocumentsTab.jsx)"]
-        ChatUI["4. Agentic Chat Tab (ChatTab.jsx)"]
-        GraphUI["5. Interactive SVG Knowledge Graph (GraphTab.jsx)"]
+        SettingsUI["1. Settings Tab (SettingsTab.jsx)"]
+        UploadUI["2. Upload Tab (UploadTab.jsx)"]
+        PipelineUI["3. Live 5-Step Pipeline Tab (IngestionTab.jsx)"]
+        DocsUI["4. Documents Manager Tab + Delete All Modal (DocumentsTab.jsx)"]
+        ChatUI["5. Agentic Chat Tab (ChatTab.jsx)"]
+        GraphUI["6. Interactive SVG Knowledge Graph (GraphTab.jsx)"]
     end
 
     subgraph Backend["FastAPI Backend (Port 8000)"]
