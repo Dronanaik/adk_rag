@@ -1715,6 +1715,15 @@
 <li><strong>Updated Database Counters</strong>: The 4 workspace metric cards immediately reflect the updated totals in Neon PostgreSQL and Neo4j.</li>
 <li><strong>Per-Stage Output Logs</strong>: All 5 pipeline cards show green <strong><code>✓ Completed</code></strong> badges along with their concrete stage output for the completed run.</li>
 </ol>
+<div class="admonition tip">
+<p class="admonition-title">Automatic Redundant &amp; Updated File Upload Handling (<code>v2.1.1</code>)</p>
+<p>The ingestion pipeline computes a normalized <strong>SHA-256 content fingerprint</strong> (<code>content_hash</code>) for every uploaded file and automatically handles redundant or updated uploads:</p>
+<ul>
+<li><strong>Exact Same File Uploaded Again (<code>Skipped (Already Indexed)</code>)</strong>: Skips redundant Gemini embedding and Neo4j extraction calls and reuses your existing indexed document.</li>
+<li><strong>Same Content with a Different Filename (<code>Skipped (Duplicate of &lt;filename&gt;)</code>)</strong>: Prevents duplicate chunks from skewing vector similarity scores and points to the existing filename.</li>
+<li><strong>Updated Version of an Existing File (<code>Updated Version</code>)</strong>: Atomically purges the old version's chunks from <strong>Neon PostgreSQL</strong> and its relationships/orphaned entities from <strong>Neo4j</strong> before indexing the updated document.</li>
+</ul>
+</div>
 <hr />
 <h2 id="step-4-managing-indexed-documents-documents-tab">Step 4: Managing Indexed Documents (<code>Documents</code> Tab)<a class="headerlink" href="#step-4-managing-indexed-documents-documents-tab" title="Permanent link">&para;</a></h2>
 <p>Switch to the <strong>Documents</strong> tab (<code>DocumentsTab.jsx</code>) to audit your indexed files or remove documents from your workspace.</p>

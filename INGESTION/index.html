@@ -789,6 +789,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#redundant-updated-file-upload-handling-v211" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Redundant &amp; Updated File Upload Handling (v2.1.1)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#step-1-format-specific-text-extraction-appparserspy" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1109,6 +1120,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#redundant-updated-file-upload-handling-v211" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Redundant &amp; Updated File Upload Handling (v2.1.1)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#step-1-format-specific-text-extraction-appparserspy" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1262,9 +1284,58 @@
 <pre class="mermaid"><code>flowchart TD
     Upload["Uploaded File (app/api.py -&gt; /tmp/adk_rag_uploads)"] --&gt; Step1["Step 1: Format-Specific Text Extraction (app/parsers.py)"]
     Step1 --&gt; Step2["Step 2: Structure-Aware Semantic Chunking (app/chunking.py — 1200 chars, 200 overlap)"]
-    Step2 --&gt; Step3["Step 3: Batched Gemini Embeddings (app/embeddings.py — gemini-embedding-001, 768-dim)"]
+    Step2 --&gt; Dedup{"SHA-256 Content-Hash &amp; Filename Check (app/rag_store.py)"}
+    Dedup --&gt;|"Same Filename + Same Hash (unchanged)"| FastSkip["Skip Redundant Indexing &amp; Return Existing Metrics"]
+    Dedup --&gt;|"Different Filename + Same Hash (duplicate_content)"| FastSkip
+    Dedup --&gt;|"Same Filename + Modified Hash (updated)"| PurgeOld["Atomically Purge Previous Chunks (Postgres) &amp; Triples (Neo4j)"]
+    PurgeOld --&gt; Step3["Step 3: Batched Gemini Embeddings (app/embeddings.py — gemini-embedding-001, 768-dim)"]
+    Dedup --&gt;|"New Document (created)"| Step3
     Step3 --&gt; Step4["Step 4: Neon PostgreSQL Indexing (app/rag_store.py — pgvector HNSW + FTS GIN)"]
     Step4 --&gt; Step5["Step 5: Neo4j Knowledge Graph Extraction (app/graph_store.py — gemini-2.5-flash Structured JSON)"]</code></pre>
+<hr />
+<h2 id="redundant-updated-file-upload-handling-v211">Redundant &amp; Updated File Upload Handling (<code>v2.1.1</code>)<a class="headerlink" href="#redundant-updated-file-upload-handling-v211" title="Permanent link">&para;</a></h2>
+<p>After Step 2, <code>ingest_document</code> computes a normalized <strong>SHA-256 content fingerprint</strong> (<code>hashlib.sha256(re.sub(r"\s+", " ", text.strip()).encode("utf-8")).hexdigest()</code>) and calls <code>find_existing_user_document(...)</code> in <code>app/rag_store.py</code> to handle all three redundant/updated upload scenarios automatically:</p>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Condition</th>
+<th><code>ingest_action</code></th>
+<th>Pipeline Behavior</th>
+<th>UI Badge</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. Exact Same File Re-Uploaded</strong></td>
+<td><code>same filename</code> + <code>same content_hash</code></td>
+<td><code>"unchanged"</code></td>
+<td>Skips redundant Gemini embedding &amp; Neo4j extraction calls, fast-completes Step 5, and returns existing document counts.</td>
+<td><code>Skipped (Already Indexed)</code></td>
+</tr>
+<tr>
+<td><strong>2. Same Content, Different Filename</strong></td>
+<td><code>different filename</code> + <code>same content_hash</code></td>
+<td><code>"duplicate_content"</code></td>
+<td>Prevents duplicate vector chunks and duplicate graph triples from polluting retrieval; references <code>duplicate_of</code>.</td>
+<td><code>Skipped (Duplicate of &lt;filename&gt;)</code></td>
+</tr>
+<tr>
+<td><strong>3. Updated Version of Existing File</strong></td>
+<td><code>same filename</code> + <code>different content_hash</code></td>
+<td><code>"updated"</code></td>
+<td>Atomically deletes the previous version from Neon PostgreSQL (<code>delete_document_chunks</code>) and Neo4j (<code>delete_document_from_graph</code>), then indexes the new version through Steps 3–5.</td>
+<td><code>Updated Version</code></td>
+</tr>
+<tr>
+<td><strong>4. Brand-New Document</strong></td>
+<td>No filename or content hash match</td>
+<td><code>"created"</code></td>
+<td>Runs the full 5-step dual ingestion pipeline and stores <code>content_hash</code> in <code>documents.metadata</code>.</td>
+<td><code>Indexed (New)</code></td>
+</tr>
+</tbody>
+</table>
 <hr />
 <h2 id="step-1-format-specific-text-extraction-appparserspy">Step 1: Format-Specific Text Extraction (<code>app/parsers.py</code>)<a class="headerlink" href="#step-1-format-specific-text-extraction-appparserspy" title="Permanent link">&para;</a></h2>
 <p><code>parse_file(file_path)</code> inspects the lowercase file extension and routes the file to the appropriate parser:</p>
