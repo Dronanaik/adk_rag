@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { FileIcon, FileText, FileSpreadsheet, FileJson, Globe, Trash2, RefreshCw, AlertCircle } from 'lucide-react'
-import { deleteDocument, listDocuments } from '../api.js'
+import { FileIcon, FileText, FileSpreadsheet, FileJson, Globe, Trash2, RefreshCw, AlertCircle, X } from 'lucide-react'
+import { deleteAllDocuments, deleteDocument, listDocuments } from '../api.js'
 import styles from './DocumentsTab.module.css'
 
 function getFileIcon(name = '') {
@@ -20,6 +20,9 @@ export default function DocumentsTab({ userId }) {
   const [error, setError] = useState('')
   const [deletingId, setDeletingId] = useState(null)
   const [confirmId, setConfirmId] = useState(null)
+  const [showDeleteAllModal, setShowDeleteAllModal] = useState(false)
+  const [deleteAllInput, setDeleteAllInput] = useState('')
+  const [deletingAll, setDeletingAll] = useState(false)
 
   const fetchDocuments = useCallback(async () => {
     setLoading(true)
@@ -51,6 +54,35 @@ export default function DocumentsTab({ userId }) {
     }
   }
 
+  function openDeleteAllModal() {
+    setDeleteAllInput('')
+    setShowDeleteAllModal(true)
+  }
+
+  function closeDeleteAllModal() {
+    if (deletingAll) return
+    setShowDeleteAllModal(false)
+    setDeleteAllInput('')
+  }
+
+  async function handleDeleteAll(e) {
+    if (e) e.preventDefault()
+    if (deleteAllInput !== 'Delete' || deletingAll) return
+
+    setDeletingAll(true)
+    setError('')
+    try {
+      await deleteAllDocuments(userId)
+      setDocuments([])
+      setShowDeleteAllModal(false)
+      setDeleteAllInput('')
+    } catch (err) {
+      setError(`Delete All failed: ${err.message}`)
+    } finally {
+      setDeletingAll(false)
+    }
+  }
+
   return (
     <div className={`${styles.wrap} fade-in`}>
       <div className={styles.headerRow}>
@@ -62,15 +94,88 @@ export default function DocumentsTab({ userId }) {
               : `${documents.length} document${documents.length !== 1 ? 's' : ''} indexed in Neon PostgreSQL & Neo4j`}
           </p>
         </div>
-        <button
-          className="btn btn-secondary"
-          onClick={fetchDocuments}
-          disabled={loading}
-          id="refresh-docs-btn"
-        >
-          <RefreshCw size={16} className={loading ? 'spinner' : ''} /> Refresh
-        </button>
+        <div className={styles.headerActions}>
+          {documents.length > 0 && (
+            <button
+              className="btn btn-danger"
+              onClick={openDeleteAllModal}
+              disabled={loading || deletingAll}
+              id="delete-all-docs-btn"
+            >
+              <Trash2 size={16} /> Delete All
+            </button>
+          )}
+          <button
+            className="btn btn-secondary"
+            onClick={fetchDocuments}
+            disabled={loading || deletingAll}
+            id="refresh-docs-btn"
+          >
+            <RefreshCw size={16} className={loading ? 'spinner' : ''} /> Refresh
+          </button>
+        </div>
       </div>
+
+      {showDeleteAllModal && (
+        <div className={styles.modalBackdrop} onClick={closeDeleteAllModal}>
+          <div
+            className={`glass-card ${styles.modalCard}`}
+            onClick={e => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-all-modal-title"
+          >
+            <div className={styles.modalHeader}>
+              <h3 id="delete-all-modal-title" className={styles.modalTitle}>
+                Delete All Documents
+              </h3>
+              <button
+                type="button"
+                className={styles.modalCloseBtn}
+                onClick={closeDeleteAllModal}
+                disabled={deletingAll}
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <p className={styles.modalDescription}>
+              This will permanently delete all <strong>{documents.length}</strong> document{documents.length !== 1 ? 's' : ''} from Neon PostgreSQL and Neo4j. Type <code>Delete</code> below to confirm.
+            </p>
+            <form onSubmit={handleDeleteAll} className={styles.modalForm}>
+              <input
+                type="text"
+                className="input"
+                placeholder="Enter Delete"
+                value={deleteAllInput}
+                onChange={e => setDeleteAllInput(e.target.value)}
+                disabled={deletingAll}
+                autoFocus
+                id="delete-all-confirm-input"
+              />
+              <div className={styles.modalActions}>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={closeDeleteAllModal}
+                  disabled={deletingAll}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-danger"
+                  disabled={deleteAllInput !== 'Delete' || deletingAll}
+                  id="confirm-delete-all-btn"
+                >
+                  {deletingAll ? <RefreshCw size={15} className="spinner" /> : <Trash2 size={15} />}
+                  Delete All
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className="alert alert-error">

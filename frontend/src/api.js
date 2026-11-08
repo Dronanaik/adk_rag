@@ -168,6 +168,14 @@ export async function deleteDocument(documentId, userId) {
   )
 }
 
+export async function deleteAllDocuments(userId) {
+  return apiFetch(
+    '/documents',
+    { method: 'DELETE' },
+    userId
+  )
+}
+
 // ---------------------------------------------------------------------------
 // Knowledge Graph (Neo4j)
 // ---------------------------------------------------------------------------

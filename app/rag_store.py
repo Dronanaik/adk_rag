@@ -174,6 +174,47 @@ def delete_document_chunks(
     return chunk_count
 
 
+def delete_all_user_documents(user_id: str) -> dict[str, int]:
+    """
+    Delete all documents and chunks belonging to user_id from Neon PostgreSQL.
+    Returns counts of deleted documents and chunks.
+    """
+    _ensure_schema()
+    with get_db_connection(register_pgvector=False) as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT COUNT(*) FROM document_chunks
+                WHERE user_id = %s;
+                """,
+                (user_id,),
+            )
+            row = cur.fetchone()
+            chunk_count = int(row[0]) if row else 0
+
+            cur.execute(
+                """
+                DELETE FROM documents
+                WHERE user_id = %s;
+                """,
+                (user_id,),
+            )
+            deleted_docs = cur.rowcount
+
+            cur.execute(
+                """
+                DELETE FROM document_chunks
+                WHERE user_id = %s;
+                """,
+                (user_id,),
+            )
+
+    return {
+        "deleted_documents": deleted_docs,
+        "deleted_chunks": chunk_count,
+    }
+
+
 def find_existing_user_document(
     user_id: str,
     filename: str,

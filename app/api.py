@@ -35,6 +35,7 @@ from app.database import (
 )
 from app.embeddings import reset_genai_client
 from app.graph_store import (
+    delete_all_user_documents_from_graph,
     delete_document_from_graph,
     get_entity_relationships_from_graph,
     get_graph_stats,
@@ -44,6 +45,7 @@ from app.graph_store import (
 )
 from app.ingest import get_ingestion_progress, ingest_document
 from app.rag_store import (
+    delete_all_user_documents,
     delete_document_chunks,
     get_vector_store_stats,
     list_user_documents,
@@ -70,7 +72,7 @@ app = FastAPI(
         "Hybrid Agentic RAG & Knowledge Graph platform powered by Google ADK, "
         "Gemini, Neon PostgreSQL (pgvector), and Neo4j."
     ),
-    version="2.3.0",
+    version="2.3.3",
     lifespan=lifespan,
 )
 
@@ -400,6 +402,36 @@ def get_documents(
     return {
         "success": True,
         "documents": documents,
+    }
+
+
+@app.delete("/documents")
+def delete_all_documents(
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Delete all documents, vector chunks, and Knowledge Graph entities/relationships
+    belonging to the authenticated user.
+    """
+    user_id = current_user["user_id"]
+    pg_deleted = delete_all_user_documents(user_id=user_id)
+
+    graph_deleted = {"deleted_relationships": 0, "deleted_entities": 0}
+    try:
+        graph_deleted = delete_all_user_documents_from_graph(user_id=user_id)
+    except Exception:
+        logger.warning(
+            "Neo4j delete-all warning for user %s",
+            _sanitize_log_value(user_id),
+            exc_info=True,
+        )
+
+    return {
+        "success": True,
+        "deleted_documents": pg_deleted.get("deleted_documents", 0),
+        "deleted_chunks": pg_deleted.get("deleted_chunks", 0),
+        "deleted_entities": graph_deleted.get("deleted_entities", 0),
+        "deleted_relationships": graph_deleted.get("deleted_relationships", 0),
     }
 
 

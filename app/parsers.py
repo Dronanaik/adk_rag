@@ -1,8 +1,10 @@
 import csv
+import hashlib
 from html.parser import HTMLParser
 import io
 import logging
 from pathlib import Path
+import re
 from typing import Any
 
 import pymupdf as fitz
@@ -10,11 +12,35 @@ from docx import Document
 from docx.oxml.ns import qn
 from docx.table import Table
 from docx.text.paragraph import Paragraph
+from google.genai import types
+
+import app.config as config
+from app.embeddings import get_genai_client
 
 logger = logging.getLogger(__name__)
 
 _docling_converter: Any = None
 _docling_unavailable: bool = False
+_image_transcription_cache: dict[str, str] = {}
+
+IMAGE_PLACEHOLDER = "<!-- image -->"
+MAX_VISION_IMAGES_PER_DOC = 15
+MIN_IMAGE_DIMENSION_PX = 48
+MIN_IMAGE_BYTES = 1500
+
+IMAGE_EXTRACTION_PROMPT = (
+    "You are a lossless document figure, chart, and diagram transcription engine. "
+    "Examine this image extracted from a document.\n"
+    "1. If the image is purely a decorative icon, company logo, bullet, or blank spacer "
+    "with no meaningful textual or visual data, reply with exactly: DECORATIVE_ONLY\n"
+    "2. Otherwise, transcribe ALL visible text, labels, headings, numbers, metrics, equations, "
+    "and callouts verbatim.\n"
+    "3. If the image contains a table, chart, or graph, represent its data as a clean "
+    "GitHub-Flavored Markdown table.\n"
+    "4. If the image is an architecture diagram, flowchart, or entity-relationship diagram, "
+    "list all components/nodes and their exact directional connections (e.g., Component A -> connects to -> Component B).\n"
+    "Output concise, structured Markdown only without conversational preamble."
+)
 
 DOCLING_SUPPORTED_EXTENSIONS = {
     ".pdf",
@@ -30,7 +56,8 @@ DOCLING_SUPPORTED_EXTENSIONS = {
 
 def _get_docling_converter() -> Any:
     """
-    Lazily initialize and cache the Docling DocumentConverter instance.
+    Lazily initialize and cache the Docling DocumentConverter instance with
+    OCR, table structure recognition, and picture image cropping enabled.
     """
     global _docling_converter, _docling_unavailable
     if _docling_unavailable:
@@ -39,23 +66,282 @@ def _get_docling_converter() -> Any:
         return _docling_converter
 
     try:
-        from docling.document_converter import DocumentConverter
+        from docling.datamodel.base_models import InputFormat
+        from docling.datamodel.pipeline_options import PdfPipelineOptions
+        from docling.document_converter import DocumentConverter, PdfFormatOption
 
-        _docling_converter = DocumentConverter()
+        pdf_options = PdfPipelineOptions(
+            do_ocr=True,
+            do_table_structure=True,
+            generate_picture_images=True,
+            images_scale=2.0,
+        )
+        _docling_converter = DocumentConverter(
+            format_options={
+                InputFormat.PDF: PdfFormatOption(pipeline_options=pdf_options),
+            }
+        )
         return _docling_converter
     except Exception:
-        logger.warning(
-            "Docling DocumentConverter could not be initialized; using lossless native parsers.",
-            exc_info=True,
+        try:
+            from docling.document_converter import DocumentConverter
+
+            _docling_converter = DocumentConverter()
+            return _docling_converter
+        except Exception:
+            logger.warning(
+                "Docling DocumentConverter could not be initialized; using lossless native parsers.",
+                exc_info=True,
+            )
+            _docling_unavailable = True
+            return None
+
+
+def _transcribe_image_with_gemini(
+    image_bytes: bytes,
+    mime_type: str = "image/png",
+    caption: str = "",
+) -> str:
+    """
+    Use Gemini 2.5 Flash Multimodal Vision to extract all text, chart values,
+    and diagram relationships from an embedded document image.
+    """
+    if not image_bytes or len(image_bytes) < MIN_IMAGE_BYTES or not config.GOOGLE_API_KEY:
+        return caption.strip()
+
+    digest = hashlib.sha256(image_bytes).hexdigest()
+    if digest in _image_transcription_cache:
+        cached = _image_transcription_cache[digest]
+        if not cached:
+            return caption.strip()
+        return f"{caption.strip()}\n{cached}".strip() if caption.strip() else cached
+
+    try:
+        client = get_genai_client()
+        response = client.models.generate_content(
+            model=config.AGENT_MODEL,
+            contents=[
+                types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
+                IMAGE_EXTRACTION_PROMPT,
+            ],
         )
-        _docling_unavailable = True
-        return None
+        text = (response.text or "").strip()
+        if not text or "DECORATIVE_ONLY" in text:
+            _image_transcription_cache[digest] = ""
+            return caption.strip()
+
+        _image_transcription_cache[digest] = text
+        if caption.strip():
+            return f"**Caption:** {caption.strip()}\n{text}"
+        return text
+    except Exception:
+        logger.debug("Gemini vision transcription skipped for embedded image", exc_info=True)
+        return caption.strip()
+
+
+def _extract_docling_picture_payloads(doc: Any) -> list[dict[str, Any]]:
+    """
+    Extract cropped PIL images and captions from a DoclingDocument's pictures collection.
+    """
+    payloads: list[dict[str, Any]] = []
+    pictures = getattr(doc, "pictures", None) or []
+
+    for pic in pictures:
+        caption = ""
+        try:
+            if hasattr(pic, "caption_text"):
+                caption = (pic.caption_text(doc) or "").strip()
+        except Exception:
+            caption = ""
+
+        pil_img = None
+        try:
+            if hasattr(pic, "get_image"):
+                pil_img = pic.get_image(doc)
+            if pil_img is None and getattr(pic, "image", None) is not None:
+                pil_img = getattr(pic.image, "pil_image", None)
+        except Exception:
+            pil_img = None
+
+        img_bytes = b""
+        if pil_img is not None:
+            width, height = getattr(pil_img, "size", (0, 0))
+            if width >= MIN_IMAGE_DIMENSION_PX and height >= MIN_IMAGE_DIMENSION_PX:
+                buf = io.BytesIO()
+                pil_img.save(buf, format="PNG")
+                img_bytes = buf.getvalue()
+
+        payloads.append(
+            {
+                "bytes": img_bytes,
+                "mime_type": "image/png",
+                "caption": caption,
+            }
+        )
+
+    return payloads
+
+
+def _extract_native_images_from_file(file_path: str) -> list[dict[str, Any]]:
+    """
+    Extract embedded bitmap images directly from .pdf, .docx, or .pptx files
+    when Docling picture bitmaps are not directly populated.
+    """
+    ext = Path(file_path).suffix.lower()
+    images: list[dict[str, Any]] = []
+    seen_hashes: set[str] = set()
+
+    try:
+        if ext == ".pdf":
+            with fitz.open(file_path) as pdf_doc:
+                for page_num, page in enumerate(pdf_doc, start=1):
+                    for img_info in page.get_images(full=True):
+                        xref = img_info[0]
+                        base_img = pdf_doc.extract_image(xref)
+                        if not base_img:
+                            continue
+                        width = int(base_img.get("width") or 0)
+                        height = int(base_img.get("height") or 0)
+                        img_bytes = base_img.get("image") or b""
+                        if (
+                            width < MIN_IMAGE_DIMENSION_PX
+                            or height < MIN_IMAGE_DIMENSION_PX
+                            or len(img_bytes) < MIN_IMAGE_BYTES
+                        ):
+                            continue
+                        h = hashlib.sha256(img_bytes).hexdigest()
+                        if h in seen_hashes:
+                            continue
+                        seen_hashes.add(h)
+                        img_ext = (base_img.get("ext") or "png").lower()
+                        mime = "image/jpeg" if img_ext in {"jpg", "jpeg"} else f"image/{img_ext}"
+                        images.append(
+                            {
+                                "bytes": img_bytes,
+                                "mime_type": mime,
+                                "caption": f"Page {page_num} Figure",
+                            }
+                        )
+                        if len(images) >= MAX_VISION_IMAGES_PER_DOC:
+                            return images
+
+        elif ext == ".docx":
+            doc = Document(file_path)
+            for rel in doc.part.rels.values():
+                if "image" in getattr(rel, "reltype", ""):
+                    target_part = getattr(rel, "target_part", None)
+                    img_bytes = getattr(target_part, "blob", b"") if target_part else b""
+                    content_type = getattr(target_part, "content_type", "image/png") if target_part else "image/png"
+                    if len(img_bytes) < MIN_IMAGE_BYTES or not content_type.startswith("image/"):
+                        continue
+                    if content_type in {"image/x-emf", "image/x-wmf"}:
+                        continue
+                    h = hashlib.sha256(img_bytes).hexdigest()
+                    if h in seen_hashes:
+                        continue
+                    seen_hashes.add(h)
+                    images.append(
+                        {
+                            "bytes": img_bytes,
+                            "mime_type": content_type,
+                            "caption": "",
+                        }
+                    )
+                    if len(images) >= MAX_VISION_IMAGES_PER_DOC:
+                        return images
+
+        elif ext == ".pptx":
+            from pptx import Presentation
+
+            prs = Presentation(file_path)
+            for slide_num, slide in enumerate(prs.slides, start=1):
+                for shape in slide.shapes:
+                    if hasattr(shape, "image"):
+                        try:
+                            img_bytes = shape.image.blob
+                            content_type = shape.image.content_type or "image/png"
+                            if len(img_bytes) < MIN_IMAGE_BYTES:
+                                continue
+                            h = hashlib.sha256(img_bytes).hexdigest()
+                            if h in seen_hashes:
+                                continue
+                            seen_hashes.add(h)
+                            images.append(
+                                {
+                                    "bytes": img_bytes,
+                                    "mime_type": content_type,
+                                    "caption": f"Slide {slide_num} Visual",
+                                }
+                            )
+                            if len(images) >= MAX_VISION_IMAGES_PER_DOC:
+                                return images
+                        except Exception:
+                            continue
+    except Exception:
+        logger.debug("Native embedded image extraction skipped for %s", file_path, exc_info=True)
+
+    return images
+
+
+def _resolve_image_placeholders(
+    markdown_text: str,
+    docling_doc: Any,
+    file_path: str,
+) -> str:
+    """
+    Replace every '<!-- image -->' placeholder in Docling's Markdown export
+    with structured text/table/diagram descriptions extracted via Gemini Vision,
+    ensuring zero visual content loss and leaving no raw '<!-- image -->' tags.
+    """
+    if IMAGE_PLACEHOLDER not in markdown_text:
+        return markdown_text
+
+    docling_payloads = _extract_docling_picture_payloads(docling_doc) if docling_doc is not None else []
+    has_docling_bytes = any(bool(p.get("bytes")) for p in docling_payloads)
+    native_payloads = [] if has_docling_bytes else _extract_native_images_from_file(file_path)
+
+    active_payloads = docling_payloads if has_docling_bytes else native_payloads
+    transcribed_blocks: list[str] = []
+    vision_calls = 0
+
+    for idx, item in enumerate(active_payloads, start=1):
+        img_bytes = item.get("bytes") or b""
+        mime_type = item.get("mime_type") or "image/png"
+        caption = item.get("caption") or ""
+
+        if img_bytes and vision_calls < MAX_VISION_IMAGES_PER_DOC:
+            vision_calls += 1
+            extracted_md = _transcribe_image_with_gemini(
+                image_bytes=img_bytes,
+                mime_type=mime_type,
+                caption=caption,
+            )
+        else:
+            extracted_md = caption.strip()
+
+        if extracted_md:
+            transcribed_blocks.append(f"### [Figure {idx}]\n{extracted_md}")
+        else:
+            transcribed_blocks.append("")
+
+    parts = markdown_text.split(IMAGE_PLACEHOLDER)
+    rebuilt: list[str] = [parts[0]]
+    for idx, trailing_part in enumerate(parts[1:]):
+        replacement = transcribed_blocks[idx] if idx < len(transcribed_blocks) else ""
+        if replacement:
+            rebuilt.append(f"\n\n{replacement}\n\n")
+        rebuilt.append(trailing_part)
+
+    cleaned = "".join(rebuilt).replace(IMAGE_PLACEHOLDER, "")
+    cleaned = re.sub(r"\n{3,}", "\n\n", cleaned).strip()
+    return cleaned
 
 
 def extract_with_docling(file_path: str) -> str:
     """
     Convert a document using IBM Docling (DocumentConverter) into structured,
-    layout-aware Markdown preserving reading order, headings, lists, and tables.
+    layout-aware Markdown preserving reading order, headings, lists, tables,
+    and embedded figure/diagram content (replacing '<!-- image -->' placeholders).
     """
     converter = _get_docling_converter()
     if converter is None:
@@ -64,9 +350,22 @@ def extract_with_docling(file_path: str) -> str:
     try:
         conv_result = converter.convert(file_path)
         if conv_result and getattr(conv_result, "document", None) is not None:
-            markdown_text = conv_result.document.export_to_markdown()
+            doc = conv_result.document
+            try:
+                markdown_text = doc.export_to_markdown(
+                    traverse_pictures=True,
+                    image_placeholder=IMAGE_PLACEHOLDER,
+                )
+            except TypeError:
+                markdown_text = doc.export_to_markdown()
+
             if markdown_text and markdown_text.strip():
-                return markdown_text.strip()
+                resolved_text = _resolve_image_placeholders(
+                    markdown_text=markdown_text,
+                    docling_doc=doc,
+                    file_path=file_path,
+                )
+                return resolved_text.strip()
     except Exception:
         logger.warning(
             "Docling conversion fallback triggered for %s",
@@ -143,10 +442,45 @@ def _extract_pdf_pymupdf_lossless(file_path: str) -> str:
     return "\n\n".join(pages)
 
 
+def _append_missing_figure_transcriptions(text: str, file_path: str) -> str:
+    """
+    If a document contains embedded images that were not already transcribed
+    in-place via Docling placeholders, transcribe and append them so zero visual
+    content is lost even when native fallback parsers are used.
+    """
+    if "### [Figure " in text:
+        return text
+
+    native_payloads = _extract_native_images_from_file(file_path)
+    if not native_payloads:
+        return text
+
+    figure_blocks: list[str] = []
+    for idx, item in enumerate(native_payloads[:MAX_VISION_IMAGES_PER_DOC], start=1):
+        img_bytes = item.get("bytes") or b""
+        mime_type = item.get("mime_type") or "image/png"
+        caption = item.get("caption") or ""
+        extracted_md = _transcribe_image_with_gemini(
+            image_bytes=img_bytes,
+            mime_type=mime_type,
+            caption=caption,
+        )
+        if extracted_md:
+            figure_blocks.append(f"### [Figure {idx}]\n{extracted_md}")
+
+    if not figure_blocks:
+        return text
+
+    if text.strip():
+        return text.strip() + "\n\n" + "\n\n".join(figure_blocks)
+    return "\n\n".join(figure_blocks)
+
+
 def extract_from_pdf(file_path: str) -> str:
     """
-    Extract text and tables from PDF using Docling layout-aware Markdown conversion,
-    reconciled with lossless PyMuPDF page & table extraction so zero content is lost.
+    Extract text, tables, and embedded figures/diagrams from PDF using Docling
+    layout-aware Markdown conversion + Gemini Vision, reconciled with lossless
+    PyMuPDF page & table extraction so zero content is lost.
     """
     docling_md = extract_with_docling(file_path)
     pymupdf_md = _extract_pdf_pymupdf_lossless(file_path)
@@ -172,11 +506,14 @@ def extract_from_pdf(file_path: str) -> str:
                     if matched == 0:
                         missing_pages.append(f"## [Page {page_number}]\n{raw_page}")
 
-        if missing_pages:
-            return docling_md + "\n\n" + "\n\n".join(missing_pages)
-        return docling_md
+        combined = (
+            docling_md + "\n\n" + "\n\n".join(missing_pages)
+            if missing_pages
+            else docling_md
+        )
+        return _append_missing_figure_transcriptions(combined, file_path)
 
-    return docling_md or pymupdf_md
+    return _append_missing_figure_transcriptions(docling_md or pymupdf_md, file_path)
 
 
 def _extract_docx_native_lossless(file_path: str) -> str:
@@ -237,15 +574,15 @@ def _extract_docx_native_lossless(file_path: str) -> str:
 
 def extract_from_docx(file_path: str) -> str:
     """
-    Extract text, headings, tables, and headers/footers from a Word (.docx) file
-    using Docling and lossless native XML body traversal.
+    Extract text, headings, tables, headers/footers, and embedded figures from a
+    Word (.docx) file using Docling, native XML body traversal, and Gemini Vision.
     """
     docling_md = extract_with_docling(file_path)
     native_md = _extract_docx_native_lossless(file_path)
 
     if docling_md and len(docling_md) >= len(native_md) * 0.85:
-        return docling_md
-    return native_md or docling_md
+        return _append_missing_figure_transcriptions(docling_md, file_path)
+    return _append_missing_figure_transcriptions(native_md or docling_md, file_path)
 
 
 def extract_from_text(file_path: str) -> str:
@@ -373,8 +710,8 @@ def extract_from_pptx(file_path: str) -> str:
 
     native_md = "\n\n".join(slides)
     if native_md and len(native_md) >= len(docling_md):
-        return native_md
-    return docling_md or native_md
+        return _append_missing_figure_transcriptions(native_md, file_path)
+    return _append_missing_figure_transcriptions(docling_md or native_md, file_path)
 
 
 class _LosslessHTMLParser(HTMLParser):
