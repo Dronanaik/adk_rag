@@ -1232,12 +1232,12 @@
 <tr>
 <td><strong>Upload Tab</strong></td>
 <td><code>UploadTab.jsx</code></td>
-<td>Drag-and-drop file selector supporting 12 document formats. Automatically redirects to the <strong>Ingestion Pipeline</strong> tab as soon as an upload starts.</td>
+<td>Multi-file drag-and-drop and browser file selector supporting 13 document formats, with a numbered file queue, <code>+ Add More Files</code>, <code>Clear All</code>, individual file removal, and automatic redirection to the <strong>Ingestion Pipeline</strong> tab when batch ingestion begins.</td>
 </tr>
 <tr>
 <td><strong>Ingestion Pipeline Tab</strong></td>
 <td><code>IngestionTab.jsx</code></td>
-<td>Polls <code>GET /ingest/progress</code> every <code>800ms</code> during upload so only the active step spins (<code>In Progress...</code>), finished steps show green checkmarks (<code>Completed</code>), and upcoming steps show <code>Queued</code>. Also displays Neon PostgreSQL &amp; Neo4j metrics and the dual storage architecture diagram.</td>
+<td>Polls <code>GET /ingest/progress</code> every <code>450ms</code> during single or multi-document uploads, displaying <code>Selected Document X of Y • Step S of 5 • &lt;Step Name&gt;</code> as the progress bar runs for each document, and summarizing total documents ingested (<code>All 5 Pipeline Steps Completed Successfully (Y Documents Ingested)</code>) with per-file metrics upon completion.</td>
 </tr>
 <tr>
 <td><strong>Documents Tab</strong></td>

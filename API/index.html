@@ -1657,8 +1657,8 @@
 </span></code></pre></div>
 <hr />
 <h3 id="post-documentsupload"><code>POST /documents/upload</code><a class="headerlink" href="#post-documentsupload" title="Permanent link">&para;</a></h3>
-<p>Uploads a file and runs the 5-step dual ingestion pipeline into Neon PostgreSQL and Neo4j.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/documents/upload<span class="w"> </span><span class="se">\</span>
+<p>Uploads a file and runs the 5-step dual ingestion pipeline into Neon PostgreSQL and Neo4j. Accepts optional <code>doc_index</code> and <code>total_docs</code> query parameters for multi-document batch telemetry in <code>GET /ingest/progress</code>.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">"http://localhost:8000/documents/upload?doc_index=1&amp;total_docs=2"</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer &lt;TOKEN&gt;"</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">  </span>-F<span class="w"> </span><span class="s2">"file=@/path/to/document.pdf"</span>
 </span></code></pre></div>

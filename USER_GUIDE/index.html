@@ -622,22 +622,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-2-uploading-a-document-upload-tab" class="md-nav__link">
+  <a href="#step-2-uploading-one-or-multiple-documents-upload-tab" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 2: Uploading a Document (Upload Tab)
+        Step 2: Uploading One or Multiple Documents (Upload Tab)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Step 2: Uploading a Document (Upload Tab)">
+    <nav class="md-nav" aria-label="Step 2: Uploading One or Multiple Documents (Upload Tab)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#upload-document-dropzone" class="md-nav__link">
+  <a href="#upload-documents-dropzone" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Upload Document Dropzone
+        Upload Documents Dropzone
       
     </span>
   </a>
@@ -645,10 +645,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#document-selected-ready-to-ingest" class="md-nav__link">
+  <a href="#multi-document-queue-selected-ready-to-ingest" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Document Selected &amp; Ready to Ingest
+        Multi-Document Queue Selected &amp; Ready to Ingest
       
     </span>
   </a>
@@ -673,10 +673,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#live-5-step-hybrid-ingestion-execution" class="md-nav__link">
+  <a href="#live-per-document-5-step-hybrid-ingestion-execution" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Live 5-Step Hybrid Ingestion Execution
+        Live Per-Document 5-Step Hybrid Ingestion Execution
       
     </span>
   </a>
@@ -684,10 +684,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#completed-ingestion-summary-stage-logs" class="md-nav__link">
+  <a href="#completed-batch-ingestion-summary-stage-logs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Completed Ingestion Summary &amp; Stage Logs
+        Completed Batch Ingestion Summary &amp; Stage Logs
       
     </span>
   </a>
@@ -1316,22 +1316,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-2-uploading-a-document-upload-tab" class="md-nav__link">
+  <a href="#step-2-uploading-one-or-multiple-documents-upload-tab" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 2: Uploading a Document (Upload Tab)
+        Step 2: Uploading One or Multiple Documents (Upload Tab)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Step 2: Uploading a Document (Upload Tab)">
+    <nav class="md-nav" aria-label="Step 2: Uploading One or Multiple Documents (Upload Tab)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#upload-document-dropzone" class="md-nav__link">
+  <a href="#upload-documents-dropzone" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Upload Document Dropzone
+        Upload Documents Dropzone
       
     </span>
   </a>
@@ -1339,10 +1339,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#document-selected-ready-to-ingest" class="md-nav__link">
+  <a href="#multi-document-queue-selected-ready-to-ingest" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Document Selected &amp; Ready to Ingest
+        Multi-Document Queue Selected &amp; Ready to Ingest
       
     </span>
   </a>
@@ -1367,10 +1367,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#live-5-step-hybrid-ingestion-execution" class="md-nav__link">
+  <a href="#live-per-document-5-step-hybrid-ingestion-execution" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Live 5-Step Hybrid Ingestion Execution
+        Live Per-Document 5-Step Hybrid Ingestion Execution
       
     </span>
   </a>
@@ -1378,10 +1378,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#completed-ingestion-summary-stage-logs" class="md-nav__link">
+  <a href="#completed-batch-ingestion-summary-stage-logs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Completed Ingestion Summary &amp; Stage Logs
+        Completed Batch Ingestion Summary &amp; Stage Logs
       
     </span>
   </a>
@@ -1669,56 +1669,51 @@
 <p>Every document you upload, every <code>768</code>-dimensional vector chunk stored in <strong>Neon PostgreSQL</strong>, and every <code>:Entity</code> / <code>:RELATES_TO</code> record created in <strong>Neo4j</strong> is strictly scoped to your authenticated <code>user_id</code>. No other user can view or query your workspace data.</p>
 </div>
 <hr />
-<h2 id="step-2-uploading-a-document-upload-tab">Step 2: Uploading a Document (<code>Upload</code> Tab)<a class="headerlink" href="#step-2-uploading-a-document-upload-tab" title="Permanent link">&para;</a></h2>
+<h2 id="step-2-uploading-one-or-multiple-documents-upload-tab">Step 2: Uploading One or Multiple Documents (<code>Upload</code> Tab)<a class="headerlink" href="#step-2-uploading-one-or-multiple-documents-upload-tab" title="Permanent link">&para;</a></h2>
 <p>Once signed in, the top header displays your <strong>API Online</strong> health indicator, your <strong>User Profile Badge</strong>, the <strong>Sign Out</strong> button, and the <strong>5-Tab Navigation Bar</strong> (<strong>Upload</strong> → <strong>Ingestion Pipeline</strong> → <strong>Documents</strong> → <strong>Agentic Chat</strong> → <strong>Knowledge Graph</strong>).</p>
-<h3 id="upload-document-dropzone">Upload Document Dropzone<a class="headerlink" href="#upload-document-dropzone" title="Permanent link">&para;</a></h3>
+<h3 id="upload-documents-dropzone">Upload Documents Dropzone<a class="headerlink" href="#upload-documents-dropzone" title="Permanent link">&para;</a></h3>
 <p><img alt="Upload Document Dropzone" src="../assets/screenshots/03-upload-dropzone.png" /></p>
 <ol>
 <li>The <strong>Upload</strong> tab is active by default when you sign in.</li>
-<li>Drag and drop a file onto the dashed bioluminescent dropzone, or click <strong>click to browse</strong> to open your system file picker.</li>
+<li>Drag and drop <strong>one or multiple files</strong> onto the dashed bioluminescent dropzone, or click <strong>click to browse multiple files</strong> to open your system file picker.</li>
 <li>All <strong>13 supported file extensions</strong> are displayed as badges below the dropzone: <code>.pdf</code>, <code>.docx</code>, <code>.xlsx</code>, <code>.xls</code>, <code>.pptx</code>, <code>.txt</code>, <code>.md</code>, <code>.csv</code>, <code>.json</code>, <code>.xml</code>, <code>.html</code>, <code>.htm</code>, and <code>.log</code>.</li>
 </ol>
 <hr />
-<h3 id="document-selected-ready-to-ingest">Document Selected &amp; Ready to Ingest<a class="headerlink" href="#document-selected-ready-to-ingest" title="Permanent link">&para;</a></h3>
+<h3 id="multi-document-queue-selected-ready-to-ingest">Multi-Document Queue Selected &amp; Ready to Ingest<a class="headerlink" href="#multi-document-queue-selected-ready-to-ingest" title="Permanent link">&para;</a></h3>
 <p><img alt="Upload Document File Preview" src="../assets/screenshots/04-upload-file-selected.png" /></p>
 <ol>
-<li>Once a file is selected (e.g., <code>Drona_Resume_.pdf</code> — <code>73.4 KB</code>), the dropzone transforms into a <strong>File Preview Card</strong> displaying:</li>
-<li>Format-specific file icon (red PDF badge for <code>.pdf</code> files)</li>
-<li>Exact <strong>filename</strong> and formatted <strong>file size</strong></li>
-<li>A <strong>× Remove</strong> button if you want to clear the selection and pick a different file</li>
-<li>Click the primary gradient button <strong>Ingest into Neon Postgres &amp; Neo4j</strong> at the bottom of the view to launch the 5-step hybrid ingestion pipeline.</li>
+<li>Once one or more files are selected (e.g., <code>doc1_openai_funding.md</code>, <code>doc2_anthropic_amazon.md</code>, and <code>doc6_google_ai_strategy.md</code>), the dropzone transforms into an interactive <strong>Multi-Document Queue Card</strong> displaying:</li>
+<li><strong>Selected Count &amp; Total Size Badge</strong>: e.g., <code>3 Documents Selected</code> (<code>Total: 10.9 KB</code>).</li>
+<li><strong>Queue Controls</strong>: Click <strong>+ Add More Files</strong> to append additional documents to the batch, or <strong>Clear All</strong> to reset the queue.</li>
+<li><strong>Numbered File Preview Rows</strong>: Each queued document shows its batch order (<code>1</code>, <code>2</code>, <code>3</code>…), format-specific icon, exact <strong>filename</strong>, formatted <strong>file size</strong>, and an individual <strong>× Remove</strong> button.</li>
+<li>Click the primary gradient button <strong>Ingest 3 Documents into Neon Postgres &amp; Neo4j</strong> (or <strong>Ingest into Neon Postgres &amp; Neo4j</strong> for a single file) at the bottom of the view to launch the 5-step hybrid ingestion pipeline.</li>
 </ol>
 <hr />
 <h2 id="step-3-monitoring-the-live-5-step-ingestion-pipeline-ingestion-pipeline-tab">Step 3: Monitoring the Live 5-Step Ingestion Pipeline (<code>Ingestion Pipeline</code> Tab)<a class="headerlink" href="#step-3-monitoring-the-live-5-step-ingestion-pipeline-ingestion-pipeline-tab" title="Permanent link">&para;</a></h2>
-<p>Clicking <strong>Ingest into Neon Postgres &amp; Neo4j</strong> automatically transitions you to the <strong>Ingestion Pipeline</strong> tab (<code>IngestionTab.jsx</code>), which polls <code>GET /ingest/progress</code> every <code>450ms</code> to display real-time execution progress.</p>
-<h3 id="live-5-step-hybrid-ingestion-execution">Live 5-Step Hybrid Ingestion Execution<a class="headerlink" href="#live-5-step-hybrid-ingestion-execution" title="Permanent link">&para;</a></h3>
+<p>Clicking the <strong>Ingest</strong> button automatically transitions you to the <strong>Ingestion Pipeline</strong> tab (<code>IngestionTab.jsx</code>), which processes each queued document sequentially through all 5 stages while polling <code>GET /ingest/progress</code> every <code>450ms</code>.</p>
+<h3 id="live-per-document-5-step-hybrid-ingestion-execution">Live Per-Document 5-Step Hybrid Ingestion Execution<a class="headerlink" href="#live-per-document-5-step-hybrid-ingestion-execution" title="Permanent link">&para;</a></h3>
 <p><img alt="Live 5-Step Hybrid Ingestion Pipeline Running" src="../assets/screenshots/05-ingestion-live-running.png" /></p>
-<p>While a document is actively being processed:</p>
+<p>While documents are actively being processed:</p>
 <ul>
-<li><strong>Top Live Progress Banner</strong>: Displays the active step number (<code>STEP 1 OF 5 • TEXT EXTRACTION</code>), live status message (<code>Starting document ingestion pipeline...</code>), percentage badge (<code>15%</code>), and animated progress bar.</li>
-<li><strong>Database Status Cards</strong>: Real-time counters for <strong>Neon Postgres Status</strong> (<code>Ready</code>), <strong>Vector Chunks Stored</strong>, <strong>Neo4j Entities</strong>, and <strong>Neo4j Relationships</strong>.</li>
+<li><strong>Per-Document Live Progress Banner</strong>:</li>
+<li>When multiple documents are selected, the header badge displays <strong><code>SELECTED DOCUMENT 2 OF 3 • STEP S OF 5 • &lt;STEP NAME&gt;</code></strong> along with a <strong><code>Doc 2 / 3</code></strong> indicator and the per-document percentage progress bar (<code>0%</code> → <code>100%</code> for each file).</li>
+<li>For a single document, it displays <strong><code>STEP S OF 5 • &lt;STEP NAME&gt;</code></strong>.</li>
+<li><strong>Database Status Cards</strong>: Real-time counters for <strong>Neon Postgres Status</strong> (<code>Ready</code>), <strong>Vector Chunks Stored</strong>, <strong>Neo4j Entities</strong>, and <strong>Neo4j Relationships</strong> update as each document finishes.</li>
 <li><strong>Active vs. Queued Step Badges</strong>:</li>
 <li>The currently executing stage highlights with a glowing cyan border and a <strong><code>Running Now...</code></strong> spinner badge.</li>
 <li>Upcoming stages remain in the <strong><code>Queued</code></strong> state until the active stage completes.</li>
 </ul>
 <hr />
-<h3 id="completed-ingestion-summary-stage-logs">Completed Ingestion Summary &amp; Stage Logs<a class="headerlink" href="#completed-ingestion-summary-stage-logs" title="Permanent link">&para;</a></h3>
+<h3 id="completed-batch-ingestion-summary-stage-logs">Completed Batch Ingestion Summary &amp; Stage Logs<a class="headerlink" href="#completed-batch-ingestion-summary-stage-logs" title="Permanent link">&para;</a></h3>
 <p><img alt="Completed 5-Step Hybrid Ingestion Pipeline" src="../assets/screenshots/06-ingestion-completed.png" /></p>
-<p>When all 5 stages finish executing:</p>
+<p>When all queued documents finish executing all 5 stages:</p>
 <ol>
-<li><strong>Emerald Completion Banner (<code>All 5 Pipeline Steps Completed Successfully</code>)</strong>: Summarizes the exact ingestion metrics for your file:</li>
-<li><strong>Filename</strong>: <code>Drona_Resume_.pdf</code></li>
-<li><strong>Chunks (pgvector)</strong>: <code>6</code></li>
-<li><strong>Entities (Neo4j)</strong>: <code>66</code></li>
-<li><strong>Relationships (Neo4j)</strong>: <code>85</code></li>
-<li><strong>Characters</strong>: <code>5,509</code></li>
+<li><strong>Emerald Completion Banner (<code>All 5 Pipeline Steps Completed Successfully (3 Documents Ingested)</code>)</strong>:</li>
+<li>Explicitly displays the total number of ingested documents when a multi-file batch completes.</li>
+<li>Summarizes aggregated metrics across the batch (<strong>Documents Ingested: <code>3</code></strong>, <strong>Filenames</strong>, <strong>Chunks (pgvector): <code>13</code></strong>, <strong>Entities (Neo4j): <code>126</code></strong>, <strong>Relationships (Neo4j): <code>118</code></strong>, and <strong>Characters: <code>11,205</code></strong>).</li>
+<li>Lists a <strong>Per-Document Breakdown</strong> (<code>✓ 1. doc1_openai_funding.md</code>, <code>✓ 2. doc2_anthropic_amazon.md</code>, <code>✓ 3. doc6_google_ai_strategy.md</code>) with each file's individual chunk, entity, and relationship counts.</li>
 <li><strong>Updated Database Counters</strong>: The 4 workspace metric cards immediately reflect the updated totals in Neon PostgreSQL and Neo4j.</li>
-<li><strong>Per-Stage Output Logs</strong>: All 5 pipeline cards show green <strong><code>✓ Completed</code></strong> badges along with their concrete stage output:</li>
-<li><strong>Step 1 — Text Extraction</strong>: <code>✓ Extracted 5,509 characters from Drona_Resume_.pdf</code></li>
-<li><strong>Step 2 — Structure-Aware Semantic Chunking</strong>: <code>✓ Created 6 overlapping semantic chunks</code></li>
-<li><strong>Step 3 — Gemini Embedding Generation</strong>: <code>✓ Generated 6 × 768-dim embedding vectors</code></li>
-<li><strong>Step 4 — Neon PostgreSQL Vector &amp; Hybrid Storage</strong>: <code>✓ Indexed 6 chunks in Neon pgvector + FTS</code></li>
-<li><strong>Step 5 — Neo4j Knowledge Graph Extraction</strong>: <code>✓ Extracted 66 entities &amp; 85 relationships in Neo4j</code></li>
+<li><strong>Per-Stage Output Logs</strong>: All 5 pipeline cards show green <strong><code>✓ Completed</code></strong> badges along with their concrete stage output for the completed run.</li>
 </ol>
 <hr />
 <h2 id="step-4-managing-indexed-documents-documents-tab">Step 4: Managing Indexed Documents (<code>Documents</code> Tab)<a class="headerlink" href="#step-4-managing-indexed-documents-documents-tab" title="Permanent link">&para;</a></h2>
@@ -1727,11 +1722,11 @@
 <p><img alt="My Documents Indexed List" src="../assets/screenshots/07-documents-list.png" /></p>
 <p>Each indexed document card displays:</p>
 <ul>
-<li><strong>Filename &amp; Format Icon</strong>: e.g., <code>Drona_Resume_.pdf</code></li>
-<li><strong>Neon PostgreSQL Vector Count Badge</strong>: <code>6 chunks</code> (cyan badge)</li>
-<li><strong>Neo4j Entity Count Badge</strong>: <code>66 entities</code> (gold badge)</li>
-<li><strong>Neo4j Relationship Count Badge</strong>: <code>85 relations</code> (emerald badge)</li>
-<li><strong>Document UUID</strong>: Truncated <code>doc_id</code> (<code>ID: a3b110e5-301...</code>)</li>
+<li><strong>Filename &amp; Format Icon</strong>: e.g., <code>doc6_google_ai_strategy.md</code>, <code>doc2_anthropic_amazon.md</code>, and <code>doc1_openai_funding.md</code></li>
+<li><strong>Neon PostgreSQL Vector Count Badge</strong>: e.g., <code>7 chunks</code>, <code>3 chunks</code> (cyan badge)</li>
+<li><strong>Neo4j Entity Count Badge</strong>: e.g., <code>55 entities</code>, <code>31 entities</code>, <code>33 entities</code> (gold badge)</li>
+<li><strong>Neo4j Relationship Count Badge</strong>: e.g., <code>52 relations</code>, <code>31 relations</code>, <code>33 relations</code> (emerald badge)</li>
+<li><strong>Document UUID</strong>: Truncated <code>doc_id</code> (<code>ID: 3cff2396-097...</code>)</li>
 <li><strong>Refresh &amp; Delete Controls</strong>: Top-right <strong>Refresh</strong> button and per-document <strong>Delete</strong> button.</li>
 </ul>
 <hr />
@@ -1761,36 +1756,36 @@
 <hr />
 <h3 id="multi-tool-grounded-response-with-dual-citations">Multi-Tool Grounded Response with Dual Citations<a class="headerlink" href="#multi-tool-grounded-response-with-dual-citations" title="Permanent link">&para;</a></h3>
 <p><img alt="Agentic Chat Grounded Response with Citations" src="../assets/screenshots/10-chat-hybrid-graph-response.png" /></p>
-<p>When you submit a question (e.g., <em>"Summarize Drona's key technical skills, AI/ML projects, and entity relationships from his resume."</em>):</p>
+<p>When you submit a cross-document question (e.g., <em>"How do OpenAI, Anthropic, Amazon, and Google compare in their AI funding and strategic partnerships?"</em>):</p>
 <ol>
 <li><strong>Session Management Controls</strong>: The header displays a glowing <strong><code>Session active</code></strong> badge (preserving multi-turn ADK <code>InMemorySessionService</code> memory) and a <strong><code>New session</code></strong> button to reset the conversation.</li>
 <li><strong>Tool Execution Badges</strong>: At the top of the assistant bubble, tool chips show the exact backend tools the ADK agent autonomously executed (<code>hybrid_search</code>, <code>graph_search</code>, <code>get_entity_relationships</code>, or <code>vector_search</code>).</li>
 <li><strong>Inline Dual Citations</strong>:</li>
-<li><strong>Document Chunk Citations</strong> (<code>[Source: Drona_Resume_.pdf, chunk N]</code>) highlight in <strong>cyan/emerald</strong>, linking claims directly to semantic vector chunks in <strong>Neon PostgreSQL</strong>.</li>
-<li><strong>Knowledge Graph Citations</strong> (<code>[Graph: DRONA L -&gt; BUILDS -&gt; Agentic AI]</code>, <code>[Graph: DRONA L -&gt; ARCHITECTS -&gt; Retrieval-Augmented Generation (RAG)]</code>, <code>[Graph: DRONA L -&gt; USES -&gt; Google Agent Development Kit (ADK)]</code>) highlight in <strong>gold</strong>, tracing multi-hop entity relationships in <strong>Neo4j</strong>.</li>
+<li><strong>Document Chunk Citations</strong> (<code>[Source: doc2_anthropic_amazon.md, chunk 1]</code>) highlight in <strong>cyan/emerald</strong>, linking claims directly to semantic vector chunks in <strong>Neon PostgreSQL</strong>.</li>
+<li><strong>Knowledge Graph Citations</strong> (<code>[Graph: Latest Funding Round -&gt; HAS_AMOUNT -&gt; $6.6 Billion]</code>) highlight in <strong>gold</strong>, tracing multi-hop entity relationships in <strong>Neo4j</strong>.</li>
 </ol>
 <hr />
 <h2 id="step-6-exploring-the-neo4j-knowledge-graph-knowledge-graph-tab">Step 6: Exploring the Neo4j Knowledge Graph (<code>Knowledge Graph</code> Tab)<a class="headerlink" href="#step-6-exploring-the-neo4j-knowledge-graph-knowledge-graph-tab" title="Permanent link">&para;</a></h2>
-<p>Switch to the <strong>Knowledge Graph</strong> tab (<code>GraphTab.jsx</code>) to visually explore and query the domain entities and directed relationships extracted from your documents.</p>
+<p>Switch to the <strong>Knowledge Graph</strong> tab (<code>GraphTab.jsx</code>) to visually explore and query the domain-agnostic entities and directed relationships extracted from your documents.</p>
 <h3 id="neo4j-knowledge-graph-topology-overview">Neo4j Knowledge Graph Topology Overview<a class="headerlink" href="#neo4j-knowledge-graph-topology-overview" title="Permanent link">&para;</a></h3>
 <p><img alt="Neo4j Knowledge Graph Explorer Overview" src="../assets/screenshots/11-graph-topology-overview.png" /></p>
 <p>The <strong>Neo4j Knowledge Graph Explorer</strong> provides four synchronized views:</p>
 <ol>
-<li><strong>Graph Summary Cards</strong>: Displays <strong>Total Entities</strong> (<code>89</code>), <strong>Relationships</strong> (<code>194</code>), and <strong>Entity Categories</strong> (<code>7</code>).</li>
-<li><strong>Real-Time Search &amp; Category Filter Pills</strong>:</li>
+<li><strong>Graph Summary Cards</strong>: Displays <strong>Total Entities</strong> (<code>179</code>), <strong>Relationships</strong> (<code>209</code>), and <strong>Entity Categories</strong> (<code>23</code>).</li>
+<li><strong>Real-Time Search &amp; Dynamic Category Filter Pills</strong>:</li>
 <li>Type any keyword into the search bar to filter entities, relationship types, or facts in real time.</li>
-<li>Click any category pill (<code>All</code>, <code>Person</code>, <code>Technology</code>, <code>Event</code>, <code>Concept</code>, <code>Organization</code>, <code>Model</code>, <code>Location</code>) to isolate specific node types.</li>
-<li><strong>Interactive Entity Topology (Left Panel)</strong>: Renders a radial SVG neural network where hub entities (such as <code>DRONA L</code>) sit at the center connected to surrounding technology, model, and organization nodes color-coded by category.</li>
-<li><strong>Extracted Relationship Facts (Right Panel)</strong>: Lists all extracted <code>(Source) -[RELATION]-&gt; (Target)</code> triples (e.g., <code>DRONA L [BUILDS -&gt;] Agentic AI</code>) along with their natural-language fact sentence and source document attribution (<code>Drona_Resume_.pdf</code>).</li>
+<li>Click any dynamically inferred category pill (<code>All</code>, <code>Organization</code>, <code>Event</code>, <code>Model</code>, <code>Agreement</code>, <code>Funding Round</code>, <code>Metric</code>, <code>Product</code>, <code>Service</code>, <code>Person</code>, <code>Partnership</code>, <code>Document</code>, <code>Location</code>, <code>Infrastructure</code>, <code>AI Model</code>, <code>Initiative</code>, <code>Concept</code>, <code>Feature</code>, <code>Platform</code>, <code>Technology</code>, <code>Alliance</code>, <code>Year</code>, <code>Strategy</code>, <code>Market</code>) to isolate specific node types and their 1-hop neighbors.</li>
+<li><strong>Interactive Entity Topology (Left Panel)</strong>: Renders a radial SVG neural network where hub entities (such as <code>Google</code>, <code>OpenAI</code>, and <code>Anthropic</code>) sit at the center connected to surrounding domain nodes color-coded by category.</li>
+<li><strong>Extracted Relationship Facts (Right Panel)</strong>: Lists all extracted <code>(Source) -[RELATION]-&gt; (Target)</code> triples along with their natural-language fact sentence and source document attribution (<code>doc1_openai_funding.md</code>, <code>doc2_anthropic_amazon.md</code>, <code>doc6_google_ai_strategy.md</code>).</li>
 </ol>
 <hr />
 <h3 id="selected-entity-1-hop-neighborhood-inspector">Selected Entity 1-Hop Neighborhood Inspector<a class="headerlink" href="#selected-entity-1-hop-neighborhood-inspector" title="Permanent link">&para;</a></h3>
 <p><img alt="Neo4j Knowledge Graph Selected Entity Inspector" src="../assets/screenshots/12-graph-node-inspector.png" /></p>
 <p>Clicking any node on the interactive SVG canvas (or clicking any entity name in the right-hand facts list) activates the <strong>1-Hop Neighborhood Inspector</strong>:</p>
 <ol>
-<li><strong>Gold Neighborhood Highlighting</strong>: All edges directly connected to the selected entity (<code>DRONA L</code>) illuminate in gold (<code>#fbbf24</code>) with relationship labels (<code>BUILDS</code>, <code>DESIGNS</code>, <code>HAS_SKILL</code>, <code>USES</code>, <code>DEVELOPED</code>, <code>STUDIED_AT</code>) rendered along the connecting paths, while unconnected nodes dim.</li>
-<li><strong>Selected Entity Detail Card (Top-Right)</strong>: Displays the entity's category badge (<code>PERSON</code>), canonical name (<code>DRONA L</code>), Gemini-extracted summary description (<em>"DRONA L is an Associate Consultant and AI engineer with hands-on experience in agentic AI systems, RAG solutions, and LLM-powered test automation."</em>), and a <strong><code>× Clear</code></strong> button to return to the full graph view.</li>
-<li><strong>Filtered Entity Relationships List (Bottom-Right)</strong>: Automatically filters the right-hand panel (<code>Relationships for "DRONA L"</code>) to show only the relationship triples involving the selected node.</li>
+<li><strong>Gold Neighborhood Highlighting</strong>: All edges directly connected to the selected entity (<code>Google</code>) illuminate in gold (<code>#fbbf24</code>) with relationship labels (<code>HAS_MARKET_SHARE_IN</code>, <code>HAS_LONG_TERM_VISION</code>, <code>HAS_INTEGRATED_CAPABILITY</code>, <code>DEVELOPS</code>, <code>ANALYZES</code>) rendered along the connecting paths, while unconnected nodes dim.</li>
+<li><strong>Selected Entity Detail Card (Top-Right)</strong>: Displays the entity's category badge (<code>ORGANIZATION</code>), canonical name (<code>Google</code>), Gemini-extracted summary description (<em>"Google's approach to the AI competitive landscape reveals a sophisticated multi-front strategy that simultaneously develops internal capabilities while investing in potential competitors."</em>), and a <strong><code>× Clear</code></strong> button to return to the full graph view.</li>
+<li><strong>Filtered Entity Relationships List (Bottom-Right)</strong>: Automatically filters the right-hand panel (<code>Relationships for "Google"</code>) to show only the <code>38 triples</code> involving the selected node.</li>
 </ol>
 
 

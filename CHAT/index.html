@@ -851,10 +851,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-graph_searchquery-user_id-limit15" class="md-nav__link">
+  <a href="#3-graph_searchquery-tool_context" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. graph_search(query, user_id, limit=15)
+        3. graph_search(query, tool_context)
       
     </span>
   </a>
@@ -862,10 +862,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-get_entity_relationshipsentity_name-user_id-depth1" class="md-nav__link">
+  <a href="#4-get_entity_relationshipsentity_name-tool_context" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. get_entity_relationships(entity_name, user_id, depth=1)
+        4. get_entity_relationships(entity_name, tool_context)
       
     </span>
   </a>
@@ -1160,10 +1160,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-graph_searchquery-user_id-limit15" class="md-nav__link">
+  <a href="#3-graph_searchquery-tool_context" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. graph_search(query, user_id, limit=15)
+        3. graph_search(query, tool_context)
       
     </span>
   </a>
@@ -1171,10 +1171,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-get_entity_relationshipsentity_name-user_id-depth1" class="md-nav__link">
+  <a href="#4-get_entity_relationshipsentity_name-tool_context" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. get_entity_relationships(entity_name, user_id, depth=1)
+        4. get_entity_relationships(entity_name, tool_context)
       
     </span>
   </a>
@@ -1318,17 +1318,17 @@
 <li><strong>How It Works</strong>: Queries <code>document_chunks</code> ordered purely by <code>pgvector</code> cosine distance (<code>embedding &lt;=&gt; query_vec</code>).</li>
 <li><strong>Best For</strong>: Conceptual, thematic, or paraphrased queries where exact keywords may not appear in the source text.</li>
 </ul>
-<h3 id="3-graph_searchquery-user_id-limit15">3. <code>graph_search(query, user_id, limit=15)</code><a class="headerlink" href="#3-graph_searchquery-user_id-limit15" title="Permanent link">&para;</a></h3>
+<h3 id="3-graph_searchquery-tool_context">3. <code>graph_search(query, tool_context)</code><a class="headerlink" href="#3-graph_searchquery-tool_context" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Backend Function</strong>: <code>app/graph_store.py -&gt; search_knowledge_graph()</code></li>
-<li><strong>How It Works</strong>: Tokenizes the query and searches Neo4j <code>(:Entity)</code> names, categories, descriptions, and <code>[:RELATES_TO]</code> facts scoped to <code>user_id</code>.</li>
-<li><strong>Best For</strong>: Discovering how people, organizations, technologies, models, and concepts connect across one or more documents.</li>
+<li><strong>How It Works</strong>: Tokenizes the query and searches Neo4j <code>(:Entity)</code> names, dynamically inferred domain categories (<code>entity_type</code>), descriptions, and <code>[:RELATES_TO]</code> facts scoped to <code>user_id</code>.</li>
+<li><strong>Best For</strong>: Discovering how any domain entities, subjects, attributes, items, processes, or categories connect, relate, depend on each other, or compare across one or more documents.</li>
 </ul>
-<h3 id="4-get_entity_relationshipsentity_name-user_id-depth1">4. <code>get_entity_relationships(entity_name, user_id, depth=1)</code><a class="headerlink" href="#4-get_entity_relationshipsentity_name-user_id-depth1" title="Permanent link">&para;</a></h3>
+<h3 id="4-get_entity_relationshipsentity_name-tool_context">4. <code>get_entity_relationships(entity_name, tool_context)</code><a class="headerlink" href="#4-get_entity_relationshipsentity_name-tool_context" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Backend Function</strong>: <code>app/graph_store.py -&gt; get_entity_relationships_from_graph()</code></li>
-<li><strong>How It Works</strong>: Finds the matching <code>(:Entity)</code> node in Neo4j and traverses all incoming and outgoing <code>[:RELATES_TO]</code> edges plus <code>[:MENTIONED_IN]</code> document links.</li>
-<li><strong>Best For</strong>: Deep-diving into a specific entity's direct connections and dependencies.</li>
+<li><strong>How It Works</strong>: Finds the matching <code>(:Entity)</code> node in Neo4j (regardless of category) and traverses all incoming and outgoing <code>[:RELATES_TO]</code> edges.</li>
+<li><strong>Best For</strong>: Deep-diving into a specific named entity's direct neighborhood, dependencies, and supporting facts.</li>
 </ul>
 <hr />
 <h2 id="dynamic-user-context-injection">Dynamic User Context Injection<a class="headerlink" href="#dynamic-user-context-injection" title="Permanent link">&para;</a></h2>
