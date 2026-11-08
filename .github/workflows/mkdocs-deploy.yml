@@ -13,7 +13,6 @@ on:
       - opened
       - synchronize
       - reopened
-      - closed
   workflow_dispatch:
 
 permissions:
@@ -21,12 +20,12 @@ permissions:
 
 concurrency:
   group: "mkdocs-pages-${{ github.ref }}"
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy-docs:
     name: Link Tag to GitHub Release & Deploy MkDocs
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
