@@ -179,14 +179,14 @@ export default function ChatTab({ userId }) {
           className={`btn btn-primary ${styles.sendBtn}`}
           onClick={() => handleSend()}
           disabled={loading || !input.trim()}
+          aria-label="Send message"
+          title="Send"
           id="send-btn"
         >
           {loading ? (
             <span className="spinner" />
           ) : (
-            <>
-              <span>Send</span> <Send size={16} />
-            </>
+            <Send size={18} />
           )}
         </button>
       </div>

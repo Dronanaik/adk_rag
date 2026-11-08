@@ -373,6 +373,51 @@ def delete_document_from_graph(user_id: str, document_id: str) -> dict[str, int]
     }
 
 
+def delete_all_user_documents_from_graph(user_id: str) -> dict[str, int]:
+    """
+    Delete all graph relationships, Document nodes, and Entity nodes belonging to user_id.
+    """
+    if not is_neo4j_configured():
+        return {"deleted_relationships": 0, "deleted_entities": 0}
+
+    _ensure_neo4j_schema()
+    driver = get_neo4j_driver()
+
+    with driver.session(database=config.NEO4J_DATABASE) as session:
+        rel_res = session.run(
+            """
+            MATCH (:Entity {user_id: $user_id})-[r:RELATES_TO {user_id: $user_id}]->(:Entity {user_id: $user_id})
+            DELETE r
+            RETURN count(r) AS deleted_rels
+            """,
+            user_id=user_id,
+        ).single()
+        deleted_rels = int(rel_res["deleted_rels"]) if rel_res else 0
+
+        session.run(
+            """
+            MATCH (d:Document {user_id: $user_id})
+            DETACH DELETE d
+            """,
+            user_id=user_id,
+        )
+
+        ent_res = session.run(
+            """
+            MATCH (e:Entity {user_id: $user_id})
+            DETACH DELETE e
+            RETURN count(e) AS deleted_entities
+            """,
+            user_id=user_id,
+        ).single()
+        deleted_entities = int(ent_res["deleted_entities"]) if ent_res else 0
+
+    return {
+        "deleted_relationships": deleted_rels,
+        "deleted_entities": deleted_entities,
+    }
+
+
 def _extract_search_terms(query: str) -> list[str]:
     stop_words = {
         "what", "how", "why", "when", "where", "who", "which", "are", "is",

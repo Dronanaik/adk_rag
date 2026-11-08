@@ -1,3 +1,28 @@
+# Release Notes — `v2.3.3`
+
+**Release Title:** Delete All Documents Confirmation Modal, Multimodal Figure/Image Extraction & Chat UI Refinements (`v2.3.3`)  
+**Tag:** `v2.3.3`  
+**Previous Tag:** `v2.3.0`
+
+> **Combining Agentic RAG, Knowledge Graphs, and Hybrid Vector-Graph Retrieval to transform fragmented information into connected intelligence, powered by Google ADK and Gemini 2.5.**
+
+---
+
+## What's New & Fixed in `v2.3.3`
+
+### 1. "Delete All" Documents with Type-to-Confirm Modal (`app/rag_store.py`, `app/graph_store.py`, `app/api.py`, `frontend/src/components/DocumentsTab.jsx`)
+- **Bulk Document & Knowledge Graph Deletion (`DELETE /documents`)**: Added `delete_all_user_documents` and `delete_all_user_documents_from_graph` to atomically delete all documents, vector chunks (`document_chunks`), and Neo4j Knowledge Graph entities/relationships (`Entity`, `Document`, `RELATES_TO`) scoped to the authenticated user.
+- **Type-to-Confirm Popup (`Delete`)**: Clicking **Delete All** in the **Documents** tab opens a confirmation modal requiring the user to type `Delete` before the deletion can be executed.
+
+### 2. Zero Visual Content Loss — Replacing Docling `<!-- image -->` Placeholders (`app/parsers.py`)
+- **Docling Picture Traversal & Image Cropping**: Configured `DocumentConverter` with `PdfPipelineOptions(do_ocr=True, do_table_structure=True, generate_picture_images=True, images_scale=2.0)` and `export_to_markdown(traverse_pictures=True)`.
+- **Multimodal Gemini Vision Figure & Diagram Transcription**: Embedded images, charts, flowcharts, and architecture diagrams across `.pdf`, `.docx`, and `.pptx` files are automatically transcribed via Gemini 2.5 Flash Vision (`_transcribe_image_with_gemini`) and substituted in-place for every `<!-- image -->` placeholder so no visual or diagram content is lost.
+
+### 3. Minimalist Icon-Only Chat Send Button (`frontend/src/components/ChatTab.jsx`)
+- Removed the `"Send"` text label from the chat submission button, keeping a clean icon-only `<Send />` button.
+
+---
+
 # Release Notes — `v2.3.0`
 
 **Release Title:** Interactive Environment Variables & Connection Settings UI with Documentation Deep-Links & Default Fallback (`v2.3.0`)  
