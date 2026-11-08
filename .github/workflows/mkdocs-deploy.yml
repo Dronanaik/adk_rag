@@ -4,10 +4,8 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "docs/**"
-      - "mkdocs.yml"
-      - ".github/workflows/mkdocs-deploy.yml"
+    tags:
+      - "v*"
   workflow_dispatch:
 
 permissions:
@@ -19,13 +17,32 @@ concurrency:
 
 jobs:
   deploy-docs:
-    name: Build & Deploy MkDocs
+    name: Build & Deploy MkDocs + Sync GitHub Releases
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
+
+      - name: Sync GitHub Releases for all v* tags
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git fetch --tags --force
+          for TAG in $(git tag -l "v*" --sort=v:refname); do
+            if ! gh release view "$TAG" >/dev/null 2>&1; then
+              echo "Creating GitHub Release for $TAG..."
+              gh release create "$TAG" --title "ADK Agentic RAG $TAG" --notes-file RELEASE_NOTES.md
+            fi
+          done
+          LATEST_TAG=$(git tag -l "v*" --sort=-v:refname | head -n 1)
+          if [ -n "$LATEST_TAG" ]; then
+            gh release edit "$LATEST_TAG" --latest --notes-file RELEASE_NOTES.md || true
+          fi
+
+      - name: Sync RELEASE_NOTES.md into docs/
+        run: cp RELEASE_NOTES.md docs/RELEASE_NOTES.md
 
       - name: Configure Git user for gh-pages deployment
         run: |

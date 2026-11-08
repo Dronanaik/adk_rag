@@ -33,7 +33,7 @@ flowchart LR
 
     Drag and drop files across 13 supported formats, preview file metadata, and launch hybrid ingestion.
 
-    [:octicons-arrow-down-24: Jump to Document Upload](#step-2-uploading-a-document-upload-tab)
+    [:octicons-arrow-down-24: Jump to Document Upload](#step-2-uploading-one-or-multiple-documents-upload-tab)
 
 -   :material-progress-check:{ .lg .middle } **Live 5-Step Ingestion Pipeline**
 

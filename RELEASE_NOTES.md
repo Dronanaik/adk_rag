@@ -25,9 +25,9 @@
 
 # Release Notes — `v2.1.0`
 
-**Release Title:** Multi-Document Upload, Batch Ingestion Pipeline & Domain-Agnostic Knowledge Graph (`v2.1.0`)  
+**Release Title:** Multi-Document Upload, Batch Ingestion Pipeline & E2E Walkthrough (`v2.1.0`)  
 **Tag:** `v2.1.0`  
-**Previous Tag:** `v2.0.0`
+**Previous Tag:** `v2.0.1`
 
 > **Combining Agentic RAG, Knowledge Graphs, and Hybrid Vector-Graph Retrieval to transform fragmented information into connected intelligence, powered by Google ADK and Gemini 2.5.**
 
@@ -40,7 +40,19 @@
 - **Per-Document Live Pipeline Progress (`IngestionTab.jsx`, `app/ingest.py`)**: When uploading multiple files, each document runs sequentially through all 5 pipeline stages (`0%` → `100%`) while displaying **`Selected Document X of Y • Step S of 5 • <Step Name>`** in the live progress banner.
 - **Multi-Document Completion Summary (`IngestionTab.jsx`)**: Upon completion of a multi-file batch, the completion card displays **`All 5 Pipeline Steps Completed Successfully (Y Documents Ingested)`**, aggregates total chunks, entities, relationships, and characters across all ingested documents, and lists per-document ingestion metrics.
 
-### 2. Domain-Agnostic Knowledge Graph Routing & Extraction (`app/agent.py`, `app/graph_store.py`, `frontend/src/components/GraphTab.jsx`)
+---
+
+# Release Notes — `v2.0.1`
+
+**Release Title:** Domain-Agnostic Knowledge Graph Extraction & SVG Topology Centering Fix (`v2.0.1`)  
+**Tag:** `v2.0.1`  
+**Previous Tag:** `v2.0.0`
+
+---
+
+## What's Fixed in `v2.0.1`
+
+### 1. Domain-Agnostic Knowledge Graph Routing & Extraction (`app/agent.py`, `app/graph_store.py`, `frontend/src/components/GraphTab.jsx`)
 - **Unrestricted Agent Graph Tool Selection (`app/agent.py`)**: Fixed overly narrow `graph_search` and `get_entity_relationships` routing instructions that previously only listed `concepts, technologies, people, or organizations`. The agent now triggers Knowledge Graph retrieval across **any** domain entity category, attribute, hierarchy, dependency, or multi-hop relationship present in the uploaded document.
 - **Dynamic Entity Category Inference (`app/graph_store.py`)**: Removed the rigid 8-category constraint in `ExtractedEntity.entity_type` and `EXTRACTION_PROMPT`, enabling Gemini 2.5 to dynamically infer concise, singular `Title Case` entity categories tailored to the document's domain (e.g., `Skill`, `Project`, `Certification`, `Education`, `Role`, `Product`, `Policy`, `Clause`, `Regulation`, `Dataset`, `Component`, `Condition`, `Medication`, etc.) and added `entity_type` matching to Neo4j Cypher search queries (`search_knowledge_graph`).
 - **Deterministic Category Badge Palette & SVG Topology Centering (`frontend/src/components/GraphTab.jsx`)**:
@@ -48,7 +60,7 @@
   - Included 1-hop connected neighbor nodes in the filtered SVG canvas so selecting a category pill renders both the matching entity in the center and its connected relationships around it.
   - Expanded `TYPE_COLORS` with cross-domain categories and added deterministic hash-based color assignment in `getTypeStyle`.
 
-### 3. CodeQL Security & Static Analysis Remediation (`app/`, `frontend/`)
+### 2. CodeQL Security & Static Analysis Remediation (`app/`, `frontend/`)
 - Resolved all 16 GitHub CodeQL code scanning alerts across Python and JavaScript (`py/stack-trace-exposure`, `py/log-injection`, `py/polynomial-redos`, `py/weak-sensitive-data-hashing`, `py/path-injection`, `py/empty-except`, `py/unused-import`, and `js/empty-catch-block`).
 
 ---
