@@ -160,6 +160,13 @@ When all queued documents finish executing all 5 stages:
 2. **Updated Database Counters**: The 4 workspace metric cards immediately reflect the updated totals in Neon PostgreSQL and Neo4j.
 3. **Per-Stage Output Logs**: All 5 pipeline cards show green **`✓ Completed`** badges along with their concrete stage output for the completed run.
 
+!!! tip "Automatic Redundant & Updated File Upload Handling (`v2.1.1`)"
+    The ingestion pipeline computes a normalized **SHA-256 content fingerprint** (`content_hash`) for every uploaded file and automatically handles redundant or updated uploads:
+
+    - **Exact Same File Uploaded Again (`Skipped (Already Indexed)`)**: Skips redundant Gemini embedding and Neo4j extraction calls and reuses your existing indexed document.
+    - **Same Content with a Different Filename (`Skipped (Duplicate of <filename>)`)**: Prevents duplicate chunks from skewing vector similarity scores and points to the existing filename.
+    - **Updated Version of an Existing File (`Updated Version`)**: Atomically purges the old version's chunks from **Neon PostgreSQL** and its relationships/orphaned entities from **Neo4j** before indexing the updated document.
+
 ---
 
 ## Step 4: Managing Indexed Documents (`Documents` Tab)

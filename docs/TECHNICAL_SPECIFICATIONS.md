@@ -41,15 +41,16 @@ Complete engineering specifications for the **ADK Agentic RAG + Knowledge Graph*
     );
     CREATE INDEX IF NOT EXISTS idx_Users_Email ON users(email);
 
-    -- 2. Documents metadata table
+    -- 2. Documents metadata table (metadata JSONB stores SHA-256 content_hash for v2.1.1 deduplication)
     CREATE TABLE IF NOT EXISTS documents (
-        document_id TEXT PRIMARY KEY,
+        id UUID PRIMARY KEY,
         user_id TEXT NOT NULL,
         filename TEXT NOT NULL,
-        file_type TEXT NOT NULL,
-        chunks_count INTEGER DEFAULT 0,
-        entities_count INTEGER DEFAULT 0,
-        relationships_count INTEGER DEFAULT 0,
+        chunk_count INTEGER DEFAULT 0,
+        entity_count INTEGER DEFAULT 0,
+        relationship_count INTEGER DEFAULT 0,
+        character_count INTEGER DEFAULT 0,
+        metadata JSONB DEFAULT '{}'::jsonb,
         created_at TIMESTAMPTZ DEFAULT NOW()
     );
     CREATE INDEX IF NOT EXISTS idx_Documents_User ON documents(user_id);

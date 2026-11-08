@@ -58,6 +58,16 @@
   flex-shrink: 0;
 }
 
+.actionDetailNote {
+  margin-bottom: 14px;
+  padding: 8px 12px;
+  background: rgba(6, 20, 16, 0.72);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  color: #a7f3d0;
+}
+
 .batchSummaryList {
   margin-top: 16px;
   padding-top: 14px;

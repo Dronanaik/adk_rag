@@ -26,6 +26,7 @@ def add_document_chunks(
     entity_count: int = 0,
     relationship_count: int = 0,
     precomputed_embeddings: list[list[float]] | None = None,
+    content_hash: str = "",
 ) -> int:
     """
     Embed and store document metadata and chunks in Neon PostgreSQL (pgvector).
@@ -41,6 +42,7 @@ def add_document_chunks(
     )
 
     doc_uuid = uuid.UUID(str(document_id))
+    doc_metadata = {"content_hash": content_hash} if content_hash else {}
 
     with get_db_connection() as conn:
         with conn.cursor() as cur:
@@ -48,14 +50,15 @@ def add_document_chunks(
                 """
                 INSERT INTO documents (
                     id, user_id, filename, chunk_count,
-                    entity_count, relationship_count, character_count
+                    entity_count, relationship_count, character_count, metadata
                 )
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s::jsonb)
                 ON CONFLICT (id) DO UPDATE SET
                     chunk_count = EXCLUDED.chunk_count,
                     entity_count = EXCLUDED.entity_count,
                     relationship_count = EXCLUDED.relationship_count,
-                    character_count = EXCLUDED.character_count;
+                    character_count = EXCLUDED.character_count,
+                    metadata = EXCLUDED.metadata;
                 """,
                 (
                     str(doc_uuid),
@@ -65,6 +68,7 @@ def add_document_chunks(
                     entity_count,
                     relationship_count,
                     character_count,
+                    json.dumps(doc_metadata),
                 ),
             )
 
@@ -168,6 +172,104 @@ def delete_document_chunks(
                 )
 
     return chunk_count
+
+
+def find_existing_user_document(
+    user_id: str,
+    filename: str,
+    content_hash: str,
+    character_count: int = 0,
+    first_chunk_text: str = "",
+) -> dict[str, Any]:
+    """
+    Inspect existing documents for the user to detect redundant or updated uploads:
+      - exact_match: same filename + same content_hash
+      - content_match: different filename + same content_hash
+      - filename_matches: same filename + different content_hash (older versions to replace)
+    Also backfills metadata.content_hash for legacy documents when character_count and
+    the first chunk match.
+    """
+    _ensure_schema()
+    exact_match: dict[str, Any] | None = None
+    content_match: dict[str, Any] | None = None
+    filename_matches: list[dict[str, Any]] = []
+
+    with get_db_connection(register_pgvector=False) as conn:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute(
+                """
+                SELECT
+                    d.id::text AS document_id,
+                    d.filename,
+                    d.chunk_count AS chunks,
+                    d.entity_count AS entities,
+                    d.relationship_count AS relationships,
+                    d.character_count AS characters,
+                    d.metadata->>'content_hash' AS content_hash,
+                    dc.content AS first_chunk_content
+                FROM documents d
+                LEFT JOIN document_chunks dc
+                    ON dc.document_id = d.id AND dc.chunk_index = 0
+                WHERE d.user_id = %s
+                ORDER BY d.created_at DESC;
+                """,
+                (user_id,),
+            )
+            rows = cur.fetchall()
+
+            for row in rows:
+                row_hash = (row.get("content_hash") or "").strip()
+                is_same_content = False
+
+                if row_hash and content_hash:
+                    is_same_content = row_hash == content_hash
+                elif (
+                    not row_hash
+                    and content_hash
+                    and character_count > 0
+                    and int(row.get("characters") or 0) == character_count
+                    and (row.get("first_chunk_content") or "").strip() == first_chunk_text.strip()
+                ):
+                    is_same_content = True
+                    cur.execute(
+                        """
+                        UPDATE documents
+                        SET metadata = jsonb_set(
+                            COALESCE(metadata, '{}'::jsonb),
+                            '{content_hash}',
+                            to_jsonb(%s::text)
+                        )
+                        WHERE id = %s::uuid AND user_id = %s;
+                        """,
+                        (content_hash, row["document_id"], user_id),
+                    )
+
+                doc_info = {
+                    "document_id": row["document_id"],
+                    "filename": row["filename"],
+                    "chunks": int(row.get("chunks") or 0),
+                    "entities": int(row.get("entities") or 0),
+                    "relationships": int(row.get("relationships") or 0),
+                    "characters": int(row.get("characters") or 0),
+                    "content_hash": content_hash if is_same_content else row_hash,
+                }
+
+                if row["filename"] == filename and is_same_content:
+                    if exact_match is None:
+                        exact_match = doc_info
+                    else:
+                        filename_matches.append(doc_info)
+                elif row["filename"] != filename and is_same_content:
+                    if content_match is None:
+                        content_match = doc_info
+                elif row["filename"] == filename and not is_same_content:
+                    filename_matches.append(doc_info)
+
+    return {
+        "exact_match": exact_match,
+        "content_match": content_match,
+        "filename_matches": filename_matches,
+    }
 
 
 def search_documents(

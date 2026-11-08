@@ -95,8 +95,22 @@ export default function App() {
       }
     }
 
+    const createdCount = completedResults.filter(
+      (r) => !r.ingest_action || r.ingest_action === 'created'
+    ).length
+    const updatedCount = completedResults.filter((r) => r.ingest_action === 'updated').length
+    const skippedCount = completedResults.filter(
+      (r) => r.ingest_action === 'unchanged' || r.ingest_action === 'duplicate_content'
+    ).length
+
     const summaryResult = {
       documents_count: completedResults.length,
+      created_count: createdCount,
+      updated_count: updatedCount,
+      skipped_count: skippedCount,
+      ingest_action: completedResults.length === 1 ? completedResults[0]?.ingest_action : undefined,
+      action_detail: completedResults.length === 1 ? completedResults[0]?.action_detail : undefined,
+      duplicate_of: completedResults.length === 1 ? completedResults[0]?.duplicate_of : undefined,
       filename:
         completedResults.length === 1
           ? completedResults[0]?.filename

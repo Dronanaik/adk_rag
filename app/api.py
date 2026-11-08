@@ -58,7 +58,7 @@ app = FastAPI(
         "Hybrid Agentic RAG & Knowledge Graph platform powered by Google ADK, "
         "Gemini, Neon PostgreSQL (pgvector), and Neo4j."
     ),
-    version="2.1.0",
+    version="2.1.1",
     lifespan=lifespan,
 )
 
@@ -350,7 +350,10 @@ async def upload_document(
 
         return {
             "success": True,
-            "message": "Document ingested into Neon PostgreSQL and Neo4j Knowledge Graph.",
+            "message": result.get(
+                "action_detail",
+                "Document ingested into Neon PostgreSQL and Neo4j Knowledge Graph.",
+            ),
             "result": result,
         }
 

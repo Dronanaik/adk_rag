@@ -55,6 +55,23 @@ const PIPELINE_STEPS = [
   },
 ]
 
+const ACTION_META = {
+  created: { label: 'Indexed (New)', className: 'badge badge-green' },
+  updated: { label: 'Updated Version', className: 'badge badge-purple' },
+  unchanged: { label: 'Skipped (Already Indexed)', className: 'badge badge-teal' },
+  duplicate_content: { label: 'Skipped (Duplicate Content)', className: 'badge badge-teal' },
+}
+
+function getActionBadge(action, duplicateOf) {
+  if (action === 'duplicate_content' && duplicateOf) {
+    return {
+      label: `Skipped (Duplicate of ${duplicateOf})`,
+      className: 'badge badge-teal',
+    }
+  }
+  return ACTION_META[action] || ACTION_META.created
+}
+
 export default function IngestionTab({ uploadState }) {
   const [status, setStatus] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -210,14 +227,45 @@ export default function IngestionTab({ uploadState }) {
             background: 'rgba(10, 34, 27, 0.88)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-            <CheckCircle2 size={22} color="#34d399" />
-            <h3 style={{ margin: 0, color: '#6ee7b7', fontSize: '1.05rem' }}>
-              {ingestedCount > 1
-                ? `All 5 Pipeline Steps Completed Successfully (${ingestedCount} Documents Ingested)`
-                : 'All 5 Pipeline Steps Completed Successfully'}
-            </h3>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '12px',
+              flexWrap: 'wrap',
+              marginBottom: '16px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <CheckCircle2 size={22} color="#34d399" />
+              <h3 style={{ margin: 0, color: '#6ee7b7', fontSize: '1.05rem' }}>
+                {ingestedCount > 1
+                  ? `All 5 Pipeline Steps Completed Successfully (${ingestedCount} Documents Ingested)`
+                  : 'All 5 Pipeline Steps Completed Successfully'}
+              </h3>
+            </div>
+            {ingestedCount === 1 && uploadState.result.ingest_action && (
+              <span
+                className={
+                  getActionBadge(
+                    uploadState.result.ingest_action,
+                    uploadState.result.duplicate_of
+                  ).className
+                }
+              >
+                {
+                  getActionBadge(
+                    uploadState.result.ingest_action,
+                    uploadState.result.duplicate_of
+                  ).label
+                }
+              </span>
+            )}
           </div>
+          {ingestedCount === 1 && uploadState.result.action_detail && (
+            <div className={styles.actionDetailNote}>{uploadState.result.action_detail}</div>
+          )}
           <div
             style={{
               display: 'grid',
@@ -246,17 +294,26 @@ export default function IngestionTab({ uploadState }) {
 
           {ingestedCount > 1 && uploadState.result.documents?.length > 1 && (
             <div className={styles.batchSummaryList}>
-              {uploadState.result.documents.map((doc, idx) => (
-                <div key={doc.document_id || `${doc.filename}-${idx}`} className={styles.batchDocItem}>
-                  <span className={styles.batchDocName}>
-                    <Check size={13} color="#34d399" /> {idx + 1}. {doc.filename}
-                  </span>
-                  <span className={styles.batchDocStats}>
-                    {doc.chunks_created} chunks &bull; {doc.entities_extracted ?? 0} entities &bull;{' '}
-                    {doc.relationships_extracted ?? 0} relationships
-                  </span>
-                </div>
-              ))}
+              {uploadState.result.documents.map((doc, idx) => {
+                const badge = getActionBadge(doc.ingest_action, doc.duplicate_of)
+                return (
+                  <div
+                    key={doc.document_id || `${doc.filename}-${idx}`}
+                    className={styles.batchDocItem}
+                  >
+                    <span className={styles.batchDocName}>
+                      <Check size={13} color="#34d399" /> {idx + 1}. {doc.filename}{' '}
+                      <span className={badge.className} style={{ marginLeft: '6px' }}>
+                        {badge.label}
+                      </span>
+                    </span>
+                    <span className={styles.batchDocStats}>
+                      {doc.chunks_created} chunks &bull; {doc.entities_extracted ?? 0} entities
+                      &bull; {doc.relationships_extracted ?? 0} relationships
+                    </span>
+                  </div>
+                )
+              })}
             </div>
           )}
         </div>

@@ -1,3 +1,28 @@
+# Release Notes — `v2.1.1`
+
+**Release Title:** SHA-256 Content Deduplication & Atomic Document Version Replacement (`v2.1.1`)  
+**Tag:** `v2.1.1`  
+**Previous Tag:** `v2.1.0`
+
+> **Combining Agentic RAG, Knowledge Graphs, and Hybrid Vector-Graph Retrieval to transform fragmented information into connected intelligence, powered by Google ADK and Gemini 2.5.**
+
+---
+
+## What's New & Fixed in `v2.1.1`
+
+### 1. SHA-256 Content-Hash Deduplication & Atomic Version Replacement (`app/ingest.py`, `app/rag_store.py`)
+- **Normalized SHA-256 Content Fingerprinting**: Every uploaded document's extracted text is normalized (`re.sub(r"\s+", " ", text.strip())`) and hashed with `SHA-256`, stored in `documents.metadata.content_hash` in Neon PostgreSQL (with automatic backfill for pre-`v2.1.1` rows).
+- **Three-Scenario Redundant & Updated File Handling (`find_existing_user_document`)**:
+  1. **Exact Same File Uploaded Again (`same filename` + `same content_hash` → `ingest_action: "unchanged"`)**: Skips redundant Gemini embedding and Neo4j LLM extraction calls, fast-completes Step 5, and returns the existing document metrics (`Skipped (Already Indexed)`).
+  2. **Same Content with Different Filename (`different filename` + `same content_hash` → `ingest_action: "duplicate_content"`)**: Prevents duplicate vector chunks and duplicate graph triples from polluting retrieval rankings and returns the existing document reference (`Skipped (Duplicate of <existing_filename>)`).
+  3. **Updated Version of an Existing File (`same filename` + `different content_hash` → `ingest_action: "updated"`)**: Atomically purges the previous version's chunks from Neon PostgreSQL (`delete_document_chunks`) and its relationships/orphaned entities from Neo4j (`delete_document_from_graph`) before indexing the updated document (`Updated Version`).
+  4. **Brand-New Document (`no match` → `ingest_action: "created"`)**: Executes the full 5-step dual ingestion pipeline (`Indexed (New)`).
+
+### 2. Action Status Badges in the Ingestion Pipeline UI (`frontend/src/components/IngestionTab.jsx`, `frontend/src/App.jsx`)
+- Added real-time status badges (`Indexed (New)`, `Updated Version`, `Skipped (Already Indexed)`, `Skipped (Duplicate of <filename>)`) and `action_detail` summaries to both single-document and multi-document batch completion cards in `IngestionTab.jsx`.
+
+---
+
 # Release Notes — `v2.1.0`
 
 **Release Title:** Multi-Document Upload, Batch Ingestion Pipeline & Domain-Agnostic Knowledge Graph (`v2.1.0`)  

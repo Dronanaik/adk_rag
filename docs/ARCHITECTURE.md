@@ -18,7 +18,7 @@ The **ADK Agentic RAG + Knowledge Graph** platform is engineered as a modular, m
 
     ---
 
-    Asynchronous worker pipeline that parses 12 document formats, chunks text semantically, embeds in batches (`768`-dim), indexes in Neon Postgres, and extracts entities into Neo4j.
+    Asynchronous worker pipeline with SHA-256 content-hash deduplication & atomic version replacement that parses 13 document formats, chunks text semantically, embeds in batches (`768`-dim), indexes in Neon Postgres, and extracts entities into Neo4j.
 
 -   :material-brain:{ .lg .middle } **Google ADK Multi-Tool Agent**
 

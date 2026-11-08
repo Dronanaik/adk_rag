@@ -124,7 +124,7 @@ curl http://localhost:8000/ingest/progress \
 ---
 
 ### `POST /documents/upload`
-Uploads a file and runs the 5-step dual ingestion pipeline into Neon PostgreSQL and Neo4j. Accepts optional `doc_index` and `total_docs` query parameters for multi-document batch telemetry in `GET /ingest/progress`.
+Uploads a file and runs the 5-step dual ingestion pipeline into Neon PostgreSQL and Neo4j. Accepts optional `doc_index` and `total_docs` query parameters for multi-document batch telemetry in `GET /ingest/progress`. Automatically detects redundant uploads (`unchanged`, `duplicate_content`) and atomically replaces prior versions when an updated file with the same filename is uploaded (`updated`).
 
 ```bash
 curl -X POST "http://localhost:8000/documents/upload?doc_index=1&total_docs=2" \
@@ -135,13 +135,19 @@ curl -X POST "http://localhost:8000/documents/upload?doc_index=1&total_docs=2" \
 **Response (`200 OK`)**:
 ```json
 {
-  "status": "success",
-  "filename": "document.pdf",
-  "document_id": "52e1a9d0-8c1a-4f3b-9b12-0192837465ab",
-  "chunks_created": 14,
-  "text_length": 15240,
-  "entities_extracted": 18,
-  "relationships_extracted": 22
+  "success": true,
+  "message": "Indexed new document 'document.pdf' into Neon PostgreSQL and Neo4j.",
+  "result": {
+    "document_id": "52e1a9d0-8c1a-4f3b-9b12-0192837465ab",
+    "filename": "document.pdf",
+    "chunks_created": 14,
+    "entities_extracted": 18,
+    "relationships_extracted": 22,
+    "characters_extracted": 15240,
+    "ingest_action": "created",
+    "content_hash": "9f86d081884c7d65",
+    "action_detail": "Indexed new document 'document.pdf' into Neon PostgreSQL and Neo4j."
+  }
 }
 ```
 

@@ -10,10 +10,28 @@ The 5-step dual ingestion pipeline converts raw uploaded files into both **searc
 flowchart TD
     Upload["Uploaded File (app/api.py -> /tmp/adk_rag_uploads)"] --> Step1["Step 1: Format-Specific Text Extraction (app/parsers.py)"]
     Step1 --> Step2["Step 2: Structure-Aware Semantic Chunking (app/chunking.py — 1200 chars, 200 overlap)"]
-    Step2 --> Step3["Step 3: Batched Gemini Embeddings (app/embeddings.py — gemini-embedding-001, 768-dim)"]
+    Step2 --> Dedup{"SHA-256 Content-Hash & Filename Check (app/rag_store.py)"}
+    Dedup -->|"Same Filename + Same Hash (unchanged)"| FastSkip["Skip Redundant Indexing & Return Existing Metrics"]
+    Dedup -->|"Different Filename + Same Hash (duplicate_content)"| FastSkip
+    Dedup -->|"Same Filename + Modified Hash (updated)"| PurgeOld["Atomically Purge Previous Chunks (Postgres) & Triples (Neo4j)"]
+    PurgeOld --> Step3["Step 3: Batched Gemini Embeddings (app/embeddings.py — gemini-embedding-001, 768-dim)"]
+    Dedup -->|"New Document (created)"| Step3
     Step3 --> Step4["Step 4: Neon PostgreSQL Indexing (app/rag_store.py — pgvector HNSW + FTS GIN)"]
     Step4 --> Step5["Step 5: Neo4j Knowledge Graph Extraction (app/graph_store.py — gemini-2.5-flash Structured JSON)"]
 ```
+
+---
+
+## Redundant & Updated File Upload Handling (`v2.1.1`)
+
+After Step 2, `ingest_document` computes a normalized **SHA-256 content fingerprint** (`hashlib.sha256(re.sub(r"\s+", " ", text.strip()).encode("utf-8")).hexdigest()`) and calls `find_existing_user_document(...)` in `app/rag_store.py` to handle all three redundant/updated upload scenarios automatically:
+
+| Scenario | Condition | `ingest_action` | Pipeline Behavior | UI Badge |
+|----------|-----------|-----------------|-------------------|----------|
+| **1. Exact Same File Re-Uploaded** | `same filename` + `same content_hash` | `"unchanged"` | Skips redundant Gemini embedding & Neo4j extraction calls, fast-completes Step 5, and returns existing document counts. | `Skipped (Already Indexed)` |
+| **2. Same Content, Different Filename** | `different filename` + `same content_hash` | `"duplicate_content"` | Prevents duplicate vector chunks and duplicate graph triples from polluting retrieval; references `duplicate_of`. | `Skipped (Duplicate of <filename>)` |
+| **3. Updated Version of Existing File** | `same filename` + `different content_hash` | `"updated"` | Atomically deletes the previous version from Neon PostgreSQL (`delete_document_chunks`) and Neo4j (`delete_document_from_graph`), then indexes the new version through Steps 3–5. | `Updated Version` |
+| **4. Brand-New Document** | No filename or content hash match | `"created"` | Runs the full 5-step dual ingestion pipeline and stores `content_hash` in `documents.metadata`. | `Indexed (New)` |
 
 ---
 
