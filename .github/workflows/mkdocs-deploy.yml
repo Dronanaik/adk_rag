@@ -1,4 +1,4 @@
-name: Deploy MkDocs to GitHub Pages
+name: Deploy MkDocs & Link Tag to GitHub Release
 
 on:
   push:
@@ -6,59 +6,152 @@ on:
       - main
     tags:
       - "v*"
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - closed
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: "mkdocs-pages"
+  group: "mkdocs-pages-${{ github.ref }}"
   cancel-in-progress: true
 
 jobs:
   deploy-docs:
-    name: Build & Deploy MkDocs + Sync GitHub Releases
+    name: Link Tag to GitHub Release & Deploy MkDocs
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Sync GitHub Releases for all v* tags
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git fetch --tags --force
-          for TAG in $(git tag -l "v*" --sort=v:refname); do
-            if ! gh release view "$TAG" >/dev/null 2>&1; then
-              echo "Creating GitHub Release for $TAG..."
-              gh release create "$TAG" --title "ADK Agentic RAG $TAG" --notes-file RELEASE_NOTES.md
-            fi
-          done
-          LATEST_TAG=$(git tag -l "v*" --sort=-v:refname | head -n 1)
-          if [ -n "$LATEST_TAG" ]; then
-            gh release edit "$LATEST_TAG" --latest --notes-file RELEASE_NOTES.md || true
-          fi
-
-      - name: Sync RELEASE_NOTES.md into docs/
-        run: cp RELEASE_NOTES.md docs/RELEASE_NOTES.md
-
-      - name: Configure Git user for gh-pages deployment
+      - name: Configure Git user
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+      - name: Ensure Current Version Tag Exists & Link All v* Tags to Their Exact GitHub Releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git fetch --tags --force
+
+          python3 - << 'PYEOF'
+          import json
+          import os
+          import re
+          import subprocess
+          from pathlib import Path
+
+          def run(cmd, check=True):
+              return subprocess.run(cmd, text=True, capture_output=True, check=check)
+
+          # 1. Determine current version from frontend/package.json
+          pkg = json.loads(Path("frontend/package.json").read_text(encoding="utf-8"))
+          current_ver = pkg["version"].strip()
+          current_tag = current_ver if current_ver.startswith("v") else f"v{current_ver}"
+
+          # 2. Parse RELEASE_NOTES.md into per-tag sections (# Release Notes — `vX.Y.Z`)
+          notes_text = Path("RELEASE_NOTES.md").read_text(encoding="utf-8")
+          header_pattern = re.compile(r"^# Release Notes\s*[—\-]+\s*`?(v\d+\.\d+\.\d+)`?", re.MULTILINE)
+          matches = list(header_pattern.finditer(notes_text))
+
+          sections = {}
+          for idx, m in enumerate(matches):
+              tag_name = m.group(1)
+              start = m.start()
+              end = matches[idx + 1].start() if idx + 1 < len(matches) else len(notes_text)
+              section_body = notes_text[start:end].strip()
+              # Strip trailing horizontal rule separator between sections
+              section_body = re.sub(r"\n---\s*$", "", section_body).strip()
+              sections[tag_name] = section_body
+
+          # 3. Ensure the current version tag exists in Git and on origin
+          existing_tags = run(["git", "tag", "-l", "v*"], check=False).stdout.splitlines()
+          if current_tag not in existing_tags:
+              print(f"Creating missing tag {current_tag} on HEAD...")
+              title_line = f"Release {current_tag}"
+              if current_tag in sections:
+                  m_title = re.search(r"\*\*Release Title:\*\*\s*(.+)", sections[current_tag])
+                  if m_title:
+                      title_line = f"Release {current_tag}: {m_title.group(1).strip()}"
+              run(["git", "tag", "-a", current_tag, "-m", title_line])
+              run(["git", "push", "origin", f"refs/tags/{current_tag}"], check=False)
+
+          # Refresh sorted v* tag list
+          tags_out = run(["git", "tag", "-l", "v*", "--sort=v:refname"]).stdout.splitlines()
+          tags = [t.strip() for t in tags_out if t.strip()]
+
+          # 4. Sync every v* tag with its isolated release notes section on GitHub Releases
+          for tag in tags:
+              body = sections.get(tag)
+              if not body:
+                  # Fallback: read RELEASE_NOTES.md from the tag commit itself and take its first section
+                  hist = run(["git", "show", f"{tag}:RELEASE_NOTES.md"], check=False)
+                  if hist.returncode == 0 and hist.stdout.strip():
+                      h_matches = list(header_pattern.finditer(hist.stdout))
+                      if len(h_matches) > 1:
+                          body = hist.stdout[h_matches[0].start():h_matches[1].start()].strip()
+                      else:
+                          body = hist.stdout.strip()
+                      body = re.sub(r"\n---\s*$", "", body).strip()
+                  else:
+                      body = f"# Release Notes — `{tag}`"
+
+              notes_file = Path(f"/tmp/release_notes_{tag}.md")
+              notes_file.write_text(body + "\n", encoding="utf-8")
+              release_title = f"ADK Agentic RAG {tag}"
+
+              view_res = run(["gh", "release", "view", tag], check=False)
+              if view_res.returncode != 0:
+                  print(f"Creating GitHub Release and linking tag {tag}...")
+                  run([
+                      "gh", "release", "create", tag,
+                      "--verify-tag",
+                      "--title", release_title,
+                      "--notes-file", str(notes_file),
+                  ])
+              else:
+                  print(f"Updating GitHub Release notes for tag {tag} to ensure exact per-tag isolation...")
+                  run([
+                      "gh", "release", "edit", tag,
+                      "--title", release_title,
+                      "--notes-file", str(notes_file),
+                  ], check=False)
+
+          # 5. Mark the highest semantic version tag as Latest
+          if tags:
+              latest_tag = tags[-1]
+              print(f"Marking {latest_tag} as Latest GitHub Release...")
+              run(["gh", "release", "edit", latest_tag, "--latest"], check=False)
+          PYEOF
+
+      - name: Sync RELEASE_NOTES.md into docs/
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        run: cp RELEASE_NOTES.md docs/RELEASE_NOTES.md
+
       - name: Set up Python 3.12
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: "pip"
 
       - name: Install MkDocs dependencies
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         run: |
           python -m pip install --upgrade pip
           pip install mkdocs mkdocs-material pymdown-extensions
 
       - name: Build and deploy documentation to gh-pages branch
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         run: mkdocs gh-deploy --force --clean
