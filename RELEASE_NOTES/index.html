@@ -86,7 +86,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#release-notes-v230" class="md-skip">
+        <a href="#release-notes-v233" class="md-skip">
           Skip to content
         </a>
       
@@ -1005,22 +1005,44 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#whats-new-in-v230" class="md-nav__link">
+  <a href="#whats-new-fixed-in-v233" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What's New in v2.3.0
+        What's New &amp; Fixed in v2.3.3
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="What&#39;s New in v2.3.0">
+    <nav class="md-nav" aria-label="What&#39;s New &amp; Fixed in v2.3.3">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-interactive-environment-variables-connection-settings-page-frontendsrccomponentssettingstabjsx-frontendsrccomponentsuseridmodaljsx-frontendsrccomponentstabsjsx" class="md-nav__link">
+  <a href="#1-delete-all-documents-with-type-to-confirm-modal-apprag_storepy-appgraph_storepy-appapipy-frontendsrccomponentsdocumentstabjsx" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Interactive Environment Variables &amp; Connection Settings Page (frontend/src/components/SettingsTab.jsx, frontend/src/components/UserIdModal.jsx, frontend/src/components/Tabs.jsx)
+        1. "Delete All" Documents with Type-to-Confirm Modal (app/rag_store.py, app/graph_store.py, app/api.py, frontend/src/components/DocumentsTab.jsx)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-zero-visual-content-loss-replacing-docling-image-placeholders-appparserspy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Zero Visual Content Loss — Replacing Docling &lt;!-- image --&gt; Placeholders (app/parsers.py)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-minimalist-icon-only-chat-send-button-frontendsrccomponentschattabjsx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Minimalist Icon-Only Chat Send Button (frontend/src/components/ChatTab.jsx)
       
     </span>
   </a>
@@ -1075,22 +1097,44 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#whats-new-in-v230" class="md-nav__link">
+  <a href="#whats-new-fixed-in-v233" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What's New in v2.3.0
+        What's New &amp; Fixed in v2.3.3
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="What&#39;s New in v2.3.0">
+    <nav class="md-nav" aria-label="What&#39;s New &amp; Fixed in v2.3.3">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-interactive-environment-variables-connection-settings-page-frontendsrccomponentssettingstabjsx-frontendsrccomponentsuseridmodaljsx-frontendsrccomponentstabsjsx" class="md-nav__link">
+  <a href="#1-delete-all-documents-with-type-to-confirm-modal-apprag_storepy-appgraph_storepy-appapipy-frontendsrccomponentsdocumentstabjsx" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Interactive Environment Variables &amp; Connection Settings Page (frontend/src/components/SettingsTab.jsx, frontend/src/components/UserIdModal.jsx, frontend/src/components/Tabs.jsx)
+        1. "Delete All" Documents with Type-to-Confirm Modal (app/rag_store.py, app/graph_store.py, app/api.py, frontend/src/components/DocumentsTab.jsx)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-zero-visual-content-loss-replacing-docling-image-placeholders-appparserspy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Zero Visual Content Loss — Replacing Docling &lt;!-- image --&gt; Placeholders (app/parsers.py)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-minimalist-icon-only-chat-send-button-frontendsrccomponentschattabjsx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Minimalist Icon-Only Chat Send Button (frontend/src/components/ChatTab.jsx)
       
     </span>
   </a>
@@ -1183,6 +1227,30 @@
   
 
 
+<h1 id="release-notes-v233">Release Notes — <code>v2.3.3</code><a class="headerlink" href="#release-notes-v233" title="Permanent link">&para;</a></h1>
+<p><strong>Release Title:</strong> Delete All Documents Confirmation Modal, Multimodal Figure/Image Extraction &amp; Chat UI Refinements (<code>v2.3.3</code>)<br />
+<strong>Tag:</strong> <code>v2.3.3</code><br />
+<strong>Previous Tag:</strong> <code>v2.3.0</code></p>
+<blockquote>
+<p><strong>Combining Agentic RAG, Knowledge Graphs, and Hybrid Vector-Graph Retrieval to transform fragmented information into connected intelligence, powered by Google ADK and Gemini 2.5.</strong></p>
+</blockquote>
+<hr />
+<h2 id="whats-new-fixed-in-v233">What's New &amp; Fixed in <code>v2.3.3</code><a class="headerlink" href="#whats-new-fixed-in-v233" title="Permanent link">&para;</a></h2>
+<h3 id="1-delete-all-documents-with-type-to-confirm-modal-apprag_storepy-appgraph_storepy-appapipy-frontendsrccomponentsdocumentstabjsx">1. "Delete All" Documents with Type-to-Confirm Modal (<code>app/rag_store.py</code>, <code>app/graph_store.py</code>, <code>app/api.py</code>, <code>frontend/src/components/DocumentsTab.jsx</code>)<a class="headerlink" href="#1-delete-all-documents-with-type-to-confirm-modal-apprag_storepy-appgraph_storepy-appapipy-frontendsrccomponentsdocumentstabjsx" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Bulk Document &amp; Knowledge Graph Deletion (<code>DELETE /documents</code>)</strong>: Added <code>delete_all_user_documents</code> and <code>delete_all_user_documents_from_graph</code> to atomically delete all documents, vector chunks (<code>document_chunks</code>), and Neo4j Knowledge Graph entities/relationships (<code>Entity</code>, <code>Document</code>, <code>RELATES_TO</code>) scoped to the authenticated user.</li>
+<li><strong>Type-to-Confirm Popup (<code>Delete</code>)</strong>: Clicking <strong>Delete All</strong> in the <strong>Documents</strong> tab opens a confirmation modal requiring the user to type <code>Delete</code> before the deletion can be executed.</li>
+</ul>
+<h3 id="2-zero-visual-content-loss-replacing-docling-image-placeholders-appparserspy">2. Zero Visual Content Loss — Replacing Docling <code>&lt;!-- image --&gt;</code> Placeholders (<code>app/parsers.py</code>)<a class="headerlink" href="#2-zero-visual-content-loss-replacing-docling-image-placeholders-appparserspy" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Docling Picture Traversal &amp; Image Cropping</strong>: Configured <code>DocumentConverter</code> with <code>PdfPipelineOptions(do_ocr=True, do_table_structure=True, generate_picture_images=True, images_scale=2.0)</code> and <code>export_to_markdown(traverse_pictures=True)</code>.</li>
+<li><strong>Multimodal Gemini Vision Figure &amp; Diagram Transcription</strong>: Embedded images, charts, flowcharts, and architecture diagrams across <code>.pdf</code>, <code>.docx</code>, and <code>.pptx</code> files are automatically transcribed via Gemini 2.5 Flash Vision (<code>_transcribe_image_with_gemini</code>) and substituted in-place for every <code>&lt;!-- image --&gt;</code> placeholder so no visual or diagram content is lost.</li>
+</ul>
+<h3 id="3-minimalist-icon-only-chat-send-button-frontendsrccomponentschattabjsx">3. Minimalist Icon-Only Chat Send Button (<code>frontend/src/components/ChatTab.jsx</code>)<a class="headerlink" href="#3-minimalist-icon-only-chat-send-button-frontendsrccomponentschattabjsx" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Removed the <code>"Send"</code> text label from the chat submission button, keeping a clean icon-only <code>&lt;Send /&gt;</code> button.</li>
+</ul>
+<hr />
 <h1 id="release-notes-v230">Release Notes — <code>v2.3.0</code><a class="headerlink" href="#release-notes-v230" title="Permanent link">&para;</a></h1>
 <p><strong>Release Title:</strong> Interactive Environment Variables &amp; Connection Settings UI with Documentation Deep-Links &amp; Default Fallback (<code>v2.3.0</code>)<br />
 <strong>Tag:</strong> <code>v2.3.0</code><br />
