@@ -1038,6 +1038,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#3-cross-platform-one-command-project-setup-setupsh-setupbat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Cross-Platform One-Command Project Setup (setup.sh, setup.bat)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1113,6 +1124,17 @@
     <span class="md-ellipsis">
       
         2. Table-Header-Preserving Semantic Chunking (app/chunking.py)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-cross-platform-one-command-project-setup-setupsh-setupbat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Cross-Platform One-Command Project Setup (setup.sh, setup.bat)
       
     </span>
   </a>
@@ -1227,6 +1249,10 @@
 <h3 id="2-table-header-preserving-semantic-chunking-appchunkingpy">2. Table-Header-Preserving Semantic Chunking (<code>app/chunking.py</code>)<a class="headerlink" href="#2-table-header-preserving-semantic-chunking-appchunkingpy" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Added <code>_split_markdown_table_block</code> to <code>app/chunking.py</code> so that when a large Markdown table spans multiple <code>1,200</code>-character chunks, it splits cleanly along table row boundaries (<code>\n</code>) and repeats the Markdown table header (<code>| Col 1 | Col 2 |\n| --- | --- |</code>) at the top of each continuation chunk.</li>
+</ul>
+<h3 id="3-cross-platform-one-command-project-setup-setupsh-setupbat">3. Cross-Platform One-Command Project Setup (<code>setup.sh</code>, <code>setup.bat</code>)<a class="headerlink" href="#3-cross-platform-one-command-project-setup-setupsh-setupbat" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Added <code>setup.sh</code> (Linux/macOS/WSL) and <code>setup.bat</code> (Windows) to automate prerequisite verification, Python <code>.venv</code> creation, CPU PyTorch + Docling + backend package installation, <code>frontend</code> npm installation, <code>.env</code> initialization with auto-generated <code>JWT_SECRET_KEY</code>, and optional <code>--with-docs</code> / <code>--start</code> flags.</li>
 </ul>
 <hr />
 <h1 id="release-notes-v211">Release Notes — <code>v2.1.1</code><a class="headerlink" href="#release-notes-v211" title="Permanent link">&para;</a></h1>
