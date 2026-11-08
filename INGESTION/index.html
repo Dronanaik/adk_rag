@@ -800,10 +800,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-1-lossless-docling-format-specific-extraction-appparserspy" class="md-nav__link">
+  <a href="#step-1-lossless-docling-multimodal-vision-format-specific-extraction-appparserspy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 1: Lossless Docling &amp; Format-Specific Extraction (app/parsers.py)
+        Step 1: Lossless Docling, Multimodal Vision &amp; Format-Specific Extraction (app/parsers.py)
       
     </span>
   </a>
@@ -1159,10 +1159,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-1-lossless-docling-format-specific-extraction-appparserspy" class="md-nav__link">
+  <a href="#step-1-lossless-docling-multimodal-vision-format-specific-extraction-appparserspy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 1: Lossless Docling &amp; Format-Specific Extraction (app/parsers.py)
+        Step 1: Lossless Docling, Multimodal Vision &amp; Format-Specific Extraction (app/parsers.py)
       
     </span>
   </a>
@@ -1365,8 +1365,13 @@
 </tbody>
 </table>
 <hr />
-<h2 id="step-1-lossless-docling-format-specific-extraction-appparserspy">Step 1: Lossless Docling &amp; Format-Specific Extraction (<code>app/parsers.py</code>)<a class="headerlink" href="#step-1-lossless-docling-format-specific-extraction-appparserspy" title="Permanent link">&para;</a></h2>
-<p><code>extract_text(file_path)</code> uses <strong>IBM Docling (<code>docling.document_converter.DocumentConverter</code>)</strong> reconciled with lossless format-specific extractors so zero text, tables, headers, footers, or speaker notes are lost:</p>
+<h2 id="step-1-lossless-docling-multimodal-vision-format-specific-extraction-appparserspy">Step 1: Lossless Docling, Multimodal Vision &amp; Format-Specific Extraction (<code>app/parsers.py</code>)<a class="headerlink" href="#step-1-lossless-docling-multimodal-vision-format-specific-extraction-appparserspy" title="Permanent link">&para;</a></h2>
+<p><code>extract_text(file_path)</code> uses <strong>IBM Docling (<code>docling.document_converter.DocumentConverter</code>)</strong> combined with <strong>Gemini 2.5 Flash Multimodal Vision (<code>v2.3.3</code>)</strong> and lossless format-specific extractors so zero text, tables, embedded figures/diagrams, headers, footers, or speaker notes are lost:</p>
+<ul>
+<li><strong>Eliminating <code>&lt;!-- image --&gt;</code> Content Loss (<code>v2.3.3</code>)</strong>:</li>
+<li>Docling is initialized with <code>PdfPipelineOptions(do_ocr=True, do_table_structure=True, generate_picture_images=True, images_scale=2.0)</code> and <code>export_to_markdown(traverse_pictures=True)</code>.</li>
+<li>Every embedded figure, chart, diagram, or screenshot across <code>.pdf</code>, <code>.docx</code>, and <code>.pptx</code> is extracted, filtered to skip tiny decorative icons (<code>&lt; 48px</code>), and transcribed via <strong>Gemini 2.5 Flash Vision</strong> (<code>_transcribe_image_with_gemini</code>) into structured Markdown text, tables, and component relationships, replacing each <code>&lt;!-- image --&gt;</code> placeholder in-place.</li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -1378,13 +1383,13 @@
 <tbody>
 <tr>
 <td><code>.pdf</code></td>
-<td><code>docling</code> (<code>DocumentConverter</code>) + <code>pymupdf</code> (<code>fitz</code>)</td>
-<td>Converts multi-column layouts, headings, and tables into structured Markdown via Docling TableFormer, reconciled page-by-page with PyMuPDF (<code>page.get_text("text", sort=True)</code> + <code>page.find_tables()</code>).</td>
+<td><code>docling</code> (<code>DocumentConverter</code>) + <code>pymupdf</code> (<code>fitz</code>) + Gemini Vision</td>
+<td>Converts multi-column layouts, headings, tables, and embedded figures/diagrams into structured Markdown via Docling TableFormer + Gemini Vision, reconciled page-by-page with PyMuPDF (<code>page.get_text("text", sort=True)</code> + <code>page.find_tables()</code>).</td>
 </tr>
 <tr>
 <td><code>.docx</code></td>
-<td><code>docling</code> + <code>python-docx</code></td>
-<td>Preserves document order across headings (<code>#</code>, <code>##</code>, <code>###</code>), paragraphs, all Word tables (<code>w:tbl</code> as Markdown tables), and section headers/footers.</td>
+<td><code>docling</code> + <code>python-docx</code> + Gemini Vision</td>
+<td>Preserves document order across headings (<code>#</code>, <code>##</code>, <code>###</code>), paragraphs, all Word tables (<code>w:tbl</code> as Markdown tables), section headers/footers, and embedded figures.</td>
 </tr>
 <tr>
 <td><code>.xlsx</code>, <code>.xls</code></td>
@@ -1393,8 +1398,8 @@
 </tr>
 <tr>
 <td><code>.pptx</code></td>
-<td><code>docling</code> + <code>python-pptx</code></td>
-<td>Recursively extracts text frames, grouped shapes (<code>shape.shapes</code>), slide tables (<code>shape.has_table</code> as Markdown tables), and speaker notes (<code>notes_slide</code>).</td>
+<td><code>docling</code> + <code>python-pptx</code> + Gemini Vision</td>
+<td>Recursively extracts text frames, grouped shapes (<code>shape.shapes</code>), slide tables (<code>shape.has_table</code> as Markdown tables), speaker notes (<code>notes_slide</code>), and embedded slide diagrams/images.</td>
 </tr>
 <tr>
 <td><code>.html</code>, <code>.htm</code></td>

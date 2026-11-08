@@ -1225,13 +1225,13 @@
     Main["main.jsx"] --&gt; App["App.jsx (Root Auth &amp; Tab State)"]
     App --&gt;|Unauthenticated| AuthModal["UserIdModal.jsx (Neon PostgreSQL Sign In / Create Account)"]
     App --&gt;|Authenticated| Header["Header.jsx (Status Pill, User Profile, Sign Out)"]
-    App --&gt;|Authenticated| Tabs["Tabs.jsx (5-Tab Navigation Bar)"]
-    Tabs --&gt; T1["1. UploadTab.jsx (Drag &amp; Drop File Upload)"]
-    Tabs --&gt; T2["2. IngestionTab.jsx (Live 5-Step Progress &amp; DB Metrics)"]
-    Tabs --&gt; T3["3. DocumentsTab.jsx (Document List &amp; Cascade Delete)"]
-    Tabs --&gt; T4["4. ChatTab.jsx + ChatMessage.jsx (Agentic Chat with Tool Badges &amp; Citations)"]
-    Tabs --&gt; T5["5. GraphTab.jsx (Interactive SVG Neo4j Knowledge Graph)"]
-    Tabs --&gt; T6["6. SettingsTab.jsx (Environment Variables, Info Docs Links &amp; Default Fallback)"]</code></pre>
+    App --&gt;|Authenticated| Tabs["Tabs.jsx (6-Tab Navigation Bar)"]
+    Tabs --&gt; T0["1. SettingsTab.jsx (Minimalist Env Variables, Info Icon Links &amp; Save &amp; Continue)"]
+    Tabs --&gt; T1["2. UploadTab.jsx (Drag &amp; Drop Multi-File Upload)"]
+    Tabs --&gt; T2["3. IngestionTab.jsx (Live 5-Step Progress &amp; DB Metrics)"]
+    Tabs --&gt; T3["4. DocumentsTab.jsx (Document List, Single Delete &amp; Delete All Modal)"]
+    Tabs --&gt; T4["5. ChatTab.jsx + ChatMessage.jsx (Agentic Chat with Icon-Only Send &amp; Citations)"]
+    Tabs --&gt; T5["6. GraphTab.jsx (Interactive SVG Neo4j Knowledge Graph)"]</code></pre>
 <hr />
 <h2 id="component-reference-frontendsrccomponents">Component Reference (<code>frontend/src/components/</code>)<a class="headerlink" href="#component-reference-frontendsrccomponents" title="Permanent link">&para;</a></h2>
 <table>
@@ -1246,7 +1246,7 @@
 <tr>
 <td><strong>Authentication Screen</strong></td>
 <td><code>UserIdModal.jsx</code></td>
-<td>Full Sign In / Create Account interface backed by <code>/auth/login</code> and <code>/auth/signup</code> on Neon PostgreSQL, plus a <strong>Configure Environment Variables &amp; Connections</strong> drawer for first-time setup.</td>
+<td>Full Sign In / Create Account interface backed by <code>/auth/login</code> and <code>/auth/signup</code> on Neon PostgreSQL.</td>
 </tr>
 <tr>
 <td><strong>Top Header</strong></td>
@@ -1256,7 +1256,12 @@
 <tr>
 <td><strong>Tab Navigation</strong></td>
 <td><code>Tabs.jsx</code></td>
-<td>Six-tab bar ordered: <code>Upload</code> → <code>Ingestion Pipeline</code> → <code>Documents</code> → <code>Agentic Chat</code> → <code>Knowledge Graph</code> → <code>Settings</code>.</td>
+<td>Six-tab bar ordered: <code>Settings</code> → <code>Upload</code> → <code>Ingestion Pipeline</code> → <code>Documents</code> → <code>Agentic Chat</code> → <code>Knowledge Graph</code>.</td>
+</tr>
+<tr>
+<td><strong>Settings Tab (<code>v2.3.0</code> / <code>v2.3.3</code>)</strong></td>
+<td><code>SettingsTab.jsx</code></td>
+<td>Post-login landing screen displaying a minimalist grid of environment variable keys, input fields, and icon-only (<code>ⓘ</code>) documentation deep-links. Blank fields silently fall back to server defaults; clicking <strong>Save &amp; Continue</strong> navigates to the <strong>Upload</strong> tab.</td>
 </tr>
 <tr>
 <td><strong>Upload Tab</strong></td>
@@ -1269,24 +1274,19 @@
 <td>Polls <code>GET /ingest/progress</code> every <code>450ms</code> during single or multi-document uploads, displaying <code>Selected Document X of Y • Step S of 5 • &lt;Step Name&gt;</code> as the progress bar runs for each document, and summarizing total documents ingested (<code>All 5 Pipeline Steps Completed Successfully (Y Documents Ingested)</code>) with per-file metrics upon completion.</td>
 </tr>
 <tr>
-<td><strong>Documents Tab</strong></td>
+<td><strong>Documents Tab (<code>v2.3.3</code>)</strong></td>
 <td><code>DocumentsTab.jsx</code></td>
-<td>Lists all documents owned by the user with chunk, entity, and relationship counts, plus one-click cascade deletion across Neon PostgreSQL and Neo4j.</td>
+<td>Lists all documents owned by the user with chunk, entity, and relationship counts, per-document cascade delete, and a <strong>Delete All</strong> button that opens a confirmation modal requiring the user to type <code>Delete</code>.</td>
 </tr>
 <tr>
-<td><strong>Agentic Chat Tab</strong></td>
+<td><strong>Agentic Chat Tab (<code>v2.3.3</code>)</strong></td>
 <td><code>ChatTab.jsx</code> &amp; <code>ChatMessage.jsx</code></td>
-<td>Multi-turn chat interface with suggested starter prompts, animated typing indicators, tool execution badges (<code>hybrid_search</code>, <code>vector_search</code>, <code>graph_search</code>, <code>get_entity_relationships</code>), and highlighted <code>[Source: ...]</code> / <code>[Graph: ...]</code> citations.</td>
+<td>Multi-turn chat interface with suggested starter prompts, an icon-only <code>&lt;Send /&gt;</code> button, animated typing indicators, tool execution badges (<code>hybrid_search</code>, <code>vector_search</code>, <code>graph_search</code>, <code>get_entity_relationships</code>), and highlighted <code>[Source: ...]</code> / <code>[Graph: ...]</code> citations.</td>
 </tr>
 <tr>
 <td><strong>Knowledge Graph Tab</strong></td>
 <td><code>GraphTab.jsx</code></td>
 <td>Interactive SVG radial/force-layout canvas for exploring Neo4j <code>:Entity</code> nodes and <code>:RELATES_TO</code> edges, complete with category filter pills, real-time keyword search, zoom controls, a 1-hop Entity Inspector drawer, and a structured triplets table.</td>
-</tr>
-<tr>
-<td><strong>Settings Tab (<code>v2.3.0</code>)</strong></td>
-<td><code>SettingsTab.jsx</code></td>
-<td>Interactive Environment Variables &amp; Connection Settings page with live connection health cards, per-variable <strong><code>ⓘ How to get?</code></strong> documentation deep-links, automatic fallback to default values when fields are left blank, and one-click reset.</td>
 </tr>
 </tbody>
 </table>

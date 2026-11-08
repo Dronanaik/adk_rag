@@ -622,6 +622,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#step-1b-configure-environment-variables-settings-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1b: Configure Environment Variables (Settings Tab)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#step-2-uploading-one-or-multiple-documents-upload-tab" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -723,10 +734,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#atomic-cascade-delete-confirmation" class="md-nav__link">
+  <a href="#atomic-cascade-delete-bulk-delete-all-confirmation-modal-v233" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Atomic Cascade Delete Confirmation
+        Atomic Cascade Delete &amp; Bulk "Delete All" Confirmation Modal (v2.3.3)
       
     </span>
   </a>
@@ -1344,6 +1355,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#step-1b-configure-environment-variables-settings-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1b: Configure Environment Variables (Settings Tab)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#step-2-uploading-one-or-multiple-documents-upload-tab" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1445,10 +1467,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#atomic-cascade-delete-confirmation" class="md-nav__link">
+  <a href="#atomic-cascade-delete-bulk-delete-all-confirmation-modal-v233" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Atomic Cascade Delete Confirmation
+        Atomic Cascade Delete &amp; Bulk "Delete All" Confirmation Modal (v2.3.3)
       
     </span>
   </a>
@@ -1626,11 +1648,12 @@
 <hr />
 <h2 id="end-to-end-user-workflow"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 15a3 3 0 0 1 3 3 3 3 0 0 1-3 3 2.99 2.99 0 0 1-2.83-2H14v-2h1.17c.41-1.17 1.52-2 2.83-2m0 2a1 1 0 0 0-1 1 1 1 0 0 0 1 1 1 1 0 0 0 1-1 1 1 0 0 0-1-1m0-9a1.43 1.43 0 0 0 1.43-1.43 1.43 1.43 0 1 0-2.86 0A1.43 1.43 0 0 0 18 8m0-5.43a4 4 0 0 1 4 4C22 9.56 18 14 18 14s-4-4.44-4-7.43a4 4 0 0 1 4-4M8.83 17H10v2H8.83A2.99 2.99 0 0 1 6 21a3 3 0 0 1-3-3c0-1.31.83-2.42 2-2.83V14h2v1.17c.85.3 1.53.98 1.83 1.83M6 17a1 1 0 0 0-1 1 1 1 0 0 0 1 1 1 1 0 0 0 1-1 1 1 0 0 0-1-1M6 3a3 3 0 0 1 3 3c0 1.31-.83 2.42-2 2.83V10H5V8.83A2.99 2.99 0 0 1 3 6a3 3 0 0 1 3-3m0 2a1 1 0 0 0-1 1 1 1 0 0 0 1 1 1 1 0 0 0 1-1 1 1 0 0 0-1-1m5 14v-2h2v2zm-4-6H5v-2h2z"/></svg></span> End-to-End User Workflow<a class="headerlink" href="#end-to-end-user-workflow" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>flowchart LR
-    A["1. Authentication (Sign In / Create Account)"] --&gt; B["2. Document Upload (Dropzone &amp; File Preview)"]
-    B --&gt; C["3. Hybrid Ingestion (Live Progress &amp; Completion)"]
-    C --&gt; D["4. Document Manager (Index Counts &amp; Cascade Delete)"]
-    D --&gt; E["5. Agentic Chat (4 Tools &amp; Dual Citations)"]
-    E --&gt; F["6. Knowledge Graph (Topology &amp; 1-Hop Inspector)"]</code></pre>
+    A["1. Authentication (Sign In / Create Account)"] --&gt; S["2. Settings (Env Variables &amp; Docs Info Links)"]
+    S --&gt; B["3. Document Upload (Dropzone &amp; File Preview)"]
+    B --&gt; C["4. Hybrid Ingestion (Lossless Docling + Vision)"]
+    C --&gt; D["5. Document Manager (Delete &amp; Delete All Modal)"]
+    D --&gt; E["6. Agentic Chat (4 Tools &amp; Dual Citations)"]
+    E --&gt; F["7. Knowledge Graph (Topology &amp; 1-Hop Inspector)"]</code></pre>
 <div class="grid cards">
 <ul>
 <li>
@@ -1638,6 +1661,12 @@
 <hr />
 <p>Sign in or register an isolated multi-tenant workspace backed by <strong>Neon PostgreSQL</strong> (<code>PBKDF2-HMAC-SHA256</code> + <code>HS256</code> JWT).</p>
 <p><a href="#step-1-create-an-account-or-sign-in"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4.97 13.22a.75.75 0 0 1 1.06 0L11 18.19V3.75a.75.75 0 0 1 1.5 0v14.44l4.97-4.97a.749.749 0 0 1 1.275.326.75.75 0 0 1-.215.734l-6.25 6.25a.75.75 0 0 1-1.06 0l-6.25-6.25a.75.75 0 0 1 0-1.06"/></svg></span> Jump to Authentication</a></p>
+</li>
+<li>
+<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4m0 2a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2m-2 12c-.25 0-.46-.18-.5-.42l-.37-2.65c-.63-.25-1.17-.59-1.69-.99l-2.49 1.01c-.22.08-.49 0-.61-.22l-2-3.46a.493.493 0 0 1 .12-.64l2.11-1.66L4.5 12l.07-1-2.11-1.63a.493.493 0 0 1-.12-.64l2-3.46c.12-.22.39-.31.61-.22l2.49 1c.52-.39 1.06-.73 1.69-.98l.37-2.65c.04-.24.25-.42.5-.42h4c.25 0 .46.18.5.42l.37 2.65c.63.25 1.17.59 1.69.98l2.49-1c.22-.09.49 0 .61.22l2 3.46c.13.22.07.49-.12.64L19.43 11l.07 1-.07 1 2.11 1.63c.19.15.25.42.12.64l-2 3.46c-.12.22-.39.31-.61.22l-2.49-1c-.52.39-1.06.73-1.69.98l-.37 2.65c-.04.24-.25.42-.5.42zm1.25-18-.37 2.61c-1.2.25-2.26.89-3.03 1.78L5.44 7.35l-.75 1.3L6.8 10.2a5.55 5.55 0 0 0 0 3.6l-2.12 1.56.75 1.3 2.43-1.04c.77.88 1.82 1.52 3.01 1.76l.37 2.62h1.52l.37-2.61c1.19-.25 2.24-.89 3.01-1.77l2.43 1.04.75-1.3-2.12-1.55c.4-1.17.4-2.44 0-3.61l2.11-1.55-.75-1.3-2.41 1.04a5.42 5.42 0 0 0-3.03-1.77L12.75 4z"/></svg></span> <strong>Environment Variables (<code>Settings</code> Tab)</strong></p>
+<hr />
+<p>Post-login landing screen with minimalist key inputs, <code>ⓘ</code> documentation links, and silent fallback to default values when left blank.</p>
+<p><a href="#step-1b-configure-environment-variables-settings-tab"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4.97 13.22a.75.75 0 0 1 1.06 0L11 18.19V3.75a.75.75 0 0 1 1.5 0v14.44l4.97-4.97a.749.749 0 0 1 1.275.326.75.75 0 0 1-.215.734l-6.25 6.25a.75.75 0 0 1-1.06 0l-6.25-6.25a.75.75 0 0 1 0-1.06"/></svg></span> Jump to Environment Settings</a></p>
 </li>
 <li>
 <p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 20H6.5q-2.28 0-3.89-1.57Q1 16.85 1 14.58q0-1.95 1.17-3.48 1.18-1.53 3.08-1.95.63-2.3 2.5-3.72Q9.63 4 12 4q2.93 0 4.96 2.04Q19 8.07 19 11q1.73.2 2.86 1.5 1.14 1.28 1.14 3 0 1.88-1.31 3.19T18.5 20H13v-7.15l1.6 1.55L16 13l-4-4-4 4 1.4 1.4 1.6-1.55Z"/></svg></span> <strong>Document Upload</strong></p>
@@ -1648,13 +1677,13 @@
 <li>
 <p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 2.03v2.02c4.39.54 7.5 4.53 6.96 8.92-.46 3.64-3.32 6.53-6.96 6.96v2c5.5-.55 9.5-5.43 8.95-10.93-.45-4.75-4.22-8.5-8.95-8.97m-2 .03c-1.95.19-3.81.94-5.33 2.2L7.1 5.74c1.12-.9 2.47-1.48 3.9-1.68zM4.26 5.67A9.9 9.9 0 0 0 2.05 11h2c.19-1.42.75-2.77 1.64-3.9zM15.5 8.5l-4.88 4.88-2.12-2.12-1.06 1.06 3.18 3.18 5.94-5.94zM2.06 13c.2 1.96.97 3.81 2.21 5.33l1.42-1.43A8 8 0 0 1 4.06 13zm5.04 5.37-1.43 1.37A10 10 0 0 0 11 22v-2a8 8 0 0 1-3.9-1.63"/></svg></span> <strong>Live 5-Step Ingestion Pipeline</strong></p>
 <hr />
-<p>Watch real-time step-by-step execution across text extraction, chunking, Gemini embeddings, Neon <code>pgvector</code>, and Neo4j.</p>
+<p>Watch real-time step-by-step execution across lossless Docling + Gemini Vision extraction, chunking, Gemini embeddings, Neon <code>pgvector</code>, and Neo4j.</p>
 <p><a href="#step-3-monitoring-the-live-5-step-ingestion-pipeline-ingestion-pipeline-tab"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4.97 13.22a.75.75 0 0 1 1.06 0L11 18.19V3.75a.75.75 0 0 1 1.5 0v14.44l4.97-4.97a.749.749 0 0 1 1.275.326.75.75 0 0 1-.215.734l-6.25 6.25a.75.75 0 0 1-1.06 0l-6.25-6.25a.75.75 0 0 1 0-1.06"/></svg></span> Jump to Ingestion Pipeline</a></p>
 </li>
 <li>
 <p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h6l2 2zM2 6v14h18v2H2a2 2 0 0 1-2-2V6zm4 0v10h16V6z"/></svg></span> <strong>Document Management</strong></p>
 <hr />
-<p>Inspect per-document vector chunk, entity, and relationship counts or trigger atomic cascade deletion across both databases.</p>
+<p>Inspect per-document vector chunk, entity, and relationship counts, delete single files, or use the <strong>Delete All</strong> modal (<code>Delete</code> confirmation).</p>
 <p><a href="#step-4-managing-indexed-documents-documents-tab"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4.97 13.22a.75.75 0 0 1 1.06 0L11 18.19V3.75a.75.75 0 0 1 1.5 0v14.44l4.97-4.97a.749.749 0 0 1 1.275.326.75.75 0 0 1-.215.734l-6.25 6.25a.75.75 0 0 1-1.06 0l-6.25-6.25a.75.75 0 0 1 0-1.06"/></svg></span> Jump to Document Management</a></p>
 </li>
 <li>
@@ -1697,12 +1726,21 @@
 <p>Every document you upload, every <code>768</code>-dimensional vector chunk stored in <strong>Neon PostgreSQL</strong>, and every <code>:Entity</code> / <code>:RELATES_TO</code> record created in <strong>Neo4j</strong> is strictly scoped to your authenticated <code>user_id</code>. No other user can view or query your workspace data.</p>
 </div>
 <hr />
+<h2 id="step-1b-configure-environment-variables-settings-tab">Step 1b: Configure Environment Variables (<code>Settings</code> Tab)<a class="headerlink" href="#step-1b-configure-environment-variables-settings-tab" title="Permanent link">&para;</a></h2>
+<p>Immediately after signing in, you land on the <strong>Settings</strong> tab (<code>SettingsTab.jsx</code>), which is the first tab in the navigation bar (<strong>Settings</strong> → <strong>Upload</strong> → <strong>Ingestion Pipeline</strong> → <strong>Documents</strong> → <strong>Agentic Chat</strong> → <strong>Knowledge Graph</strong>).</p>
+<p><img alt="Minimalist Environment Variables Settings" src="../assets/screenshots/02b-settings-env-vars.png" /></p>
+<ol>
+<li><strong>Minimalist Variable Grid</strong>: Each card displays <strong>only</strong> the environment variable key name (<code>GOOGLE_API_KEY</code>, <code>AGENT_MODEL</code>, <code>GRAPH_EXTRACTION_MODEL</code>, <code>EMBEDDING_MODEL</code>, <code>DATABASE_URL</code>, <code>JWT_SECRET_KEY</code>, <code>JWT_EXPIRE_HOURS</code>, <code>NEO4J_URI</code>, <code>NEO4J_USERNAME</code>, <code>NEO4J_PASSWORD</code>, <code>NEO4J_DATABASE</code>, <code>TOP_K</code>), an input field, and an info icon (<code>ⓘ</code>).</li>
+<li><strong>Documentation Deep-Link (<code>ⓘ</code>)</strong>: Clicking the <strong><code>ⓘ</code></strong> icon next to any variable opens the exact step-by-step guide in <a href="../INSTALLATION/">Installation &amp; Environment Setup</a> explaining how to obtain that key.</li>
+<li><strong>Silent Default Fallback</strong>: Default values are never exposed in the UI. Leaving any input blank automatically falls back to the server's default configuration in the background.</li>
+<li>Click <strong>Save &amp; Continue</strong> to apply your configuration and automatically navigate to the <strong>Upload</strong> tab.</li>
+</ol>
+<hr />
 <h2 id="step-2-uploading-one-or-multiple-documents-upload-tab">Step 2: Uploading One or Multiple Documents (<code>Upload</code> Tab)<a class="headerlink" href="#step-2-uploading-one-or-multiple-documents-upload-tab" title="Permanent link">&para;</a></h2>
-<p>Once signed in, the top header displays your <strong>API Online</strong> health indicator, your <strong>User Profile Badge</strong>, the <strong>Sign Out</strong> button, and the <strong>5-Tab Navigation Bar</strong> (<strong>Upload</strong> → <strong>Ingestion Pipeline</strong> → <strong>Documents</strong> → <strong>Agentic Chat</strong> → <strong>Knowledge Graph</strong>).</p>
+<p>Once your settings are saved, you transition to the <strong>Upload</strong> tab (<code>UploadTab.jsx</code>).</p>
 <h3 id="upload-documents-dropzone">Upload Documents Dropzone<a class="headerlink" href="#upload-documents-dropzone" title="Permanent link">&para;</a></h3>
 <p><img alt="Upload Document Dropzone" src="../assets/screenshots/03-upload-dropzone.png" /></p>
 <ol>
-<li>The <strong>Upload</strong> tab is active by default when you sign in.</li>
 <li>Drag and drop <strong>one or multiple files</strong> onto the dashed bioluminescent dropzone, or click <strong>click to browse multiple files</strong> to open your system file picker.</li>
 <li>All <strong>13 supported file extensions</strong> are displayed as badges below the dropzone: <code>.pdf</code>, <code>.docx</code>, <code>.xlsx</code>, <code>.xls</code>, <code>.pptx</code>, <code>.txt</code>, <code>.md</code>, <code>.csv</code>, <code>.json</code>, <code>.xml</code>, <code>.html</code>, <code>.htm</code>, and <code>.log</code>.</li>
 </ol>
@@ -1767,14 +1805,17 @@
 <li><strong>Refresh &amp; Delete Controls</strong>: Top-right <strong>Refresh</strong> button and per-document <strong>Delete</strong> button.</li>
 </ul>
 <hr />
-<h3 id="atomic-cascade-delete-confirmation">Atomic Cascade Delete Confirmation<a class="headerlink" href="#atomic-cascade-delete-confirmation" title="Permanent link">&para;</a></h3>
+<h3 id="atomic-cascade-delete-bulk-delete-all-confirmation-modal-v233">Atomic Cascade Delete &amp; Bulk "Delete All" Confirmation Modal (<code>v2.3.3</code>)<a class="headerlink" href="#atomic-cascade-delete-bulk-delete-all-confirmation-modal-v233" title="Permanent link">&para;</a></h3>
 <p><img alt="Cascade Delete Confirmation" src="../assets/screenshots/08-documents-delete-confirm.png" /></p>
 <ol>
-<li>Clicking <strong>Delete</strong> on any document card reveals an inline confirmation bar: <strong><code>Delete from Postgres &amp; Neo4j?</code></strong> with <strong>Yes, delete</strong> and <strong>Cancel</strong> buttons.</li>
-<li>Clicking <strong>Yes, delete</strong> invokes <code>DELETE /documents/{doc_id}</code>, which atomically:</li>
-<li>Deletes the document metadata row and all associated <code>document_chunks</code> (<code>ON DELETE CASCADE</code>) from <strong>Neon PostgreSQL</strong>.</li>
-<li>Removes all <code>RELATES_TO</code> edges, the <code>:Document</code> node, and any orphaned <code>:Entity</code> nodes for that document from <strong>Neo4j</strong>.</li>
-<li>Clicking <strong>Cancel</strong> dismisses the confirmation prompt without modifying your data.</li>
+<li><strong>Single-Document Delete</strong>: Clicking <strong>Delete</strong> on any document card reveals an inline confirmation bar: <strong><code>Delete from Postgres &amp; Neo4j?</code></strong> with <strong>Yes, delete</strong> and <strong>Cancel</strong> buttons. Clicking <strong>Yes, delete</strong> invokes <code>DELETE /documents/{doc_id}</code> to atomically remove the document's chunks from <strong>Neon PostgreSQL</strong> and its relationships/orphaned entities from <strong>Neo4j</strong>.</li>
+</ol>
+<p><img alt="Delete All Documents Type-to-Confirm Modal" src="../assets/screenshots/08b-documents-delete-all-modal.png" /></p>
+<ol>
+<li><strong>Bulk "Delete All" with Type-to-Confirm Popup (<code>Delete</code>)</strong>:</li>
+<li>Clicking the <strong>Delete All</strong> button in the top-right header opens a modal dialog (<code>Delete All Documents</code>).</li>
+<li>To prevent accidental data loss, the <strong>Delete All</strong> action button remains disabled until you type <strong><code>Delete</code></strong> into the confirmation input field.</li>
+<li>Confirming invokes <code>DELETE /documents</code>, wiping all documents, vector chunks, and Knowledge Graph entities/relationships for your user account across both <strong>Neon PostgreSQL</strong> and <strong>Neo4j</strong>.</li>
 </ol>
 <hr />
 <h2 id="step-5-asking-questions-in-agentic-chat-agentic-chat-tab">Step 5: Asking Questions in Agentic Chat (<code>Agentic Chat</code> Tab)<a class="headerlink" href="#step-5-asking-questions-in-agentic-chat-agentic-chat-tab" title="Permanent link">&para;</a></h2>
@@ -1788,7 +1829,7 @@
 <li><em>"What are the main entities and relationships in my knowledge graph?"</em></li>
 <li><em>"Explain the core architecture and technical components described."</em></li>
 <li><em>"What are the key findings, metrics, or conclusions?"</em></li>
-<li>You can also type any custom question into the bottom input box and press <span class="keys"><kbd class="key-enter">Enter</kbd></span> (or click <strong>Send</strong>).</li>
+<li>You can also type any custom question into the bottom input box and press <span class="keys"><kbd class="key-enter">Enter</kbd></span> (or click the icon-only <strong>Send</strong> button).</li>
 </ul>
 <hr />
 <h3 id="multi-tool-grounded-response-with-dual-citations">Multi-Tool Grounded Response with Dual Citations<a class="headerlink" href="#multi-tool-grounded-response-with-dual-citations" title="Permanent link">&para;</a></h3>
