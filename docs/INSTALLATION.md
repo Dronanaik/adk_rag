@@ -16,7 +16,42 @@ This guide walks you through setting up the **ADK Agentic RAG + Knowledge Graph*
 
 ---
 
-## 2. Backend Setup
+## 2. One-Command Automated Setup (`setup.sh` / `setup.bat`)
+
+After cloning the repository, you can set up the entire project (Python `.venv`, backend packages + Docling, React + Vite frontend dependencies, and `.env` with an auto-generated `JWT_SECRET_KEY`) using a single command:
+
+=== "Linux / macOS / WSL (`setup.sh`)"
+
+    ```bash
+    git clone https://github.com/Dronanaik/adk_rag.git
+    cd adk_rag
+    chmod +x setup.sh
+    ./setup.sh
+    ```
+
+    Optional flags:
+    ```bash
+    ./setup.sh --with-docs   # Also install MkDocs Material documentation packages
+    ./setup.sh --start       # Run setup and immediately launch Backend (8000) + Frontend (5173)
+    ```
+
+=== "Windows (`setup.bat`)"
+
+    ```bat
+    git clone https://github.com/Dronanaik/adk_rag.git
+    cd adk_rag
+    setup.bat
+    ```
+
+    Optional flags:
+    ```bat
+    setup.bat --with-docs    :: Also install MkDocs Material documentation packages
+    setup.bat --start        :: Run setup and immediately launch Backend (8000) + Frontend (5173)
+    ```
+
+---
+
+## 3. Manual Step-by-Step Setup
 
 ### Step 1: Create & Activate Virtual Environment
 

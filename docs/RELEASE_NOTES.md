@@ -22,6 +22,9 @@
 ### 2. Table-Header-Preserving Semantic Chunking (`app/chunking.py`)
 - Added `_split_markdown_table_block` to `app/chunking.py` so that when a large Markdown table spans multiple `1,200`-character chunks, it splits cleanly along table row boundaries (`\n`) and repeats the Markdown table header (`| Col 1 | Col 2 |\n| --- | --- |`) at the top of each continuation chunk.
 
+### 3. Cross-Platform One-Command Project Setup (`setup.sh`, `setup.bat`)
+- Added `setup.sh` (Linux/macOS/WSL) and `setup.bat` (Windows) to automate prerequisite verification, Python `.venv` creation, CPU PyTorch + Docling + backend package installation, `frontend` npm installation, `.env` initialization with auto-generated `JWT_SECRET_KEY`, and optional `--with-docs` / `--start` flags.
+
 ---
 
 # Release Notes — `v2.1.1`
