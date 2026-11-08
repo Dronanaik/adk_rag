@@ -35,16 +35,20 @@ After Step 2, `ingest_document` computes a normalized **SHA-256 content fingerpr
 
 ---
 
-## Step 1: Lossless Docling & Format-Specific Extraction (`app/parsers.py`)
+## Step 1: Lossless Docling, Multimodal Vision & Format-Specific Extraction (`app/parsers.py`)
 
-`extract_text(file_path)` uses **IBM Docling (`docling.document_converter.DocumentConverter`)** reconciled with lossless format-specific extractors so zero text, tables, headers, footers, or speaker notes are lost:
+`extract_text(file_path)` uses **IBM Docling (`docling.document_converter.DocumentConverter`)** combined with **Gemini 2.5 Flash Multimodal Vision (`v2.3.3`)** and lossless format-specific extractors so zero text, tables, embedded figures/diagrams, headers, footers, or speaker notes are lost:
+
+- **Eliminating `<!-- image -->` Content Loss (`v2.3.3`)**:
+  - Docling is initialized with `PdfPipelineOptions(do_ocr=True, do_table_structure=True, generate_picture_images=True, images_scale=2.0)` and `export_to_markdown(traverse_pictures=True)`.
+  - Every embedded figure, chart, diagram, or screenshot across `.pdf`, `.docx`, and `.pptx` is extracted, filtered to skip tiny decorative icons (`< 48px`), and transcribed via **Gemini 2.5 Flash Vision** (`_transcribe_image_with_gemini`) into structured Markdown text, tables, and component relationships, replacing each `<!-- image -->` placeholder in-place.
 
 | Extension | Library | Extraction Details |
 |-----------|---------|--------------------|
-| `.pdf` | `docling` (`DocumentConverter`) + `pymupdf` (`fitz`) | Converts multi-column layouts, headings, and tables into structured Markdown via Docling TableFormer, reconciled page-by-page with PyMuPDF (`page.get_text("text", sort=True)` + `page.find_tables()`). |
-| `.docx` | `docling` + `python-docx` | Preserves document order across headings (`#`, `##`, `###`), paragraphs, all Word tables (`w:tbl` as Markdown tables), and section headers/footers. |
+| `.pdf` | `docling` (`DocumentConverter`) + `pymupdf` (`fitz`) + Gemini Vision | Converts multi-column layouts, headings, tables, and embedded figures/diagrams into structured Markdown via Docling TableFormer + Gemini Vision, reconciled page-by-page with PyMuPDF (`page.get_text("text", sort=True)` + `page.find_tables()`). |
+| `.docx` | `docling` + `python-docx` + Gemini Vision | Preserves document order across headings (`#`, `##`, `###`), paragraphs, all Word tables (`w:tbl` as Markdown tables), section headers/footers, and embedded figures. |
 | `.xlsx`, `.xls` | `docling` + `openpyxl` | Loads workbook with `data_only=True` and formats every sheet as a GitHub-Flavored Markdown table under `## [Sheet: Name]`. |
-| `.pptx` | `docling` + `python-pptx` | Recursively extracts text frames, grouped shapes (`shape.shapes`), slide tables (`shape.has_table` as Markdown tables), and speaker notes (`notes_slide`). |
+| `.pptx` | `docling` + `python-pptx` + Gemini Vision | Recursively extracts text frames, grouped shapes (`shape.shapes`), slide tables (`shape.has_table` as Markdown tables), speaker notes (`notes_slide`), and embedded slide diagrams/images. |
 | `.html`, `.htm` | `docling` + `HTMLParser` | Converts HTML headings, lists, and `<table>` elements into structured Markdown. |
 | `.csv` | `csv` + Markdown formatter | Converts CSV rows into a structured Markdown table with column headers. |
 | `.txt`, `.md`, `.json`, `.xml`, `.log` | Built-in `open()` | Reads UTF-8 text directly without truncation. |

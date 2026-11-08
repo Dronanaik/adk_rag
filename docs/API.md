@@ -175,6 +175,27 @@ curl -X DELETE http://localhost:8000/documents/52e1a9d0-8c1a-4f3b-9b12-019283746
 
 ---
 
+### `DELETE /documents`
+Bulk-deletes **all** documents, vector chunks, and Neo4j Knowledge Graph entities/relationships belonging to the authenticated user (`v2.3.3`).
+
+```bash
+curl -X DELETE http://localhost:8000/documents \
+  -H "Authorization: Bearer <TOKEN>"
+```
+
+**Response (`200 OK`)**:
+```json
+{
+  "success": true,
+  "deleted_documents": 3,
+  "deleted_chunks": 13,
+  "deleted_entities": 119,
+  "deleted_relationships": 116
+}
+```
+
+---
+
 ## 5. Knowledge Graph Endpoints (Neo4j)
 
 ### `GET /graph`

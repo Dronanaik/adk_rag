@@ -10,11 +10,12 @@ This step-by-step visual guide walks you through every view and interaction in t
 
 ```mermaid
 flowchart LR
-    A["1. Authentication (Sign In / Create Account)"] --> B["2. Document Upload (Dropzone & File Preview)"]
-    B --> C["3. Hybrid Ingestion (Live Progress & Completion)"]
-    C --> D["4. Document Manager (Index Counts & Cascade Delete)"]
-    D --> E["5. Agentic Chat (4 Tools & Dual Citations)"]
-    E --> F["6. Knowledge Graph (Topology & 1-Hop Inspector)"]
+    A["1. Authentication (Sign In / Create Account)"] --> S["2. Settings (Env Variables & Docs Info Links)"]
+    S --> B["3. Document Upload (Dropzone & File Preview)"]
+    B --> C["4. Hybrid Ingestion (Lossless Docling + Vision)"]
+    C --> D["5. Document Manager (Delete & Delete All Modal)"]
+    D --> E["6. Agentic Chat (4 Tools & Dual Citations)"]
+    E --> F["7. Knowledge Graph (Topology & 1-Hop Inspector)"]
 ```
 
 <div class="grid cards" markdown>
@@ -26,6 +27,14 @@ flowchart LR
     Sign in or register an isolated multi-tenant workspace backed by **Neon PostgreSQL** (`PBKDF2-HMAC-SHA256` + `HS256` JWT).
 
     [:octicons-arrow-down-24: Jump to Authentication](#step-1-create-an-account-or-sign-in)
+
+-   :material-cog-outline:{ .lg .middle } **Environment Variables (`Settings` Tab)**
+
+    ---
+
+    Post-login landing screen with minimalist key inputs, `ⓘ` documentation links, and silent fallback to default values when left blank.
+
+    [:octicons-arrow-down-24: Jump to Environment Settings](#step-1b-configure-environment-variables-settings-tab)
 
 -   :material-cloud-upload:{ .lg .middle } **Document Upload**
 
@@ -39,7 +48,7 @@ flowchart LR
 
     ---
 
-    Watch real-time step-by-step execution across text extraction, chunking, Gemini embeddings, Neon `pgvector`, and Neo4j.
+    Watch real-time step-by-step execution across lossless Docling + Gemini Vision extraction, chunking, Gemini embeddings, Neon `pgvector`, and Neo4j.
 
     [:octicons-arrow-down-24: Jump to Ingestion Pipeline](#step-3-monitoring-the-live-5-step-ingestion-pipeline-ingestion-pipeline-tab)
 
@@ -47,7 +56,7 @@ flowchart LR
 
     ---
 
-    Inspect per-document vector chunk, entity, and relationship counts or trigger atomic cascade deletion across both databases.
+    Inspect per-document vector chunk, entity, and relationship counts, delete single files, or use the **Delete All** modal (`Delete` confirmation).
 
     [:octicons-arrow-down-24: Jump to Document Management](#step-4-managing-indexed-documents-documents-tab)
 
@@ -101,17 +110,29 @@ When you open the application (`http://localhost:5173`), the **Bioluminescent Ne
 
 ---
 
+## Step 1b: Configure Environment Variables (`Settings` Tab)
+
+Immediately after signing in, you land on the **Settings** tab (`SettingsTab.jsx`), which is the first tab in the navigation bar (**Settings** → **Upload** → **Ingestion Pipeline** → **Documents** → **Agentic Chat** → **Knowledge Graph**).
+
+![Minimalist Environment Variables Settings](assets/screenshots/02b-settings-env-vars.png)
+
+1. **Minimalist Variable Grid**: Each card displays **only** the environment variable key name (`GOOGLE_API_KEY`, `AGENT_MODEL`, `GRAPH_EXTRACTION_MODEL`, `EMBEDDING_MODEL`, `DATABASE_URL`, `JWT_SECRET_KEY`, `JWT_EXPIRE_HOURS`, `NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD`, `NEO4J_DATABASE`, `TOP_K`), an input field, and an info icon (`ⓘ`).
+2. **Documentation Deep-Link (`ⓘ`)**: Clicking the **`ⓘ`** icon next to any variable opens the exact step-by-step guide in [Installation & Environment Setup](INSTALLATION.md) explaining how to obtain that key.
+3. **Silent Default Fallback**: Default values are never exposed in the UI. Leaving any input blank automatically falls back to the server's default configuration in the background.
+4. Click **Save & Continue** to apply your configuration and automatically navigate to the **Upload** tab.
+
+---
+
 ## Step 2: Uploading One or Multiple Documents (`Upload` Tab)
 
-Once signed in, the top header displays your **API Online** health indicator, your **User Profile Badge**, the **Sign Out** button, and the **5-Tab Navigation Bar** (**Upload** → **Ingestion Pipeline** → **Documents** → **Agentic Chat** → **Knowledge Graph**).
+Once your settings are saved, you transition to the **Upload** tab (`UploadTab.jsx`).
 
 ### Upload Documents Dropzone
 
 ![Upload Document Dropzone](assets/screenshots/03-upload-dropzone.png)
 
-1. The **Upload** tab is active by default when you sign in.
-2. Drag and drop **one or multiple files** onto the dashed bioluminescent dropzone, or click **click to browse multiple files** to open your system file picker.
-3. All **13 supported file extensions** are displayed as badges below the dropzone: `.pdf`, `.docx`, `.xlsx`, `.xls`, `.pptx`, `.txt`, `.md`, `.csv`, `.json`, `.xml`, `.html`, `.htm`, and `.log`.
+1. Drag and drop **one or multiple files** onto the dashed bioluminescent dropzone, or click **click to browse multiple files** to open your system file picker.
+2. All **13 supported file extensions** are displayed as badges below the dropzone: `.pdf`, `.docx`, `.xlsx`, `.xls`, `.pptx`, `.txt`, `.md`, `.csv`, `.json`, `.xml`, `.html`, `.htm`, and `.log`.
 
 ---
 
@@ -188,15 +209,18 @@ Each indexed document card displays:
 
 ---
 
-### Atomic Cascade Delete Confirmation
+### Atomic Cascade Delete & Bulk "Delete All" Confirmation Modal (`v2.3.3`)
 
 ![Cascade Delete Confirmation](assets/screenshots/08-documents-delete-confirm.png)
 
-1. Clicking **Delete** on any document card reveals an inline confirmation bar: **`Delete from Postgres & Neo4j?`** with **Yes, delete** and **Cancel** buttons.
-2. Clicking **Yes, delete** invokes `DELETE /documents/{doc_id}`, which atomically:
-   - Deletes the document metadata row and all associated `document_chunks` (`ON DELETE CASCADE`) from **Neon PostgreSQL**.
-   - Removes all `RELATES_TO` edges, the `:Document` node, and any orphaned `:Entity` nodes for that document from **Neo4j**.
-3. Clicking **Cancel** dismisses the confirmation prompt without modifying your data.
+1. **Single-Document Delete**: Clicking **Delete** on any document card reveals an inline confirmation bar: **`Delete from Postgres & Neo4j?`** with **Yes, delete** and **Cancel** buttons. Clicking **Yes, delete** invokes `DELETE /documents/{doc_id}` to atomically remove the document's chunks from **Neon PostgreSQL** and its relationships/orphaned entities from **Neo4j**.
+
+![Delete All Documents Type-to-Confirm Modal](assets/screenshots/08b-documents-delete-all-modal.png)
+
+2. **Bulk "Delete All" with Type-to-Confirm Popup (`Delete`)**:
+   - Clicking the **Delete All** button in the top-right header opens a modal dialog (`Delete All Documents`).
+   - To prevent accidental data loss, the **Delete All** action button remains disabled until you type **`Delete`** into the confirmation input field.
+   - Confirming invokes `DELETE /documents`, wiping all documents, vector chunks, and Knowledge Graph entities/relationships for your user account across both **Neon PostgreSQL** and **Neo4j**.
 
 ---
 
@@ -215,7 +239,7 @@ When starting a new session:
   2. *"What are the main entities and relationships in my knowledge graph?"*
   3. *"Explain the core architecture and technical components described."*
   4. *"What are the key findings, metrics, or conclusions?"*
-- You can also type any custom question into the bottom input box and press ++enter++ (or click **Send**).
+- You can also type any custom question into the bottom input box and press ++enter++ (or click the icon-only **Send** button).
 
 ---
 
