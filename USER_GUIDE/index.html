@@ -622,10 +622,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-1b-configure-environment-variables-settings-tab" class="md-nav__link">
+  <a href="#step-1b-configure-environment-variables-settings-in-top-header" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 1b: Configure Environment Variables (Settings Tab)
+        Step 1b: Configure Environment Variables (Settings in Top Header)
       
     </span>
   </a>
@@ -816,6 +816,45 @@
     <span class="md-ellipsis">
       
         Selected Entity 1-Hop Neighborhood Inspector
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-7-evaluating-rag-quality-evaluation-in-top-header" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Evaluating RAG Quality (Evaluation in Top Header)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 7: Evaluating RAG Quality (Evaluation in Top Header)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generate-a-synthetic-golden-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generate a Synthetic Golden Dataset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-evaluation-inspect-per-case-scores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run Evaluation &amp; Inspect Per-Case Scores
       
     </span>
   </a>
@@ -1257,7 +1296,7 @@
   <span class="md-ellipsis">
     
   
-    Release Notes (v2.3.3)
+    Release Notes (v2.4.0)
   
 
     
@@ -1355,10 +1394,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-1b-configure-environment-variables-settings-tab" class="md-nav__link">
+  <a href="#step-1b-configure-environment-variables-settings-in-top-header" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 1b: Configure Environment Variables (Settings Tab)
+        Step 1b: Configure Environment Variables (Settings in Top Header)
       
     </span>
   </a>
@@ -1560,6 +1599,45 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#step-7-evaluating-rag-quality-evaluation-in-top-header" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Evaluating RAG Quality (Evaluation in Top Header)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 7: Evaluating RAG Quality (Evaluation in Top Header)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generate-a-synthetic-golden-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generate a Synthetic Golden Dataset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-evaluation-inspect-per-case-scores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run Evaluation &amp; Inspect Per-Case Scores
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1642,7 +1720,7 @@
 
 
 <h1 id="interactive-user-guide"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 2-5 4.5v11l5-4.5zM6.5 5C4.55 5 2.45 5.4 1 6.5v14.66c0 .25.25.5.5.5.1 0 .15-.07.25-.07 1.35-.65 3.3-1.09 4.75-1.09 1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.31 4.75 1.06.1.05.15.03.25.03.25 0 .5-.25.5-.5V6.5c-.6-.45-1.25-.75-2-1V19c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6.5C10.55 5.4 8.45 5 6.5 5"/></svg></span> Interactive User Guide<a class="headerlink" href="#interactive-user-guide" title="Permanent link">&para;</a></h1>
-<p>This step-by-step visual guide walks you through every view and interaction in the <strong>ADK Agentic RAG + Knowledge Graph</strong> platform—from signing in with <strong>Neon PostgreSQL Authentication</strong> to uploading documents, monitoring the live 5-step hybrid ingestion pipeline, managing indexed documents, querying the <strong>Google ADK Agent</strong>, and inspecting your <strong>Neo4j Knowledge Graph</strong>.</p>
+<p>This step-by-step visual guide walks you through every view and interaction in the <strong>ADK Agentic RAG + Knowledge Graph</strong> platform—from signing in with <strong>Neon PostgreSQL Authentication</strong> to configuring environment variables, uploading documents, monitoring the live 5-step hybrid ingestion pipeline, managing indexed documents, querying the <strong>Google ADK Agent</strong>, inspecting your <strong>Neo4j Knowledge Graph</strong>, and evaluating RAG quality with <strong>LangSmith &amp; Gemini 2.5 Flash</strong>.</p>
 <video src="../adk_rag.mp4" width="100%" controls autoplay loop muted style="border-radius: 12px; border: 1px solid rgba(52, 211, 153, 0.3); margin-top: 12px;"></video>
 
 <hr />
@@ -1653,7 +1731,8 @@
     B --&gt; C["4. Hybrid Ingestion (Lossless Docling + Vision)"]
     C --&gt; D["5. Document Manager (Delete &amp; Delete All Modal)"]
     D --&gt; E["6. Agentic Chat (4 Tools &amp; Dual Citations)"]
-    E --&gt; F["7. Knowledge Graph (Topology &amp; 1-Hop Inspector)"]</code></pre>
+    E --&gt; F["7. Knowledge Graph (Topology &amp; 1-Hop Inspector)"]
+    F --&gt; G["8. RAG Evaluation &amp; LangSmith (Gemini 2.5 Flash Judge)"]</code></pre>
 <div class="grid cards">
 <ul>
 <li>
@@ -1663,10 +1742,10 @@
 <p><a href="#step-1-create-an-account-or-sign-in"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4.97 13.22a.75.75 0 0 1 1.06 0L11 18.19V3.75a.75.75 0 0 1 1.5 0v14.44l4.97-4.97a.749.749 0 0 1 1.275.326.75.75 0 0 1-.215.734l-6.25 6.25a.75.75 0 0 1-1.06 0l-6.25-6.25a.75.75 0 0 1 0-1.06"/></svg></span> Jump to Authentication</a></p>
 </li>
 <li>
-<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4m0 2a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2m-2 12c-.25 0-.46-.18-.5-.42l-.37-2.65c-.63-.25-1.17-.59-1.69-.99l-2.49 1.01c-.22.08-.49 0-.61-.22l-2-3.46a.493.493 0 0 1 .12-.64l2.11-1.66L4.5 12l.07-1-2.11-1.63a.493.493 0 0 1-.12-.64l2-3.46c.12-.22.39-.31.61-.22l2.49 1c.52-.39 1.06-.73 1.69-.98l.37-2.65c.04-.24.25-.42.5-.42h4c.25 0 .46.18.5.42l.37 2.65c.63.25 1.17.59 1.69.98l2.49-1c.22-.09.49 0 .61.22l2 3.46c.13.22.07.49-.12.64L19.43 11l.07 1-.07 1 2.11 1.63c.19.15.25.42.12.64l-2 3.46c-.12.22-.39.31-.61.22l-2.49-1c-.52.39-1.06.73-1.69.98l-.37 2.65c-.04.24-.25.42-.5.42zm1.25-18-.37 2.61c-1.2.25-2.26.89-3.03 1.78L5.44 7.35l-.75 1.3L6.8 10.2a5.55 5.55 0 0 0 0 3.6l-2.12 1.56.75 1.3 2.43-1.04c.77.88 1.82 1.52 3.01 1.76l.37 2.62h1.52l.37-2.61c1.19-.25 2.24-.89 3.01-1.77l2.43 1.04.75-1.3-2.12-1.55c.4-1.17.4-2.44 0-3.61l2.11-1.55-.75-1.3-2.41 1.04a5.42 5.42 0 0 0-3.03-1.77L12.75 4z"/></svg></span> <strong>Environment Variables (<code>Settings</code> Tab)</strong></p>
+<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4m0 2a2 2 0 0 0-2 2 2 2 0 0 0 2 2 2 2 0 0 0 2-2 2 2 0 0 0-2-2m-2 12c-.25 0-.46-.18-.5-.42l-.37-2.65c-.63-.25-1.17-.59-1.69-.99l-2.49 1.01c-.22.08-.49 0-.61-.22l-2-3.46a.493.493 0 0 1 .12-.64l2.11-1.66L4.5 12l.07-1-2.11-1.63a.493.493 0 0 1-.12-.64l2-3.46c.12-.22.39-.31.61-.22l2.49 1c.52-.39 1.06-.73 1.69-.98l.37-2.65c.04-.24.25-.42.5-.42h4c.25 0 .46.18.5.42l.37 2.65c.63.25 1.17.59 1.69.98l2.49-1c.22-.09.49 0 .61.22l2 3.46c.13.22.07.49-.12.64L19.43 11l.07 1-.07 1 2.11 1.63c.19.15.25.42.12.64l-2 3.46c-.12.22-.39.31-.61.22l-2.49-1c-.52.39-1.06.73-1.69.98l-.37 2.65c-.04.24-.25.42-.5.42zm1.25-18-.37 2.61c-1.2.25-2.26.89-3.03 1.78L5.44 7.35l-.75 1.3L6.8 10.2a5.55 5.55 0 0 0 0 3.6l-2.12 1.56.75 1.3 2.43-1.04c.77.88 1.82 1.52 3.01 1.76l.37 2.62h1.52l.37-2.61c1.19-.25 2.24-.89 3.01-1.77l2.43 1.04.75-1.3-2.12-1.55c.4-1.17.4-2.44 0-3.61l2.11-1.55-.75-1.3-2.41 1.04a5.42 5.42 0 0 0-3.03-1.77L12.75 4z"/></svg></span> <strong>Environment Variables (<code>Settings</code> Header Button)</strong></p>
 <hr />
-<p>Post-login landing screen with minimalist key inputs, <code>ⓘ</code> documentation links, and silent fallback to default values when left blank.</p>
-<p><a href="#step-1b-configure-environment-variables-settings-tab"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4.97 13.22a.75.75 0 0 1 1.06 0L11 18.19V3.75a.75.75 0 0 1 1.5 0v14.44l4.97-4.97a.749.749 0 0 1 1.275.326.75.75 0 0 1-.215.734l-6.25 6.25a.75.75 0 0 1-1.06 0l-6.25-6.25a.75.75 0 0 1 0-1.06"/></svg></span> Jump to Environment Settings</a></p>
+<p>Post-login configuration screen in the top header with minimalist key inputs, <code>ⓘ</code> documentation links, and silent fallback to default values when left blank.</p>
+<p><a href="#step-1b-configure-environment-variables-settings-in-top-header"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4.97 13.22a.75.75 0 0 1 1.06 0L11 18.19V3.75a.75.75 0 0 1 1.5 0v14.44l4.97-4.97a.749.749 0 0 1 1.275.326.75.75 0 0 1-.215.734l-6.25 6.25a.75.75 0 0 1-1.06 0l-6.25-6.25a.75.75 0 0 1 0-1.06"/></svg></span> Jump to Environment Settings</a></p>
 </li>
 <li>
 <p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 20H6.5q-2.28 0-3.89-1.57Q1 16.85 1 14.58q0-1.95 1.17-3.48 1.18-1.53 3.08-1.95.63-2.3 2.5-3.72Q9.63 4 12 4q2.93 0 4.96 2.04Q19 8.07 19 11q1.73.2 2.86 1.5 1.14 1.28 1.14 3 0 1.88-1.31 3.19T18.5 20H13v-7.15l1.6 1.55L16 13l-4-4-4 4 1.4 1.4 1.6-1.55Z"/></svg></span> <strong>Document Upload</strong></p>
@@ -1698,6 +1777,12 @@
 <p>Explore the interactive Neo4j SVG entity topology, filter by category, and click any node to inspect its 1-hop neighborhood.</p>
 <p><a href="#step-6-exploring-the-neo4j-knowledge-graph-knowledge-graph-tab"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4.97 13.22a.75.75 0 0 1 1.06 0L11 18.19V3.75a.75.75 0 0 1 1.5 0v14.44l4.97-4.97a.749.749 0 0 1 1.275.326.75.75 0 0 1-.215.734l-6.25 6.25a.75.75 0 0 1-1.06 0l-6.25-6.25a.75.75 0 0 1 0-1.06"/></svg></span> Jump to Knowledge Graph</a></p>
 </li>
+<li>
+<p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 17H7v-7h2zm4 0h-2V7h2zm4 0h-2v-4h2zm2 2H5V5h14v14.1M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2"/></svg></span> <strong>RAG Evaluation &amp; LangSmith</strong></p>
+<hr />
+<p>Generate synthetic Q&amp;A golden datasets from your indexed documents and score RAG runs with <strong>Gemini 2.5 Flash</strong> LLM-as-a-Judge across 5 metrics.</p>
+<p><a href="#step-7-evaluating-rag-quality-evaluation-in-top-header"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4.97 13.22a.75.75 0 0 1 1.06 0L11 18.19V3.75a.75.75 0 0 1 1.5 0v14.44l4.97-4.97a.749.749 0 0 1 1.275.326.75.75 0 0 1-.215.734l-6.25 6.25a.75.75 0 0 1-1.06 0l-6.25-6.25a.75.75 0 0 1 0-1.06"/></svg></span> Jump to RAG Evaluation</a></p>
+</li>
 </ul>
 </div>
 <hr />
@@ -1726,8 +1811,8 @@
 <p>Every document you upload, every <code>768</code>-dimensional vector chunk stored in <strong>Neon PostgreSQL</strong>, and every <code>:Entity</code> / <code>:RELATES_TO</code> record created in <strong>Neo4j</strong> is strictly scoped to your authenticated <code>user_id</code>. No other user can view or query your workspace data.</p>
 </div>
 <hr />
-<h2 id="step-1b-configure-environment-variables-settings-tab">Step 1b: Configure Environment Variables (<code>Settings</code> Tab)<a class="headerlink" href="#step-1b-configure-environment-variables-settings-tab" title="Permanent link">&para;</a></h2>
-<p>Immediately after signing in, you land on the <strong>Settings</strong> tab (<code>SettingsTab.jsx</code>), which is the first tab in the navigation bar (<strong>Settings</strong> → <strong>Upload</strong> → <strong>Ingestion Pipeline</strong> → <strong>Documents</strong> → <strong>Agentic Chat</strong> → <strong>Knowledge Graph</strong>).</p>
+<h2 id="step-1b-configure-environment-variables-settings-in-top-header">Step 1b: Configure Environment Variables (<code>Settings</code> in Top Header)<a class="headerlink" href="#step-1b-configure-environment-variables-settings-in-top-header" title="Permanent link">&para;</a></h2>
+<p>Immediately after signing in, you land on <strong>Settings</strong> (<code>SettingsTab.jsx</code>), which lives in the <strong>top header bar</strong> alongside <strong>Evaluation</strong>—keeping the main navigation bar focused on the 5 core workflow tabs (<strong>Upload</strong> → <strong>Ingestion Pipeline</strong> → <strong>Documents</strong> → <strong>Agentic Chat</strong> → <strong>Knowledge Graph</strong>).</p>
 <p><img alt="Minimalist Environment Variables Settings" src="../assets/screenshots/02b-settings-env-vars.png" /></p>
 <ol>
 <li><strong>Minimalist Variable Grid</strong>: Each card displays <strong>only</strong> the environment variable key name (<code>GOOGLE_API_KEY</code>, <code>AGENT_MODEL</code>, <code>GRAPH_EXTRACTION_MODEL</code>, <code>EMBEDDING_MODEL</code>, <code>DATABASE_URL</code>, <code>JWT_SECRET_KEY</code>, <code>JWT_EXPIRE_HOURS</code>, <code>NEO4J_URI</code>, <code>NEO4J_USERNAME</code>, <code>NEO4J_PASSWORD</code>, <code>NEO4J_DATABASE</code>, <code>TOP_K</code>), an input field, and an info icon (<code>ⓘ</code>).</li>
@@ -1864,6 +1949,28 @@
 <li><strong>Gold Neighborhood Highlighting</strong>: All edges directly connected to the selected entity (<code>Google</code>) illuminate in gold (<code>#fbbf24</code>) with relationship labels (<code>HAS_MARKET_SHARE_IN</code>, <code>HAS_LONG_TERM_VISION</code>, <code>HAS_INTEGRATED_CAPABILITY</code>, <code>DEVELOPS</code>, <code>ANALYZES</code>) rendered along the connecting paths, while unconnected nodes dim.</li>
 <li><strong>Selected Entity Detail Card (Top-Right)</strong>: Displays the entity's category badge (<code>ORGANIZATION</code>), canonical name (<code>Google</code>), Gemini-extracted summary description (<em>"Google's approach to the AI competitive landscape reveals a sophisticated multi-front strategy that simultaneously develops internal capabilities while investing in potential competitors."</em>), and a <strong><code>× Clear</code></strong> button to return to the full graph view.</li>
 <li><strong>Filtered Entity Relationships List (Bottom-Right)</strong>: Automatically filters the right-hand panel (<code>Relationships for "Google"</code>) to show only the <code>38 triples</code> involving the selected node.</li>
+</ol>
+<hr />
+<h2 id="step-7-evaluating-rag-quality-evaluation-in-top-header">Step 7: Evaluating RAG Quality (<code>Evaluation</code> in Top Header)<a class="headerlink" href="#step-7-evaluating-rag-quality-evaluation-in-top-header" title="Permanent link">&para;</a></h2>
+<p>Click <strong>Evaluation</strong> in the top header bar (<code>EvaluationTab.jsx</code>) to measure the accuracy, grounding, and routing quality of your Agentic RAG pipeline using <strong>Gemini 2.5 Flash</strong> as an LLM-as-a-Judge and optional <strong>LangSmith</strong> experiment tracking.</p>
+<h3 id="generate-a-synthetic-golden-dataset">Generate a Synthetic Golden Dataset<a class="headerlink" href="#generate-a-synthetic-golden-dataset" title="Permanent link">&para;</a></h3>
+<p><img alt="RAG Evaluation Dataset Generation" src="../assets/screenshots/13-evaluation-dataset.png" /></p>
+<ol>
+<li>Choose the number of synthetic Q&amp;A test cases (<code>3</code>, <code>5</code>, or <code>8</code> Questions) in the <strong>Golden Dataset</strong> card.</li>
+<li>Click <strong>Generate Golden Dataset</strong> (<code>POST /evals/generate-dataset</code>) to sample indexed chunks from your Neon PostgreSQL workspace and synthesize grounded <code>(question, expected_answer, category, source_doc)</code> pairs via <strong>Gemini 2.5 Flash</strong>.</li>
+<li>If <code>LANGSMITH_API_KEY</code> is configured, the dataset is automatically synced to your LangSmith workspace for reproducible experiment tracking.</li>
+</ol>
+<hr />
+<h3 id="run-evaluation-inspect-per-case-scores">Run Evaluation &amp; Inspect Per-Case Scores<a class="headerlink" href="#run-evaluation-inspect-per-case-scores" title="Permanent link">&para;</a></h3>
+<p><img alt="RAG Evaluation Experiment Results" src="../assets/screenshots/14-evaluation-results.png" /></p>
+<ol>
+<li>Click <strong>Run Evaluation</strong> (<code>POST /evals/run</code>) to execute every golden question through the live <strong>ADK Agent</strong> (<code>hybrid_search</code>, <code>graph_search</code>, <code>vector_search</code>, <code>get_entity_relationships</code>) and score each response across 5 metrics:</li>
+<li><strong>Faithfulness</strong>: Are claims strictly supported by retrieved chunks and graph facts?</li>
+<li><strong>Context Relevance</strong>: Did the retrieved context target the user's question?</li>
+<li><strong>Answer Correctness</strong>: Does the generated answer match the expected ground truth?</li>
+<li><strong>Tool Routing</strong>: Did the ADK agent invoke appropriate search tools?</li>
+<li><strong>Citation Compliance</strong>: Did the answer include <code>[Source: ...]</code> or <code>[Graph: ...]</code> inline citations?</li>
+<li>Inspect the <strong>Experiment Results</strong> summary KPIs (<code>Overall Score</code>, <code>Cases Evaluated</code>, per-metric averages, and LangSmith run link when enabled) and expand any individual case to compare the <strong>Agent Answer</strong>, <strong>Expected Answer</strong>, retrieved tool calls, and judge reasoning.</li>
 </ol>
 
 

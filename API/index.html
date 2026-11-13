@@ -1217,6 +1217,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#8-rag-evaluation-langsmith-endpoints-v240" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. RAG Evaluation &amp; LangSmith Endpoints (v2.4.0)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. RAG Evaluation &amp; LangSmith Endpoints (v2.4.0)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#post-evalsgenerate-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /evals/generate-dataset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-evalsrun" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /evals/run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-evalsruns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /evals/runs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1296,7 +1346,7 @@
   <span class="md-ellipsis">
     
   
-    Release Notes (v2.3.3)
+    Release Notes (v2.4.0)
   
 
     
@@ -1638,6 +1688,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#8-rag-evaluation-langsmith-endpoints-v240" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. RAG Evaluation &amp; LangSmith Endpoints (v2.4.0)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. RAG Evaluation &amp; LangSmith Endpoints (v2.4.0)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#post-evalsgenerate-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /evals/generate-dataset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-evalsrun" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /evals/run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-evalsruns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /evals/runs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1916,6 +2016,20 @@
 <p>Clears all runtime overrides and restores every environment variable to its default <code>.env</code> / built-in system value.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/settings/env/reset
 </span></code></pre></div>
+<hr />
+<h2 id="8-rag-evaluation-langsmith-endpoints-v240">8. RAG Evaluation &amp; LangSmith Endpoints (<code>v2.4.0</code>)<a class="headerlink" href="#8-rag-evaluation-langsmith-endpoints-v240" title="Permanent link">&para;</a></h2>
+<p>All evaluation endpoints require a valid <code>Authorization: Bearer &lt;token&gt;</code> header.</p>
+<h3 id="post-evalsgenerate-dataset"><code>POST /evals/generate-dataset</code><a class="headerlink" href="#post-evalsgenerate-dataset" title="Permanent link">&para;</a></h3>
+<p>Synthesizes a Golden Dataset of grounded Q&amp;A test cases from the authenticated user's indexed Neon <code>pgvector</code> chunks and Neo4j Knowledge Graph triples using <strong>Gemini 2.5 Flash</strong>.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/evals/generate-dataset<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: Bearer &lt;token&gt;"</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"num_questions": 5}'</span>
+</span></code></pre></div>
+<h3 id="post-evalsrun"><code>POST /evals/run</code><a class="headerlink" href="#post-evalsrun" title="Permanent link">&para;</a></h3>
+<p>Executes the Google ADK Agent on each test case, scores responses across 5 metrics (<code>faithfulness</code>, <code>context_relevance</code>, <code>answer_correctness</code>, <code>tool_routing</code>, <code>citation_compliance</code>) using <strong>Gemini 2.5 Flash</strong>, and syncs datasets/experiments to <strong>LangSmith</strong> when configured.</p>
+<h3 id="get-evalsruns"><code>GET /evals/runs</code><a class="headerlink" href="#get-evalsruns" title="Permanent link">&para;</a></h3>
+<p>Returns LangSmith connection status (<code>langsmith_configured</code>, <code>tracing_enabled</code>, <code>project</code>) and recent evaluation runs for the authenticated user.</p>
 
 
 

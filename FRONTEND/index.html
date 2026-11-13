@@ -1045,7 +1045,7 @@
   <span class="md-ellipsis">
     
   
-    Release Notes (v2.3.3)
+    Release Notes (v2.4.0)
   
 
     
@@ -1224,14 +1224,15 @@
 <pre class="mermaid"><code>flowchart TD
     Main["main.jsx"] --&gt; App["App.jsx (Root Auth &amp; Tab State)"]
     App --&gt;|Unauthenticated| AuthModal["UserIdModal.jsx (Neon PostgreSQL Sign In / Create Account)"]
-    App --&gt;|Authenticated| Header["Header.jsx (Status Pill, User Profile, Sign Out)"]
-    App --&gt;|Authenticated| Tabs["Tabs.jsx (6-Tab Navigation Bar)"]
-    Tabs --&gt; T0["1. SettingsTab.jsx (Minimalist Env Variables, Info Icon Links &amp; Save &amp; Continue)"]
-    Tabs --&gt; T1["2. UploadTab.jsx (Drag &amp; Drop Multi-File Upload)"]
-    Tabs --&gt; T2["3. IngestionTab.jsx (Live 5-Step Progress &amp; DB Metrics)"]
-    Tabs --&gt; T3["4. DocumentsTab.jsx (Document List, Single Delete &amp; Delete All Modal)"]
-    Tabs --&gt; T4["5. ChatTab.jsx + ChatMessage.jsx (Agentic Chat with Icon-Only Send &amp; Citations)"]
-    Tabs --&gt; T5["6. GraphTab.jsx (Interactive SVG Neo4j Knowledge Graph)"]</code></pre>
+    App --&gt;|Authenticated| Header["Header.jsx (Utility Nav: Evaluation &amp; Settings, Status Pill, User Profile)"]
+    App --&gt;|Authenticated| Tabs["Tabs.jsx (5-Tab Core Workflow Bar)"]
+    Header --&gt; T0["SettingsTab.jsx (Minimalist Env Variables, Info Icon Links &amp; Save &amp; Continue)"]
+    Header --&gt; T6["EvaluationTab.jsx (LangSmith + Gemini 2.5 Flash Judge)"]
+    Tabs --&gt; T1["1. UploadTab.jsx (Drag &amp; Drop Multi-File Upload)"]
+    Tabs --&gt; T2["2. IngestionTab.jsx (Live 5-Step Progress &amp; DB Metrics)"]
+    Tabs --&gt; T3["3. DocumentsTab.jsx (Document List, Single Delete &amp; Delete All Modal)"]
+    Tabs --&gt; T4["4. ChatTab.jsx + ChatMessage.jsx (Agentic Chat with Icon-Only Send &amp; Citations)"]
+    Tabs --&gt; T5["5. GraphTab.jsx (Interactive SVG Neo4j Knowledge Graph)"]</code></pre>
 <hr />
 <h2 id="component-reference-frontendsrccomponents">Component Reference (<code>frontend/src/components/</code>)<a class="headerlink" href="#component-reference-frontendsrccomponents" title="Permanent link">&para;</a></h2>
 <table>
@@ -1251,12 +1252,12 @@
 <tr>
 <td><strong>Top Header</strong></td>
 <td><code>Header.jsx</code></td>
-<td>Sticky top bar displaying the application title, real-time <code>API Ready</code> / <code>API Offline</code> indicator, signed-in user's name and email, and a <strong>Sign Out</strong> button.</td>
+<td>Sticky top bar displaying the application title, platform utility navigation (<strong>Evaluation</strong>, <strong>Settings</strong>), real-time <code>API Online</code> / <code>API Offline</code> indicator, signed-in user's name and email, and a <strong>Sign Out</strong> button.</td>
 </tr>
 <tr>
 <td><strong>Tab Navigation</strong></td>
 <td><code>Tabs.jsx</code></td>
-<td>Six-tab bar ordered: <code>Settings</code> → <code>Upload</code> → <code>Ingestion Pipeline</code> → <code>Documents</code> → <code>Agentic Chat</code> → <code>Knowledge Graph</code>.</td>
+<td>Five-tab core workflow bar ordered: <code>Upload</code> → <code>Ingestion Pipeline</code> → <code>Documents</code> → <code>Agentic Chat</code> → <code>Knowledge Graph</code>.</td>
 </tr>
 <tr>
 <td><strong>Settings Tab (<code>v2.3.0</code> / <code>v2.3.3</code>)</strong></td>
@@ -1287,6 +1288,11 @@
 <td><strong>Knowledge Graph Tab</strong></td>
 <td><code>GraphTab.jsx</code></td>
 <td>Interactive SVG radial/force-layout canvas for exploring Neo4j <code>:Entity</code> nodes and <code>:RELATES_TO</code> edges, complete with category filter pills, real-time keyword search, zoom controls, a 1-hop Entity Inspector drawer, and a structured triplets table.</td>
+</tr>
+<tr>
+<td><strong>Evaluation Tab (<code>v2.4.0</code>)</strong></td>
+<td><code>EvaluationTab.jsx</code></td>
+<td>Generates grounded Golden Datasets from indexed documents, runs the ADK Agentic RAG pipeline, displays 5 aggregate metric cards (<code>Faithfulness</code>, <code>Context Relevance</code>, <code>Answer Correctness</code>, <code>Tool Routing</code>, <code>Citations</code>), links directly to LangSmith experiments, and provides expandable Gemini 2.5 Flash judge reasoning.</td>
 </tr>
 </tbody>
 </table>

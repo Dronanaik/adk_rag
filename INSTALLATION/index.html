@@ -716,6 +716,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#9-langsmith-observability-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. LangSmith Observability &amp; Evaluation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#step-4-start-the-fastapi-server" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1211,7 +1222,7 @@
   <span class="md-ellipsis">
     
   
-    Release Notes (v2.3.3)
+    Release Notes (v2.4.0)
   
 
     
@@ -1424,6 +1435,17 @@
     <span class="md-ellipsis">
       
         8. TOP_K (Hybrid Retrieval Depth)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-langsmith-observability-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. LangSmith Observability &amp; Evaluation
       
     </span>
   </a>
@@ -1735,6 +1757,15 @@
 <ul>
 <li><strong>Recommended / Default Value</strong>: <code>5</code> (valid range: <code>1</code> to <code>50</code>).</li>
 <li><strong>Fallback behavior</strong>: If left blank, automatically defaults to <code>5</code>.</li>
+</ul>
+<hr />
+<h3 id="9-langsmith-observability-evaluation">9. LangSmith Observability &amp; Evaluation<a class="headerlink" href="#9-langsmith-observability-evaluation" title="Permanent link">&para;</a></h3>
+<p>Configure optional <strong>LangSmith</strong> tracing and experiment syncing (<code>v2.4.0</code>). Even without a LangSmith API key, the <strong>Evaluation</strong> tab still runs locally using <strong>Gemini 2.5 Flash</strong> as the LLM-as-a-Judge.</p>
+<ul>
+<li><strong><code>LANGSMITH_TRACING</code></strong>: Set to <code>true</code> to stream live Google ADK agent chains (<code>/chat</code>) and retrieval tool spans (<code>vector_search</code>, <code>hybrid_search</code>, <code>graph_search</code>, <code>get_entity_relationships</code>) to LangSmith. Defaults to <code>false</code>.</li>
+<li><strong><code>LANGSMITH_API_KEY</code></strong>: Personal or workspace API key (<code>lsv2_pt_...</code>) generated at <a href="https://smith.langchain.com">smith.langchain.com</a> → <strong>Settings</strong> → <strong>API Keys</strong>.</li>
+<li><strong><code>LANGSMITH_PROJECT</code></strong>: Target LangSmith project name for traces and evaluation experiments. Defaults to <code>adk-agentic-rag</code>.</li>
+<li><strong><code>LANGSMITH_ENDPOINT</code></strong>: LangSmith API endpoint (<code>https://api.smith.langchain.com</code> for US, or <code>https://eu.api.smith.langchain.com</code> for EU).</li>
 </ul>
 <hr />
 <h3 id="step-4-start-the-fastapi-server">Step 4: Start the FastAPI Server<a class="headerlink" href="#step-4-start-the-fastapi-server" title="Permanent link">&para;</a></h3>
