@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   UploadCloud,
   FileIcon,
@@ -11,8 +11,15 @@ import {
   Globe,
   Plus,
   Trash2,
+  Eye,
+  Copy,
+  Check,
 } from 'lucide-react'
 import styles from './UploadTab.module.css'
+
+const TEXT_PREVIEW_EXTENSIONS = new Set([
+  'txt', 'md', 'csv', 'json', 'xml', 'html', 'htm', 'log',
+])
 
 const SUPPORTED_TYPES = [
   '.pdf', '.docx', '.xlsx', '.xls', '.pptx',
@@ -34,6 +41,8 @@ export default function UploadTab({ userId, onStartUpload }) {
   const [dragOver, setDragOver] = useState(false)
   const [selectedFiles, setSelectedFiles] = useState([])
   const [errorMsg, setErrorMsg] = useState('')
+  const [rawPreview, setRawPreview] = useState(null)
+  const [copiedRaw, setCopiedRaw] = useState(false)
   const inputRef = useRef(null)
 
   function handleFiles(fileList) {
@@ -108,8 +117,91 @@ export default function UploadTab({ userId, onStartUpload }) {
   function handleClear() {
     setSelectedFiles([])
     setErrorMsg('')
+    closeRawPreview()
     if (inputRef.current) inputRef.current.value = ''
   }
+
+  async function openRawPreview(file) {
+    const ext = (file.name.split('.').pop() || '').toLowerCase()
+    setCopiedRaw(false)
+
+    if (ext === 'pdf') {
+      const blobUrl = URL.createObjectURL(file)
+      setRawPreview({
+        name: file.name,
+        size: file.size,
+        ext,
+        kind: 'pdf',
+        blobUrl,
+        text: '',
+      })
+      return
+    }
+
+    if (TEXT_PREVIEW_EXTENSIONS.has(ext)) {
+      try {
+        const text = await file.text()
+        setRawPreview({
+          name: file.name,
+          size: file.size,
+          ext,
+          kind: 'text',
+          blobUrl: null,
+          text,
+        })
+      } catch (err) {
+        setRawPreview({
+          name: file.name,
+          size: file.size,
+          ext,
+          kind: 'error',
+          blobUrl: null,
+          text: `Could not read file: ${err.message}`,
+        })
+      }
+      return
+    }
+
+    setRawPreview({
+      name: file.name,
+      size: file.size,
+      ext,
+      kind: 'binary',
+      blobUrl: null,
+      text: '',
+      lastModified: file.lastModified ? new Date(file.lastModified).toLocaleString() : null,
+    })
+  }
+
+  function closeRawPreview() {
+    setRawPreview(prev => {
+      if (prev?.blobUrl) {
+        URL.revokeObjectURL(prev.blobUrl)
+      }
+      return null
+    })
+    setCopiedRaw(false)
+  }
+
+  async function handleCopyRaw() {
+    if (!rawPreview?.text) return
+    try {
+      await navigator.clipboard.writeText(rawPreview.text)
+      setCopiedRaw(true)
+      setTimeout(() => setCopiedRaw(false), 1800)
+    } catch {
+      // Clipboard API unavailable
+    }
+  }
+
+  useEffect(() => {
+    if (!rawPreview) return
+    function onKeyDown(e) {
+      if (e.key === 'Escape') closeRawPreview()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [rawPreview])
 
   const totalBytes = selectedFiles.reduce((sum, f) => sum + (f.size || 0), 0)
   const hasFiles = selectedFiles.length > 0
@@ -183,16 +275,34 @@ export default function UploadTab({ userId, onStartUpload }) {
                   <span className={styles.fileIndexBadge}>{idx + 1}</span>
                   <span className={styles.fileIconWrap}>{getFileIcon(file.name)}</span>
                   <div className={styles.fileMeta}>
-                    <span className={styles.fileName}>{file.name}</span>
+                    <button
+                      type="button"
+                      className={styles.fileNameBtn}
+                      onClick={() => openRawPreview(file)}
+                      title={`Preview raw ${file.name}`}
+                    >
+                      {file.name}
+                    </button>
                     <span className={styles.fileSize}>{formatBytes(file.size)}</span>
                   </div>
-                  <button
-                    type="button"
-                    className="btn btn-secondary btn-sm"
-                    onClick={() => handleRemoveFile(idx)}
-                  >
-                    <X size={14} style={{ marginRight: '4px' }} /> Remove
-                  </button>
+                  <div className={styles.fileActions}>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => openRawPreview(file)}
+                      id={`upload-preview-${idx}`}
+                      title="Preview raw file before ingestion"
+                    >
+                      <Eye size={14} /> Preview
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => handleRemoveFile(idx)}
+                    >
+                      <X size={14} style={{ marginRight: '4px' }} /> Remove
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -240,6 +350,104 @@ export default function UploadTab({ userId, onStartUpload }) {
             ? 'Ingest into Neon Postgres & Neo4j'
             : `Ingest ${selectedFiles.length} Documents into Neon Postgres & Neo4j`}
         </button>
+      )}
+
+      {/* Raw File Preview Modal */}
+      {rawPreview && (
+        <div className={styles.modalBackdrop} onClick={closeRawPreview} id="raw-file-preview-modal">
+          <div
+            className={`glass-card ${styles.previewModalCard}`}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="raw-preview-title"
+          >
+            <div className={styles.previewModalHeader}>
+              <div className={styles.previewTitleWrap}>
+                <span className={styles.fileIconWrap}>{getFileIcon(rawPreview.name)}</span>
+                <div className={styles.previewTitleInfo}>
+                  <h3 id="raw-preview-title" className={styles.previewModalTitle}>
+                    {rawPreview.name}
+                  </h3>
+                  <div className={styles.previewMetaRow}>
+                    <span className="badge badge-purple">.{rawPreview.ext}</span>
+                    <span className="badge badge-teal">{formatBytes(rawPreview.size)}</span>
+                    {rawPreview.kind === 'text' && (
+                      <span className={styles.queueTotalSize}>
+                        {rawPreview.text.length.toLocaleString()} chars ·{' '}
+                        {rawPreview.text.split(/\r?\n/).length.toLocaleString()} lines
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className={styles.previewHeaderActions}>
+                {rawPreview.kind === 'text' && rawPreview.text && (
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={handleCopyRaw}
+                    id="copy-raw-preview-btn"
+                  >
+                    {copiedRaw ? <Check size={14} /> : <Copy size={14} />}
+                    {copiedRaw ? 'Copied!' : 'Copy Raw'}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className={styles.modalCloseBtn}
+                  onClick={closeRawPreview}
+                  aria-label="Close raw preview"
+                  id="close-raw-preview-btn"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+
+            <div className={styles.previewBody}>
+              {rawPreview.kind === 'text' && (
+                <pre className={styles.previewTextContent}>
+                  {rawPreview.text || '(Empty file)'}
+                </pre>
+              )}
+
+              {rawPreview.kind === 'pdf' && (
+                <iframe
+                  src={rawPreview.blobUrl}
+                  title={`Raw PDF preview: ${rawPreview.name}`}
+                  className={styles.previewPdfFrame}
+                />
+              )}
+
+              {rawPreview.kind === 'binary' && (
+                <div className={styles.previewBinaryNotice}>
+                  <FileText size={32} color="#22d3ee" />
+                  <p className={styles.previewBinaryTitle}>
+                    Binary Office Document (.{rawPreview.ext})
+                  </p>
+                  <p className={styles.previewBinarySub}>
+                    Raw browser preview is available for text formats and PDFs. Click{' '}
+                    <strong>Ingest</strong> to extract full text, tables, and visual slides
+                    with Docling + Gemini Vision, then inspect the extracted content in the{' '}
+                    <strong>Documents</strong> tab.
+                  </p>
+                  {rawPreview.lastModified && (
+                    <span className={styles.queueTotalSize}>
+                      Last modified: {rawPreview.lastModified}
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {rawPreview.kind === 'error' && (
+                <div className="alert alert-error">
+                  <AlertTriangle size={18} /> {rawPreview.text}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

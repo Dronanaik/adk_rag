@@ -152,8 +152,12 @@ Once your settings are saved, you transition to the **Upload** tab (`UploadTab.j
 1. Once one or more files are selected (e.g., `doc1_openai_funding.md`, `doc2_anthropic_amazon.md`, and `doc6_google_ai_strategy.md`), the dropzone transforms into an interactive **Multi-Document Queue Card** displaying:
    - **Selected Count & Total Size Badge**: e.g., `3 Documents Selected` (`Total: 10.9 KB`).
    - **Queue Controls**: Click **+ Add More Files** to append additional documents to the batch, or **Clear All** to reset the queue.
-   - **Numbered File Preview Rows**: Each queued document shows its batch order (`1`, `2`, `3`…), format-specific icon, exact **filename**, formatted **file size**, and an individual **× Remove** button.
-2. Click the primary gradient button **Ingest 3 Documents into Neon Postgres & Neo4j** (or **Ingest into Neon Postgres & Neo4j** for a single file) at the bottom of the view to launch the 5-step hybrid ingestion pipeline.
+   - **Numbered File Preview Rows**: Each queued document shows its batch order (`1`, `2`, `3`…), format-specific icon, clickable **filename**, formatted **file size**, a **Preview** button (`#upload-preview-<idx>`) to inspect the raw file before ingestion (client-side text preview + Copy Raw for `.txt`/`.md`/`.csv`/`.json`/`.xml`/`.html`/`.log`, embedded PDF viewer for `.pdf`, and metadata summary for binary Office files), and an individual **× Remove** button.
+2. Click **Preview** (or click the queued filename) to inspect the raw file in the **Raw File Preview Modal** before starting ingestion:
+
+![Upload Raw File Preview Modal](assets/screenshots/04b-upload-raw-preview-modal.png)
+
+3. Click the primary gradient button **Ingest 3 Documents into Neon Postgres & Neo4j** (or **Ingest into Neon Postgres & Neo4j** for a single file) at the bottom of the view to launch the 5-step hybrid ingestion pipeline.
 
 ---
 
@@ -214,7 +218,18 @@ Each indexed document card displays:
 - **Neo4j Entity Count Badge**: e.g., `55 entities`, `31 entities`, `33 entities` (gold badge)
 - **Neo4j Relationship Count Badge**: e.g., `52 relations`, `31 relations`, `33 relations` (emerald badge)
 - **Document UUID**: Truncated `doc_id` (`ID: 3cff2396-097...`)
-- **Refresh & Delete Controls**: Top-right **Refresh** button and per-document **Delete** button.
+- **Preview, Refresh & Delete Controls**: Top-right **Refresh** button, per-document **Preview** button (and clickable filename), and per-document **Delete** button.
+
+---
+
+### Document Content Preview Modal (`v2.4.1`)
+
+![Document Preview Modal](assets/screenshots/08c-documents-preview-modal.png)
+
+Click **Preview** (or click any document's filename) to inspect its indexed content in a modal without leaving the **Documents** tab:
+
+1. **Extracted Text View**: Displays the full reconstructed text extracted during ingestion (`GET /documents/{document_id}/preview`) along with a one-click **Copy Text** button.
+2. **Indexed Chunks View**: Switch to **Indexed Chunks (`N`)** to inspect every vector chunk stored in **Neon PostgreSQL** with its chunk number and character count.
 
 ---
 
