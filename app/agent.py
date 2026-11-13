@@ -7,6 +7,7 @@ from app.graph_store import (
     search_knowledge_graph,
 )
 from app.rag_store import hybrid_search_documents, search_documents
+from app.tracing import ls_trace
 
 
 def vector_search(
@@ -27,40 +28,51 @@ def vector_search(
     if not user_id:
         return {"error": "User identity is missing."}
 
-    matches = search_documents(
-        user_id=user_id,
-        query=query,
-        top_k=config.TOP_K,
-    )
-
-    if not matches:
-        return {
-            "found": False,
-            "search_type": "vector_search",
-            "message": "No relevant document chunks were found.",
-            "sources": [],
-        }
-
-    sources = []
-    for index, match in enumerate(matches, start=1):
-        metadata = match["metadata"]
-        sources.append(
-            {
-                "source_number": index,
-                "filename": metadata.get("filename"),
-                "document_id": metadata.get("document_id"),
-                "chunk_index": metadata.get("chunk_index"),
-                "similarity": match.get("similarity"),
-                "distance": match.get("distance"),
-                "text": match["text"],
-            }
+    with ls_trace(
+        name="vector_search",
+        run_type="retriever",
+        inputs={"query": query, "top_k": config.TOP_K},
+        metadata={"user_id": user_id, "store": "neon_pgvector"},
+        tags=["adk-tool", "vector_search"],
+    ) as run:
+        matches = search_documents(
+            user_id=user_id,
+            query=query,
+            top_k=config.TOP_K,
         )
 
-    return {
-        "found": True,
-        "search_type": "vector_search",
-        "sources": sources,
-    }
+        if not matches:
+            result = {
+                "found": False,
+                "search_type": "vector_search",
+                "message": "No relevant document chunks were found.",
+                "sources": [],
+            }
+            run.end(outputs=result)
+            return result
+
+        sources = []
+        for index, match in enumerate(matches, start=1):
+            metadata = match["metadata"]
+            sources.append(
+                {
+                    "source_number": index,
+                    "filename": metadata.get("filename"),
+                    "document_id": metadata.get("document_id"),
+                    "chunk_index": metadata.get("chunk_index"),
+                    "similarity": match.get("similarity"),
+                    "distance": match.get("distance"),
+                    "text": match["text"],
+                }
+            )
+
+        result = {
+            "found": True,
+            "search_type": "vector_search",
+            "sources": sources,
+        }
+        run.end(outputs=result)
+        return result
 
 
 def hybrid_search(
@@ -82,41 +94,52 @@ def hybrid_search(
     if not user_id:
         return {"error": "User identity is missing."}
 
-    matches = hybrid_search_documents(
-        user_id=user_id,
-        query=query,
-        top_k=config.TOP_K,
-    )
-
-    if not matches:
-        return {
-            "found": False,
-            "search_type": "hybrid_search",
-            "message": "No relevant document chunks were found via hybrid search.",
-            "sources": [],
-        }
-
-    sources = []
-    for index, match in enumerate(matches, start=1):
-        metadata = match["metadata"]
-        sources.append(
-            {
-                "source_number": index,
-                "filename": metadata.get("filename"),
-                "document_id": metadata.get("document_id"),
-                "chunk_index": metadata.get("chunk_index"),
-                "combined_score": match.get("combined_score"),
-                "vector_similarity": match.get("vector_similarity"),
-                "keyword_score": match.get("keyword_score"),
-                "text": match["text"],
-            }
+    with ls_trace(
+        name="hybrid_search",
+        run_type="retriever",
+        inputs={"query": query, "top_k": config.TOP_K},
+        metadata={"user_id": user_id, "store": "neon_pgvector_fts"},
+        tags=["adk-tool", "hybrid_search"],
+    ) as run:
+        matches = hybrid_search_documents(
+            user_id=user_id,
+            query=query,
+            top_k=config.TOP_K,
         )
 
-    return {
-        "found": True,
-        "search_type": "hybrid_search",
-        "sources": sources,
-    }
+        if not matches:
+            result = {
+                "found": False,
+                "search_type": "hybrid_search",
+                "message": "No relevant document chunks were found via hybrid search.",
+                "sources": [],
+            }
+            run.end(outputs=result)
+            return result
+
+        sources = []
+        for index, match in enumerate(matches, start=1):
+            metadata = match["metadata"]
+            sources.append(
+                {
+                    "source_number": index,
+                    "filename": metadata.get("filename"),
+                    "document_id": metadata.get("document_id"),
+                    "chunk_index": metadata.get("chunk_index"),
+                    "combined_score": match.get("combined_score"),
+                    "vector_similarity": match.get("vector_similarity"),
+                    "keyword_score": match.get("keyword_score"),
+                    "text": match["text"],
+                }
+            )
+
+        result = {
+            "found": True,
+            "search_type": "hybrid_search",
+            "sources": sources,
+        }
+        run.end(outputs=result)
+        return result
 
 
 def graph_search(
@@ -138,30 +161,41 @@ def graph_search(
     if not user_id:
         return {"error": "User identity is missing."}
 
-    graph_data = search_knowledge_graph(
-        user_id=user_id,
-        query=query,
-        limit=12,
-    )
+    with ls_trace(
+        name="graph_search",
+        run_type="retriever",
+        inputs={"query": query, "limit": 12},
+        metadata={"user_id": user_id, "store": "neo4j"},
+        tags=["adk-tool", "graph_search"],
+    ) as run:
+        graph_data = search_knowledge_graph(
+            user_id=user_id,
+            query=query,
+            limit=12,
+        )
 
-    entities = graph_data.get("entities", [])
-    relationships = graph_data.get("relationships", [])
+        entities = graph_data.get("entities", [])
+        relationships = graph_data.get("relationships", [])
 
-    if not entities and not relationships:
-        return {
-            "found": False,
+        if not entities and not relationships:
+            result = {
+                "found": False,
+                "search_type": "graph_search",
+                "message": "No matching entities or relationships found in the Neo4j Knowledge Graph.",
+                "entities": [],
+                "relationships": [],
+            }
+            run.end(outputs=result)
+            return result
+
+        result = {
+            "found": True,
             "search_type": "graph_search",
-            "message": "No matching entities or relationships found in the Neo4j Knowledge Graph.",
-            "entities": [],
-            "relationships": [],
+            "entities": entities,
+            "relationships": relationships,
         }
-
-    return {
-        "found": True,
-        "search_type": "graph_search",
-        "entities": entities,
-        "relationships": relationships,
-    }
+        run.end(outputs=result)
+        return result
 
 
 def get_entity_relationships(
@@ -184,29 +218,40 @@ def get_entity_relationships(
     if not user_id:
         return {"error": "User identity is missing."}
 
-    result = get_entity_relationships_from_graph(
-        user_id=user_id,
-        entity_name=entity_name,
-        limit=20,
-    )
+    with ls_trace(
+        name="get_entity_relationships",
+        run_type="retriever",
+        inputs={"entity_name": entity_name, "limit": 20},
+        metadata={"user_id": user_id, "store": "neo4j"},
+        tags=["adk-tool", "get_entity_relationships"],
+    ) as run:
+        result_data = get_entity_relationships_from_graph(
+            user_id=user_id,
+            entity_name=entity_name,
+            limit=20,
+        )
 
-    if not result.get("found"):
-        return {
-            "found": False,
+        if not result_data.get("found"):
+            result = {
+                "found": False,
+                "search_type": "get_entity_relationships",
+                "entity": entity_name,
+                "message": f"No entity matching '{entity_name}' was found in the Knowledge Graph.",
+                "entities": [],
+                "relationships": [],
+            }
+            run.end(outputs=result)
+            return result
+
+        result = {
+            "found": True,
             "search_type": "get_entity_relationships",
             "entity": entity_name,
-            "message": f"No entity matching '{entity_name}' was found in the Knowledge Graph.",
-            "entities": [],
-            "relationships": [],
+            "entities": result_data.get("entities", []),
+            "relationships": result_data.get("relationships", []),
         }
-
-    return {
-        "found": True,
-        "search_type": "get_entity_relationships",
-        "entity": entity_name,
-        "entities": result.get("entities", []),
-        "relationships": result.get("relationships", []),
-    }
+        run.end(outputs=result)
+        return result
 
 
 root_agent = LlmAgent(

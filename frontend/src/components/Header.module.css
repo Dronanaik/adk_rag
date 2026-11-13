@@ -64,6 +64,43 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ── Platform utility buttons (Settings, Evaluation) ── */
+.utilGroup {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.utilBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-subtle);
+  background: rgba(10, 29, 24, 0.78);
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 0.79rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.utilBtn:hover:not(.utilBtnActive) {
+  border-color: var(--border-accent);
+  color: var(--text-primary);
+  background: rgba(34, 211, 238, 0.08);
+}
+
+.utilBtnActive {
+  border-color: rgba(34, 211, 238, 0.55);
+  background: rgba(34, 211, 238, 0.16);
+  color: var(--accent-primary-light);
+  box-shadow: 0 0 14px rgba(34, 211, 238, 0.2);
 }
 
 /* ── Status chip ── */

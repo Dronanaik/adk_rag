@@ -203,6 +203,17 @@ These variables connect the platform to **Neo4j** for storing and traversing you
 
 ---
 
+### 9. LangSmith Observability & Evaluation
+
+Configure optional **LangSmith** tracing and experiment syncing (`v2.4.0`). Even without a LangSmith API key, the **Evaluation** tab still runs locally using **Gemini 2.5 Flash** as the LLM-as-a-Judge.
+
+- **`LANGSMITH_TRACING`**: Set to `true` to stream live Google ADK agent chains (`/chat`) and retrieval tool spans (`vector_search`, `hybrid_search`, `graph_search`, `get_entity_relationships`) to LangSmith. Defaults to `false`.
+- **`LANGSMITH_API_KEY`**: Personal or workspace API key (`lsv2_pt_...`) generated at [smith.langchain.com](https://smith.langchain.com) → **Settings** → **API Keys**.
+- **`LANGSMITH_PROJECT`**: Target LangSmith project name for traces and evaluation experiments. Defaults to `adk-agentic-rag`.
+- **`LANGSMITH_ENDPOINT`**: LangSmith API endpoint (`https://api.smith.langchain.com` for US, or `https://eu.api.smith.langchain.com` for EU).
+
+---
+
 ### Step 4: Start the FastAPI Server
 
 ```bash

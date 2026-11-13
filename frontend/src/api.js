@@ -229,3 +229,35 @@ export async function resetEnvSettings() {
     method: 'POST',
   })
 }
+
+// ---------------------------------------------------------------------------
+// RAG Evaluation & LangSmith Observability
+// ---------------------------------------------------------------------------
+
+export async function generateEvalDataset(userId, numQuestions = 5) {
+  return apiFetch(
+    '/evals/generate-dataset',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ num_questions: numQuestions }),
+    },
+    userId
+  )
+}
+
+export async function runEvaluation(payload, userId) {
+  return apiFetch(
+    '/evals/run',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    },
+    userId
+  )
+}
+
+export async function getEvalRuns(userId) {
+  return apiFetch('/evals/runs', {}, userId)
+}

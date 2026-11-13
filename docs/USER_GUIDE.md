@@ -1,6 +1,6 @@
 # :material-book-open-page-variant: Interactive User Guide
 
-This step-by-step visual guide walks you through every view and interaction in the **ADK Agentic RAG + Knowledge Graph** platform—from signing in with **Neon PostgreSQL Authentication** to uploading documents, monitoring the live 5-step hybrid ingestion pipeline, managing indexed documents, querying the **Google ADK Agent**, and inspecting your **Neo4j Knowledge Graph**.
+This step-by-step visual guide walks you through every view and interaction in the **ADK Agentic RAG + Knowledge Graph** platform—from signing in with **Neon PostgreSQL Authentication** to configuring environment variables, uploading documents, monitoring the live 5-step hybrid ingestion pipeline, managing indexed documents, querying the **Google ADK Agent**, inspecting your **Neo4j Knowledge Graph**, and evaluating RAG quality with **LangSmith & Gemini 2.5 Flash**.
 
 <video src="../adk_rag.mp4" width="100%" controls autoplay loop muted style="border-radius: 12px; border: 1px solid rgba(52, 211, 153, 0.3); margin-top: 12px;"></video>
 
@@ -16,6 +16,7 @@ flowchart LR
     C --> D["5. Document Manager (Delete & Delete All Modal)"]
     D --> E["6. Agentic Chat (4 Tools & Dual Citations)"]
     E --> F["7. Knowledge Graph (Topology & 1-Hop Inspector)"]
+    F --> G["8. RAG Evaluation & LangSmith (Gemini 2.5 Flash Judge)"]
 ```
 
 <div class="grid cards" markdown>
@@ -28,13 +29,13 @@ flowchart LR
 
     [:octicons-arrow-down-24: Jump to Authentication](#step-1-create-an-account-or-sign-in)
 
--   :material-cog-outline:{ .lg .middle } **Environment Variables (`Settings` Tab)**
+-   :material-cog-outline:{ .lg .middle } **Environment Variables (`Settings` Header Button)**
 
     ---
 
-    Post-login landing screen with minimalist key inputs, `ⓘ` documentation links, and silent fallback to default values when left blank.
+    Post-login configuration screen in the top header with minimalist key inputs, `ⓘ` documentation links, and silent fallback to default values when left blank.
 
-    [:octicons-arrow-down-24: Jump to Environment Settings](#step-1b-configure-environment-variables-settings-tab)
+    [:octicons-arrow-down-24: Jump to Environment Settings](#step-1b-configure-environment-variables-settings-in-top-header)
 
 -   :material-cloud-upload:{ .lg .middle } **Document Upload**
 
@@ -76,6 +77,14 @@ flowchart LR
 
     [:octicons-arrow-down-24: Jump to Knowledge Graph](#step-6-exploring-the-neo4j-knowledge-graph-knowledge-graph-tab)
 
+-   :material-chart-box-outline:{ .lg .middle } **RAG Evaluation & LangSmith**
+
+    ---
+
+    Generate synthetic Q&A golden datasets from your indexed documents and score RAG runs with **Gemini 2.5 Flash** LLM-as-a-Judge across 5 metrics.
+
+    [:octicons-arrow-down-24: Jump to RAG Evaluation](#step-7-evaluating-rag-quality-evaluation-in-top-header)
+
 </div>
 
 ---
@@ -110,9 +119,9 @@ When you open the application (`http://localhost:5173`), the **Bioluminescent Ne
 
 ---
 
-## Step 1b: Configure Environment Variables (`Settings` Tab)
+## Step 1b: Configure Environment Variables (`Settings` in Top Header)
 
-Immediately after signing in, you land on the **Settings** tab (`SettingsTab.jsx`), which is the first tab in the navigation bar (**Settings** → **Upload** → **Ingestion Pipeline** → **Documents** → **Agentic Chat** → **Knowledge Graph**).
+Immediately after signing in, you land on **Settings** (`SettingsTab.jsx`), which lives in the **top header bar** alongside **Evaluation**—keeping the main navigation bar focused on the 5 core workflow tabs (**Upload** → **Ingestion Pipeline** → **Documents** → **Agentic Chat** → **Knowledge Graph**).
 
 ![Minimalist Environment Variables Settings](assets/screenshots/02b-settings-env-vars.png)
 
@@ -285,3 +294,31 @@ Clicking any node on the interactive SVG canvas (or clicking any entity name in 
 1. **Gold Neighborhood Highlighting**: All edges directly connected to the selected entity (`Google`) illuminate in gold (`#fbbf24`) with relationship labels (`HAS_MARKET_SHARE_IN`, `HAS_LONG_TERM_VISION`, `HAS_INTEGRATED_CAPABILITY`, `DEVELOPS`, `ANALYZES`) rendered along the connecting paths, while unconnected nodes dim.
 2. **Selected Entity Detail Card (Top-Right)**: Displays the entity's category badge (`ORGANIZATION`), canonical name (`Google`), Gemini-extracted summary description (*"Google's approach to the AI competitive landscape reveals a sophisticated multi-front strategy that simultaneously develops internal capabilities while investing in potential competitors."*), and a **`× Clear`** button to return to the full graph view.
 3. **Filtered Entity Relationships List (Bottom-Right)**: Automatically filters the right-hand panel (`Relationships for "Google"`) to show only the `38 triples` involving the selected node.
+
+---
+
+## Step 7: Evaluating RAG Quality (`Evaluation` in Top Header)
+
+Click **Evaluation** in the top header bar (`EvaluationTab.jsx`) to measure the accuracy, grounding, and routing quality of your Agentic RAG pipeline using **Gemini 2.5 Flash** as an LLM-as-a-Judge and optional **LangSmith** experiment tracking.
+
+### Generate a Synthetic Golden Dataset
+
+![RAG Evaluation Dataset Generation](assets/screenshots/13-evaluation-dataset.png)
+
+1. Choose the number of synthetic Q&A test cases (`3`, `5`, or `8` Questions) in the **Golden Dataset** card.
+2. Click **Generate Golden Dataset** (`POST /evals/generate-dataset`) to sample indexed chunks from your Neon PostgreSQL workspace and synthesize grounded `(question, expected_answer, category, source_doc)` pairs via **Gemini 2.5 Flash**.
+3. If `LANGSMITH_API_KEY` is configured, the dataset is automatically synced to your LangSmith workspace for reproducible experiment tracking.
+
+---
+
+### Run Evaluation & Inspect Per-Case Scores
+
+![RAG Evaluation Experiment Results](assets/screenshots/14-evaluation-results.png)
+
+1. Click **Run Evaluation** (`POST /evals/run`) to execute every golden question through the live **ADK Agent** (`hybrid_search`, `graph_search`, `vector_search`, `get_entity_relationships`) and score each response across 5 metrics:
+   - **Faithfulness**: Are claims strictly supported by retrieved chunks and graph facts?
+   - **Context Relevance**: Did the retrieved context target the user's question?
+   - **Answer Correctness**: Does the generated answer match the expected ground truth?
+   - **Tool Routing**: Did the ADK agent invoke appropriate search tools?
+   - **Citation Compliance**: Did the answer include `[Source: ...]` or `[Graph: ...]` inline citations?
+2. Inspect the **Experiment Results** summary KPIs (`Overall Score`, `Cases Evaluated`, per-metric averages, and LangSmith run link when enabled) and expand any individual case to compare the **Agent Answer**, **Expected Answer**, retrieved tool calls, and judge reasoning.
