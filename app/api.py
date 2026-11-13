@@ -47,6 +47,7 @@ from app.ingest import get_ingestion_progress, ingest_document
 from app.rag_store import (
     delete_all_user_documents,
     delete_document_chunks,
+    get_document_preview,
     get_vector_store_stats,
     list_user_documents,
 )
@@ -75,7 +76,7 @@ app = FastAPI(
         "Hybrid Agentic RAG & Knowledge Graph platform powered by Google ADK, "
         "Gemini, Neon PostgreSQL (pgvector), and Neo4j."
     ),
-    version="2.4.0",
+    version="2.4.1",
     lifespan=lifespan,
 )
 
@@ -405,6 +406,31 @@ def get_documents(
     return {
         "success": True,
         "documents": documents,
+    }
+
+
+@app.get("/documents/{document_id}/preview")
+def preview_document(
+    document_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Return the extracted full text and indexed chunks for a specific uploaded document
+    belonging to the authenticated user.
+    """
+    preview = get_document_preview(
+        user_id=current_user["user_id"],
+        document_id=document_id,
+    )
+    if not preview:
+        raise HTTPException(
+            status_code=404,
+            detail="Document not found.",
+        )
+
+    return {
+        "success": True,
+        "document": preview,
     }
 
 

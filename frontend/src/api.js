@@ -146,6 +146,10 @@ export async function listDocuments(userId) {
   return apiFetch('/documents', {}, userId)
 }
 
+export async function getDocumentPreview(documentId, userId) {
+  return apiFetch(`/documents/${encodeURIComponent(documentId)}/preview`, {}, userId)
+}
+
 export async function uploadDocument(file, userId, { docIndex = 1, totalDocs = 1 } = {}) {
   const formData = new FormData()
   formData.append('file', file)

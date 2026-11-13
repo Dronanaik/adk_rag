@@ -91,7 +91,7 @@ nav:
       - REST API Reference: API.md
       - Cloud Deployment: DEPLOYMENT.md
       - Troubleshooting: TROUBLESHOOTING.md
-      - Release Notes (v2.4.0): RELEASE_NOTES.md
+      - Release Notes (v2.4.1): RELEASE_NOTES.md
 
 markdown_extensions:
   - admonition

@@ -165,6 +165,36 @@ curl http://localhost:8000/documents \
 
 ---
 
+### `GET /documents/{document_id}/preview` (`v2.4.1`)
+Returns the reconstructed extracted text (`full_text`), ordered indexed chunks (`chunk_list`), and metadata for a specific document belonging to the authenticated user.
+
+```bash
+curl http://localhost:8000/documents/<DOCUMENT_ID>/preview \
+  -H "Authorization: Bearer <TOKEN>"
+```
+
+**Response (`200 OK`)**:
+```json
+{
+  "success": true,
+  "document": {
+    "document_id": "52e1a9d0-8c1a-4f3b-9b12-0192837465ab",
+    "filename": "document.pdf",
+    "chunks": 3,
+    "entities": 18,
+    "relationships": 22,
+    "characters": 3420,
+    "created_at": "2026-11-13T11:54:00+00:00",
+    "full_text": "...",
+    "chunk_list": [
+      { "chunk_index": 0, "content": "...", "char_count": 1140 }
+    ]
+  }
+}
+```
+
+---
+
 ### `DELETE /documents/{document_id}`
 Cascade-deletes a document and all of its chunks from Neon PostgreSQL and removes its relationships, document node, and orphaned entities from Neo4j.
 

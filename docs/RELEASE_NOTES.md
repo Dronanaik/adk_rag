@@ -1,3 +1,33 @@
+# Release Notes — `v2.4.1`
+
+**Release Title:** Document Content Preview Modal (`v2.4.1`)  
+**Tag:** `v2.4.1`  
+**Previous Tag:** `v2.4.0`
+
+> **Combining Agentic RAG, Knowledge Graphs, and Hybrid Vector-Graph Retrieval to transform fragmented information into connected intelligence, powered by Google ADK and Gemini 2.5.**
+
+---
+
+## What's New in `v2.4.1`
+
+### 1. Uploaded Document Preview Endpoint (`app/rag_store.py`, `app/api.py`)
+- **`GET /documents/{document_id}/preview`**: Added a multi-tenant, JWT-authenticated endpoint backed by `get_document_preview(user_id, document_id)` in `app/rag_store.py`.
+- Returns document metadata (`filename`, `chunks`, `entities`, `relationships`, `characters`, `created_at`), reconstructed `full_text`, and the ordered `chunk_list` (`chunk_index`, `content`, `char_count`) strictly scoped to the authenticated `user_id`.
+
+### 2. Document Preview Modals in Both Upload & Documents Tabs (`frontend/src/components/`)
+- **Raw File Preview in Upload Tab (`UploadTab.jsx`)**:
+  - Added a **Preview** button (`#upload-preview-<idx>`) and clickable filename on every queued file before ingestion.
+  - Opens a client-side **Raw File Preview Modal** (`#raw-file-preview-modal`) supporting instant raw text rendering + **Copy Raw** (`.txt`, `.md`, `.csv`, `.json`, `.xml`, `.html`, `.htm`, `.log`), embedded PDF viewing via `URL.createObjectURL` (`.pdf`), and metadata notices for binary Office formats (`.docx`, `.xlsx`, `.pptx`).
+- **Indexed Document Preview in Documents Tab (`DocumentsTab.jsx`, `frontend/src/api.js`)**:
+  - Added a **Preview** button (`#preview-<document_id>`) next to **Delete** on every document card in the **Documents** tab (and made each document filename clickable to open the preview).
+  - Interactive **Document Preview Modal (`#document-preview-modal`)** lets you toggle between **Extracted Text** (`full_text`) and **Indexed Chunks (`N`)** (`chunk_list`) with per-chunk character counts and one-click **Copy Text**.
+
+### 3. Documentation & Full E2E Demo Refresh
+- Updated `docs/API.md`, `docs/FRONTEND.md`, and `docs/USER_GUIDE.md` with `GET /documents/{document_id}/preview` and the Document Preview modal walkthrough.
+- Re-recorded the full end-to-end demo video (`docs/adk_rag.mp4`), GIF (`docs/assets/adk_rag_demo.gif`), and screenshot suite including `08c-documents-preview-modal.png`.
+
+---
+
 # Release Notes — `v2.4.0`
 
 **Release Title:** RAG Evaluation & Observability with LangSmith and Gemini 2.5 Flash LLM-as-a-Judge (`v2.4.0`)  

@@ -31,7 +31,7 @@ exit /b 0
 
 :args_done
 echo ======================================================================
-echo   ADK Agentic RAG + Knowledge Graph — Environment Setup (v2.4.0)
+echo   ADK Agentic RAG + Knowledge Graph — Environment Setup (v2.4.1)
 echo ======================================================================
 echo.
 

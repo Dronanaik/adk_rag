@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { FileIcon, FileText, FileSpreadsheet, FileJson, Globe, Trash2, RefreshCw, AlertCircle, X } from 'lucide-react'
-import { deleteAllDocuments, deleteDocument, listDocuments } from '../api.js'
+import { FileIcon, FileText, FileSpreadsheet, FileJson, Globe, Trash2, RefreshCw, AlertCircle, X, Eye, Copy, Check } from 'lucide-react'
+import { deleteAllDocuments, deleteDocument, getDocumentPreview, listDocuments } from '../api.js'
 import styles from './DocumentsTab.module.css'
 
 function getFileIcon(name = '') {
@@ -23,6 +23,11 @@ export default function DocumentsTab({ userId }) {
   const [showDeleteAllModal, setShowDeleteAllModal] = useState(false)
   const [deleteAllInput, setDeleteAllInput] = useState('')
   const [deletingAll, setDeletingAll] = useState(false)
+  const [previewDoc, setPreviewDoc] = useState(null)
+  const [previewLoading, setPreviewLoading] = useState(false)
+  const [previewError, setPreviewError] = useState('')
+  const [previewMode, setPreviewMode] = useState('text') // 'text' | 'chunks'
+  const [copiedPreview, setCopiedPreview] = useState(false)
 
   const fetchDocuments = useCallback(async () => {
     setLoading(true)
@@ -82,6 +87,57 @@ export default function DocumentsTab({ userId }) {
       setDeletingAll(false)
     }
   }
+
+  async function openPreview(doc) {
+    setPreviewDoc({
+      document_id: doc.document_id,
+      filename: doc.filename,
+      chunks: doc.chunks,
+      entities: doc.entities,
+      relationships: doc.relationships,
+      characters: doc.characters,
+      full_text: '',
+      chunk_list: [],
+    })
+    setPreviewMode('text')
+    setPreviewError('')
+    setPreviewLoading(true)
+    setCopiedPreview(false)
+    try {
+      const data = await getDocumentPreview(doc.document_id, userId)
+      setPreviewDoc(data.document)
+    } catch (err) {
+      setPreviewError(`Preview failed: ${err.message}`)
+    } finally {
+      setPreviewLoading(false)
+    }
+  }
+
+  function closePreview() {
+    setPreviewDoc(null)
+    setPreviewError('')
+    setCopiedPreview(false)
+  }
+
+  async function handleCopyPreview() {
+    if (!previewDoc?.full_text) return
+    try {
+      await navigator.clipboard.writeText(previewDoc.full_text)
+      setCopiedPreview(true)
+      setTimeout(() => setCopiedPreview(false), 1800)
+    } catch {
+      // Clipboard API unavailable in non-HTTPS contexts
+    }
+  }
+
+  useEffect(() => {
+    if (!previewDoc) return
+    function onKeyDown(e) {
+      if (e.key === 'Escape') closePreview()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [previewDoc])
 
   return (
     <div className={`${styles.wrap} fade-in`}>
@@ -202,9 +258,14 @@ export default function DocumentsTab({ userId }) {
               </div>
 
               <div className={styles.docInfo}>
-                <span className={styles.docName} title={doc.filename}>
+                <button
+                  type="button"
+                  className={styles.docNameBtn}
+                  onClick={() => openPreview(doc)}
+                  title={`Preview ${doc.filename}`}
+                >
                   {doc.filename}
-                </span>
+                </button>
                 <div className={styles.docMeta}>
                   <span className="badge badge-purple">{doc.chunks} chunks</span>
                   {doc.entities !== undefined && (
@@ -238,17 +299,143 @@ export default function DocumentsTab({ userId }) {
                   </button>
                 </div>
               ) : (
-                <button
-                  className={`btn btn-danger btn-sm ${styles.deleteBtn}`}
-                  onClick={() => setConfirmId(doc.document_id)}
-                  disabled={!!deletingId}
-                  id={`delete-${doc.document_id}`}
-                >
-                  <Trash2 size={14} /> Delete
-                </button>
+                <div className={styles.docActions}>
+                  <button
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => openPreview(doc)}
+                    disabled={!!deletingId}
+                    id={`preview-${doc.document_id}`}
+                    title="Preview extracted document content"
+                  >
+                    <Eye size={14} /> Preview
+                  </button>
+                  <button
+                    className={`btn btn-danger btn-sm ${styles.deleteBtn}`}
+                    onClick={() => setConfirmId(doc.document_id)}
+                    disabled={!!deletingId}
+                    id={`delete-${doc.document_id}`}
+                  >
+                    <Trash2 size={14} /> Delete
+                  </button>
+                </div>
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {previewDoc && (
+        <div className={styles.modalBackdrop} onClick={closePreview} id="document-preview-modal">
+          <div
+            className={`glass-card ${styles.previewModalCard}`}
+            onClick={e => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="preview-modal-title"
+          >
+            <div className={styles.previewModalHeader}>
+              <div className={styles.previewTitleWrap}>
+                <div className={styles.docIconWrap}>
+                  {getFileIcon(previewDoc.filename)}
+                </div>
+                <div className={styles.previewTitleInfo}>
+                  <h3 id="preview-modal-title" className={styles.previewModalTitle}>
+                    {previewDoc.filename}
+                  </h3>
+                  <div className={styles.docMeta}>
+                    <span className="badge badge-purple">{previewDoc.chunks} chunks</span>
+                    {previewDoc.entities !== undefined && (
+                      <span className="badge badge-teal">{previewDoc.entities} entities</span>
+                    )}
+                    {previewDoc.relationships !== undefined && (
+                      <span className="badge badge-green">{previewDoc.relationships} relations</span>
+                    )}
+                    {previewDoc.characters !== undefined && (
+                      <span className={styles.docId}>
+                        {previewDoc.characters.toLocaleString()} chars
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                className={styles.modalCloseBtn}
+                onClick={closePreview}
+                aria-label="Close preview"
+                id="close-preview-modal-btn"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className={styles.previewToolbar}>
+              <div className={styles.previewModeTabs}>
+                <button
+                  type="button"
+                  className={`${styles.previewModeBtn} ${previewMode === 'text' ? styles.previewModeBtnActive : ''}`}
+                  onClick={() => setPreviewMode('text')}
+                  id="preview-mode-text-btn"
+                >
+                  Extracted Text
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.previewModeBtn} ${previewMode === 'chunks' ? styles.previewModeBtnActive : ''}`}
+                  onClick={() => setPreviewMode('chunks')}
+                  id="preview-mode-chunks-btn"
+                >
+                  Indexed Chunks ({previewDoc.chunk_list?.length ?? previewDoc.chunks ?? 0})
+                </button>
+              </div>
+              {previewDoc.full_text && (
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={handleCopyPreview}
+                  id="copy-preview-text-btn"
+                >
+                  {copiedPreview ? <Check size={14} /> : <Copy size={14} />}
+                  {copiedPreview ? 'Copied!' : 'Copy Text'}
+                </button>
+              )}
+            </div>
+
+            <div className={styles.previewBody}>
+              {previewLoading && (
+                <div className={styles.previewLoading}>
+                  <RefreshCw size={22} className="spinner" />
+                  <span>Loading document preview…</span>
+                </div>
+              )}
+
+              {!previewLoading && previewError && (
+                <div className="alert alert-error">
+                  <AlertCircle size={18} /> {previewError}
+                </div>
+              )}
+
+              {!previewLoading && !previewError && previewMode === 'text' && (
+                <pre className={styles.previewTextContent}>
+                  {previewDoc.full_text || 'No extracted text available for this document.'}
+                </pre>
+              )}
+
+              {!previewLoading && !previewError && previewMode === 'chunks' && (
+                <div className={styles.previewChunkList}>
+                  {(previewDoc.chunk_list || []).map(chunk => (
+                    <div key={chunk.chunk_index} className={styles.previewChunkCard}>
+                      <div className={styles.previewChunkHeader}>
+                        <span className="badge badge-purple">Chunk #{chunk.chunk_index + 1}</span>
+                        <span className={styles.docId}>{chunk.char_count} chars</span>
+                      </div>
+                      <pre className={styles.previewChunkText}>{chunk.content}</pre>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>

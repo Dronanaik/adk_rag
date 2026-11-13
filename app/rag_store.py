@@ -495,6 +495,75 @@ def list_user_documents(user_id: str) -> list[dict[str, Any]]:
     return documents
 
 
+def get_document_preview(user_id: str, document_id: str) -> dict[str, Any] | None:
+    """
+    Fetch document metadata and ordered indexed chunks for previewing an uploaded document.
+    Returns None if the document ID is invalid or does not belong to user_id.
+    """
+    try:
+        parsed_id = str(uuid.UUID(str(document_id)))
+    except (ValueError, TypeError):
+        return None
+
+    _ensure_schema()
+    with get_db_connection(register_pgvector=False) as conn:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute(
+                """
+                SELECT
+                    id::text AS document_id,
+                    filename,
+                    chunk_count AS chunks,
+                    entity_count AS entities,
+                    relationship_count AS relationships,
+                    character_count AS characters,
+                    created_at
+                FROM documents
+                WHERE id = %s::uuid AND user_id = %s;
+                """,
+                (parsed_id, user_id),
+            )
+            doc_row = cur.fetchone()
+            if not doc_row:
+                return None
+
+            cur.execute(
+                """
+                SELECT
+                    chunk_index,
+                    content,
+                    metadata
+                FROM document_chunks
+                WHERE document_id = %s::uuid AND user_id = %s
+                ORDER BY chunk_index ASC;
+                """,
+                (parsed_id, user_id),
+            )
+            chunk_rows = cur.fetchall()
+
+    chunks = [
+        {
+            "chunk_index": int(row["chunk_index"]),
+            "content": row["content"] or "",
+            "char_count": len(row["content"] or ""),
+        }
+        for row in chunk_rows
+    ]
+    full_text = "\n\n".join(c["content"] for c in chunks if c["content"])
+
+    return {
+        "document_id": doc_row["document_id"],
+        "filename": doc_row["filename"],
+        "chunks": int(doc_row["chunks"] or len(chunks)),
+        "entities": int(doc_row["entities"] or 0),
+        "relationships": int(doc_row["relationships"] or 0),
+        "characters": int(doc_row["characters"] or len(full_text)),
+        "created_at": doc_row["created_at"].isoformat() if doc_row.get("created_at") else None,
+        "full_text": full_text,
+        "chunk_list": chunks,
+    }
+
+
 def get_vector_store_stats() -> dict[str, Any]:
     """
     Return aggregate chunk and document counts from Neon PostgreSQL.
