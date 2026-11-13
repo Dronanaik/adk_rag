@@ -734,6 +734,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#document-content-preview-modal-v241" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Document Content Preview Modal (v2.4.1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#atomic-cascade-delete-bulk-delete-all-confirmation-modal-v233" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1296,7 +1307,7 @@
   <span class="md-ellipsis">
     
   
-    Release Notes (v2.4.0)
+    Release Notes (v2.4.1)
   
 
     
@@ -1499,6 +1510,17 @@
     <span class="md-ellipsis">
       
         Indexed Documents List
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#document-content-preview-modal-v241" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Document Content Preview Modal (v2.4.1)
       
     </span>
   </a>
@@ -1836,7 +1858,11 @@
 <li>Once one or more files are selected (e.g., <code>doc1_openai_funding.md</code>, <code>doc2_anthropic_amazon.md</code>, and <code>doc6_google_ai_strategy.md</code>), the dropzone transforms into an interactive <strong>Multi-Document Queue Card</strong> displaying:</li>
 <li><strong>Selected Count &amp; Total Size Badge</strong>: e.g., <code>3 Documents Selected</code> (<code>Total: 10.9 KB</code>).</li>
 <li><strong>Queue Controls</strong>: Click <strong>+ Add More Files</strong> to append additional documents to the batch, or <strong>Clear All</strong> to reset the queue.</li>
-<li><strong>Numbered File Preview Rows</strong>: Each queued document shows its batch order (<code>1</code>, <code>2</code>, <code>3</code>…), format-specific icon, exact <strong>filename</strong>, formatted <strong>file size</strong>, and an individual <strong>× Remove</strong> button.</li>
+<li><strong>Numbered File Preview Rows</strong>: Each queued document shows its batch order (<code>1</code>, <code>2</code>, <code>3</code>…), format-specific icon, clickable <strong>filename</strong>, formatted <strong>file size</strong>, a <strong>Preview</strong> button (<code>#upload-preview-&lt;idx&gt;</code>) to inspect the raw file before ingestion (client-side text preview + Copy Raw for <code>.txt</code>/<code>.md</code>/<code>.csv</code>/<code>.json</code>/<code>.xml</code>/<code>.html</code>/<code>.log</code>, embedded PDF viewer for <code>.pdf</code>, and metadata summary for binary Office files), and an individual <strong>× Remove</strong> button.</li>
+<li>Click <strong>Preview</strong> (or click the queued filename) to inspect the raw file in the <strong>Raw File Preview Modal</strong> before starting ingestion:</li>
+</ol>
+<p><img alt="Upload Raw File Preview Modal" src="../assets/screenshots/04b-upload-raw-preview-modal.png" /></p>
+<ol>
 <li>Click the primary gradient button <strong>Ingest 3 Documents into Neon Postgres &amp; Neo4j</strong> (or <strong>Ingest into Neon Postgres &amp; Neo4j</strong> for a single file) at the bottom of the view to launch the 5-step hybrid ingestion pipeline.</li>
 </ol>
 <hr />
@@ -1887,8 +1913,16 @@
 <li><strong>Neo4j Entity Count Badge</strong>: e.g., <code>55 entities</code>, <code>31 entities</code>, <code>33 entities</code> (gold badge)</li>
 <li><strong>Neo4j Relationship Count Badge</strong>: e.g., <code>52 relations</code>, <code>31 relations</code>, <code>33 relations</code> (emerald badge)</li>
 <li><strong>Document UUID</strong>: Truncated <code>doc_id</code> (<code>ID: 3cff2396-097...</code>)</li>
-<li><strong>Refresh &amp; Delete Controls</strong>: Top-right <strong>Refresh</strong> button and per-document <strong>Delete</strong> button.</li>
+<li><strong>Preview, Refresh &amp; Delete Controls</strong>: Top-right <strong>Refresh</strong> button, per-document <strong>Preview</strong> button (and clickable filename), and per-document <strong>Delete</strong> button.</li>
 </ul>
+<hr />
+<h3 id="document-content-preview-modal-v241">Document Content Preview Modal (<code>v2.4.1</code>)<a class="headerlink" href="#document-content-preview-modal-v241" title="Permanent link">&para;</a></h3>
+<p><img alt="Document Preview Modal" src="../assets/screenshots/08c-documents-preview-modal.png" /></p>
+<p>Click <strong>Preview</strong> (or click any document's filename) to inspect its indexed content in a modal without leaving the <strong>Documents</strong> tab:</p>
+<ol>
+<li><strong>Extracted Text View</strong>: Displays the full reconstructed text extracted during ingestion (<code>GET /documents/{document_id}/preview</code>) along with a one-click <strong>Copy Text</strong> button.</li>
+<li><strong>Indexed Chunks View</strong>: Switch to <strong>Indexed Chunks (<code>N</code>)</strong> to inspect every vector chunk stored in <strong>Neon PostgreSQL</strong> with its chunk number and character count.</li>
+</ol>
 <hr />
 <h3 id="atomic-cascade-delete-bulk-delete-all-confirmation-modal-v233">Atomic Cascade Delete &amp; Bulk "Delete All" Confirmation Modal (<code>v2.3.3</code>)<a class="headerlink" href="#atomic-cascade-delete-bulk-delete-all-confirmation-modal-v233" title="Permanent link">&para;</a></h3>
 <p><img alt="Cascade Delete Confirmation" src="../assets/screenshots/08-documents-delete-confirm.png" /></p>

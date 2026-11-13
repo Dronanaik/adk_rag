@@ -6,7 +6,7 @@
  */
 (function () {
   var REPO = "Dronanaik/adk_rag";
-  var FALLBACK_VERSION = "v2.4.0";
+  var FALLBACK_VERSION = "v2.4.1";
 
   function parseSemver(tag) {
     if (!tag || typeof tag !== "string") return [0, 0, 0];
