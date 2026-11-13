@@ -1,13 +1,12 @@
-import { Upload, FolderOpen, GitBranch, Share2, MessageSquare, Settings } from 'lucide-react'
+import { Upload, FolderOpen, GitBranch, Share2, MessageSquare } from 'lucide-react'
 import styles from './Tabs.module.css'
 
 const TAB_CONFIG = [
-  { id: 'settings',  label: 'Settings',           Icon: Settings,      desc: 'Environment setup' },
-  { id: 'upload',    label: 'Upload',             Icon: Upload,        desc: 'Add documents' },
-  { id: 'ingestion', label: 'Ingestion Pipeline', Icon: GitBranch,     desc: 'Neon + Neo4j status' },
-  { id: 'documents', label: 'Documents',          Icon: FolderOpen,    desc: 'Manage & delete' },
-  { id: 'chat',      label: 'Agentic Chat',       Icon: MessageSquare, desc: 'Hybrid RAG + Graph' },
-  { id: 'graph',     label: 'Knowledge Graph',    Icon: Share2,        desc: 'Neo4j entities & links' },
+  { id: 'upload',     label: 'Upload',             Icon: Upload,         desc: 'Add documents' },
+  { id: 'ingestion',  label: 'Ingestion Pipeline', Icon: GitBranch,      desc: 'Neon + Neo4j status' },
+  { id: 'documents',  label: 'Documents',          Icon: FolderOpen,     desc: 'Manage & delete' },
+  { id: 'chat',       label: 'Agentic Chat',       Icon: MessageSquare,  desc: 'Hybrid RAG + Graph' },
+  { id: 'graph',      label: 'Knowledge Graph',    Icon: Share2,         desc: 'Neo4j entities & links' },
 ]
 
 export default function Tabs({ activeTab, onTabChange }) {

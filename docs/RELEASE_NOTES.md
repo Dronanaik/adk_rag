@@ -1,3 +1,34 @@
+# Release Notes — `v2.4.0`
+
+**Release Title:** RAG Evaluation & Observability with LangSmith and Gemini 2.5 Flash LLM-as-a-Judge (`v2.4.0`)  
+**Tag:** `v2.4.0`  
+**Previous Tag:** `v2.3.3`
+
+> **Combining Agentic RAG, Knowledge Graphs, and Hybrid Vector-Graph Retrieval to transform fragmented information into connected intelligence, powered by Google ADK and Gemini 2.5.**
+
+---
+
+## What's New in `v2.4.0`
+
+### 1. LangSmith Observability & Tracing (`app/tracing.py`, `app/agent.py`, `app/api.py`, `app/config.py`)
+- **Zero-Overhead Opt-In Tracing**: Added `LANGSMITH_TRACING`, `LANGSMITH_API_KEY`, `LANGSMITH_PROJECT`, and `LANGSMITH_ENDPOINT` to runtime configuration and `.env.example`.
+- **End-to-End Trace Spans**: Wrapped `/chat` in `ls_trace(..., run_type="chain")` and instrumented `vector_search`, `hybrid_search`, `graph_search`, and `get_entity_relationships` with `ls_trace(..., run_type="retriever")` without altering Google ADK tool signatures.
+
+### 2. RAG Evaluation Pipeline with Gemini 2.5 Flash LLM-as-a-Judge (`app/evals/`)
+- **Synthetic Golden Dataset Generator (`app/evals/dataset.py`)**: Generates grounded Q&A test cases directly from the authenticated user's indexed Neon pgvector chunks and Neo4j Knowledge Graph triples, with optional LangSmith Dataset sync.
+- **5-Metric Evaluation Suite (`app/evals/evaluators.py`)**:
+  - **Faithfulness** (Gemini 2.5 Flash LLM-as-a-Judge)
+  - **Context Relevance** (Gemini 2.5 Flash LLM-as-a-Judge)
+  - **Answer Correctness** (Gemini 2.5 Flash LLM-as-a-Judge)
+  - **Tool Routing** (deterministic check on ADK tool selection)
+  - **Citation Compliance** (deterministic `[Source: ...]` / `[Graph: ...]` check)
+- **Evaluation Runner & API (`app/evals/runner.py`, `app/api.py`)**: Added `POST /evals/generate-dataset`, `POST /evals/run`, `GET /evals/runs`, and CLI support (`python -m app.evals.runner`).
+
+### 3. Interactive Evaluation UI Tab (`frontend/src/components/EvaluationTab.jsx`)
+- Added the **Evaluation** tab to the React dashboard with dataset generation, inline test case editing, 5 color-coded aggregate metric cards, direct **Open in LangSmith** links, and expandable per-question Gemini 2.5 Flash judge reasoning.
+
+---
+
 # Release Notes — `v2.3.3`
 
 **Release Title:** Delete All Documents Confirmation Modal, Multimodal Figure/Image Extraction & Chat UI Refinements (`v2.3.3`)  

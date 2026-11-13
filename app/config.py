@@ -24,6 +24,10 @@ SYSTEM_FALLBACKS: dict[str, str] = {
     "NEO4J_PASSWORD": "",
     "NEO4J_DATABASE": "neo4j",
     "TOP_K": "5",
+    "LANGSMITH_TRACING": "false",
+    "LANGSMITH_API_KEY": "",
+    "LANGSMITH_PROJECT": "adk-agentic-rag",
+    "LANGSMITH_ENDPOINT": "https://api.smith.langchain.com",
 }
 
 # Snapshot of the initial default environment (.env + system fallbacks)
@@ -144,6 +148,42 @@ ENV_VAR_DEFINITIONS: list[dict[str, Any]] = [
         "description": "Default number of top-scoring chunks returned by vector and hybrid search.",
         "doc_url": f"{DOCS_BASE_URL}#8-top_k-hybrid-retrieval-depth",
     },
+    {
+        "key": "LANGSMITH_TRACING",
+        "label": "LangSmith Live Tracing",
+        "group": "langsmith",
+        "is_secret": False,
+        "placeholder": "false",
+        "description": "Set to true to stream Google ADK agent & retrieval traces to LangSmith.",
+        "doc_url": f"{DOCS_BASE_URL}#9-langsmith-observability--evaluation",
+    },
+    {
+        "key": "LANGSMITH_API_KEY",
+        "label": "LangSmith API Key",
+        "group": "langsmith",
+        "is_secret": True,
+        "placeholder": "lsv2_pt_...",
+        "description": "Personal or workspace API key from smith.langchain.com for tracing and evaluation datasets.",
+        "doc_url": f"{DOCS_BASE_URL}#9-langsmith-observability--evaluation",
+    },
+    {
+        "key": "LANGSMITH_PROJECT",
+        "label": "LangSmith Project Name",
+        "group": "langsmith",
+        "is_secret": False,
+        "placeholder": "adk-agentic-rag",
+        "description": "Target LangSmith project for ADK agent traces and RAG evaluation experiments.",
+        "doc_url": f"{DOCS_BASE_URL}#9-langsmith-observability--evaluation",
+    },
+    {
+        "key": "LANGSMITH_ENDPOINT",
+        "label": "LangSmith API Endpoint",
+        "group": "langsmith",
+        "is_secret": False,
+        "placeholder": "https://api.smith.langchain.com",
+        "description": "LangSmith API base URL (US or EU region endpoint).",
+        "doc_url": f"{DOCS_BASE_URL}#9-langsmith-observability--evaluation",
+    },
 ]
 
 
@@ -180,6 +220,7 @@ def _sync_module_globals() -> None:
     global GOOGLE_API_KEY, AGENT_MODEL, GRAPH_EXTRACTION_MODEL, EMBEDDING_MODEL
     global EMBEDDING_DIMENSIONS, DATABASE_URL, JWT_SECRET_KEY, JWT_EXPIRE_HOURS
     global NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD, NEO4J_DATABASE, TOP_K
+    global LANGSMITH_TRACING, LANGSMITH_API_KEY, LANGSMITH_PROJECT, LANGSMITH_ENDPOINT
 
     GOOGLE_API_KEY = get_config_value("GOOGLE_API_KEY")
     AGENT_MODEL = get_config_value("AGENT_MODEL") or "gemini-2.5-pro"
@@ -209,9 +250,21 @@ def _sync_module_globals() -> None:
     except ValueError:
         TOP_K = 5
 
-    # Keep os.environ in sync for libraries such as google-adk that read os.environ["GOOGLE_API_KEY"]
+    LANGSMITH_TRACING = (get_config_value("LANGSMITH_TRACING") or "false").strip().lower()
+    LANGSMITH_API_KEY = get_config_value("LANGSMITH_API_KEY")
+    LANGSMITH_PROJECT = get_config_value("LANGSMITH_PROJECT") or "adk-agentic-rag"
+    LANGSMITH_ENDPOINT = get_config_value("LANGSMITH_ENDPOINT") or "https://api.smith.langchain.com"
+
+    # Keep os.environ in sync for libraries such as google-adk and langsmith
     if GOOGLE_API_KEY:
         os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
+    if LANGSMITH_API_KEY:
+        os.environ["LANGSMITH_API_KEY"] = LANGSMITH_API_KEY
+    else:
+        os.environ.pop("LANGSMITH_API_KEY", None)
+    os.environ["LANGSMITH_TRACING"] = LANGSMITH_TRACING
+    os.environ["LANGSMITH_PROJECT"] = LANGSMITH_PROJECT
+    os.environ["LANGSMITH_ENDPOINT"] = LANGSMITH_ENDPOINT
 
 
 def get_env_settings_payload() -> list[dict[str, Any]]:
@@ -326,5 +379,9 @@ NEO4J_USERNAME: str = "neo4j"
 NEO4J_PASSWORD: str = ""
 NEO4J_DATABASE: str = "neo4j"
 TOP_K: int = 5
+LANGSMITH_TRACING: str = "false"
+LANGSMITH_API_KEY: str = ""
+LANGSMITH_PROJECT: str = "adk-agentic-rag"
+LANGSMITH_ENDPOINT: str = "https://api.smith.langchain.com"
 
 _sync_module_globals()

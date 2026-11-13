@@ -50,6 +50,9 @@ from app.rag_store import (
     get_vector_store_stats,
     list_user_documents,
 )
+from app.evals.dataset import generate_synthetic_dataset
+from app.evals.runner import get_eval_runs, run_evaluation
+from app.tracing import is_langsmith_configured, is_tracing_enabled, ls_trace
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +75,7 @@ app = FastAPI(
         "Hybrid Agentic RAG & Knowledge Graph platform powered by Google ADK, "
         "Gemini, Neon PostgreSQL (pgvector), and Neo4j."
     ),
-    version="2.3.3",
+    version="2.4.0",
     lifespan=lifespan,
 )
 
@@ -570,23 +573,29 @@ async def chat(
     tools_used: list[str] = []
 
     try:
-        async for event in _runner.run_async(
-            user_id=user_id,
-            session_id=session.id,
-            new_message=message,
+        with ls_trace(
+            name="adk_rag_chat",
+            run_type="chain",
+            inputs={"query": request.query, "user_id": user_id, "session_id": session.id},
+            tags=["chat", "adk-rag"],
         ):
-            # Track which Agentic RAG / Graph tools were invoked
-            if event.content and event.content.parts:
-                for part in event.content.parts:
-                    fn_call = getattr(part, "function_call", None)
-                    if fn_call and getattr(fn_call, "name", None):
-                        if fn_call.name not in tools_used:
-                            tools_used.append(fn_call.name)
+            async for event in _runner.run_async(
+                user_id=user_id,
+                session_id=session.id,
+                new_message=message,
+            ):
+                # Track which Agentic RAG / Graph tools were invoked
+                if event.content and event.content.parts:
+                    for part in event.content.parts:
+                        fn_call = getattr(part, "function_call", None)
+                        if fn_call and getattr(fn_call, "name", None):
+                            if fn_call.name not in tools_used:
+                                tools_used.append(fn_call.name)
 
-            if event.is_final_response() and event.content:
-                for part in event.content.parts:
-                    if hasattr(part, "text") and part.text:
-                        answer_text += part.text
+                if event.is_final_response() and event.content:
+                    for part in event.content.parts:
+                        if hasattr(part, "text") and part.text:
+                            answer_text += part.text
     except Exception:
         logger.exception("ADK Agent execution error")
         raise HTTPException(
@@ -695,4 +704,113 @@ def reset_environment_settings():
         "variables": variables,
         "connections": _evaluate_connection_statuses(),
     }
+
+
+# ---------------------------------------------------------------------------
+# RAG Evaluation & LangSmith Observability
+# ---------------------------------------------------------------------------
+
+
+class GenerateDatasetRequest(BaseModel):
+    num_questions: int = 5
+
+
+class EvalCaseInput(BaseModel):
+    id: str | None = None
+    question: str
+    expected_answer: str = ""
+    expected_sources: list[str] = []
+    expected_tools: list[str] = []
+
+
+class RunEvaluationRequest(BaseModel):
+    dataset_name: str = "adk-rag-eval-dataset"
+    experiment_prefix: str = "adk-rag-eval"
+    examples: list[EvalCaseInput]
+
+
+@app.post("/evals/generate-dataset")
+async def generate_eval_dataset(
+    request: GenerateDatasetRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Generate a synthetic Golden Dataset of grounded Q&A test cases from the
+    current user's indexed Neon pgvector chunks and Neo4j knowledge graph.
+    """
+    user_id = current_user["user_id"]
+    try:
+        examples = await asyncio.to_thread(
+            generate_synthetic_dataset,
+            user_id=user_id,
+            num_questions=request.num_questions,
+        )
+        return {
+            "success": True,
+            "examples": examples,
+            "count": len(examples),
+        }
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except Exception as exc:
+        logger.exception("Failed to generate evaluation dataset")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to generate evaluation dataset: {str(exc)[:180]}",
+        ) from exc
+
+
+@app.post("/evals/run")
+async def execute_rag_evaluation(
+    request: RunEvaluationRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Run the ADK Agentic RAG pipeline on the provided test cases, score each
+    response with Gemini 2.5 Flash (LLM-as-a-Judge) + deterministic checks,
+    and optionally sync results & traces to LangSmith.
+    """
+    user_id = current_user["user_id"]
+    if not request.examples:
+        raise HTTPException(status_code=400, detail="At least one evaluation test case is required.")
+
+    examples_payload = [ex.model_dump() for ex in request.examples if ex.question.strip()]
+    if not examples_payload:
+        raise HTTPException(status_code=400, detail="All provided test cases have empty questions.")
+
+    try:
+        run_record = await run_evaluation(
+            user_id=user_id,
+            examples=examples_payload,
+            dataset_name=request.dataset_name.strip() or "adk-rag-eval-dataset",
+            experiment_prefix=request.experiment_prefix.strip() or "adk-rag-eval",
+        )
+        return {
+            "success": True,
+            "run": run_record,
+        }
+    except Exception as exc:
+        logger.exception("Evaluation run failed")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Evaluation run failed: {str(exc)[:180]}",
+        ) from exc
+
+
+@app.get("/evals/runs")
+async def list_eval_runs(current_user: dict = Depends(get_current_user)):
+    """
+    Return LangSmith configuration status and recent RAG evaluation runs
+    for the authenticated user.
+    """
+    user_id = current_user["user_id"]
+    return {
+        "success": True,
+        "langsmith_configured": is_langsmith_configured(),
+        "tracing_enabled": is_tracing_enabled(),
+        "project": config.LANGSMITH_PROJECT,
+        "judge_model": (config.GRAPH_EXTRACTION_MODEL or "").strip() or "gemini-2.5-flash",
+        "runs": get_eval_runs(user_id),
+    }
+
 

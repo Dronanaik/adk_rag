@@ -7,6 +7,7 @@ import DocumentsTab from './components/DocumentsTab.jsx'
 import IngestionTab from './components/IngestionTab.jsx'
 import GraphTab from './components/GraphTab.jsx'
 import ChatTab from './components/ChatTab.jsx'
+import EvaluationTab from './components/EvaluationTab.jsx'
 import SettingsTab from './components/SettingsTab.jsx'
 import styles from './App.module.css'
 import {
@@ -148,17 +149,24 @@ export default function App() {
   }
 
   const tabContent = {
-    settings:  <SettingsTab  onContinueToUpload={() => setActiveTab('upload')} />,
-    upload:    <UploadTab    userId={userId} onStartUpload={handleStartUpload} />,
-    documents: <DocumentsTab userId={userId} />,
-    ingestion: <IngestionTab uploadState={uploadState} />,
-    chat:      <ChatTab      userId={userId} />,
-    graph:     <GraphTab     userId={userId} />,
+    settings:   <SettingsTab   onContinueToUpload={() => setActiveTab('upload')} />,
+    upload:     <UploadTab     userId={userId} onStartUpload={handleStartUpload} />,
+    documents:  <DocumentsTab  userId={userId} />,
+    ingestion:  <IngestionTab  uploadState={uploadState} />,
+    chat:       <ChatTab       userId={userId} />,
+    graph:      <GraphTab      userId={userId} />,
+    evaluation: <EvaluationTab userId={userId} />,
   }
 
   return (
     <div className={styles.app}>
-      <Header user={user} userId={userId} onChangeUser={handleSignOut} />
+      <Header
+        user={user}
+        userId={userId}
+        activeTab={activeTab}
+        onSelectTab={handleTabChange}
+        onChangeUser={handleSignOut}
+      />
 
       <main className={styles.main}>
         <div className="container">

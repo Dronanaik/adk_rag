@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Wifi, WifiOff, Loader2, LogOut, Brain } from 'lucide-react'
+import { Wifi, WifiOff, Loader2, LogOut, Brain, Settings, ClipboardCheck } from 'lucide-react'
 import { checkHealth } from '../api.js'
 import styles from './Header.module.css'
 
-export default function Header({ user, userId, onChangeUser }) {
+export default function Header({ user, userId, activeTab, onSelectTab, onChangeUser }) {
   const [backendStatus, setBackendStatus] = useState('loading')
 
   useEffect(() => {
@@ -44,6 +44,32 @@ export default function Header({ user, userId, onChangeUser }) {
 
         {/* Right side */}
         <div className={styles.right}>
+
+          {/* Platform utility views (separate from core workflow tabs) */}
+          <div className={styles.utilGroup} role="navigation" aria-label="Platform tools">
+            <button
+              type="button"
+              id="nav-evaluation"
+              className={`${styles.utilBtn} ${activeTab === 'evaluation' ? styles.utilBtnActive : ''}`}
+              onClick={() => onSelectTab?.('evaluation')}
+              title="RAG Evaluation & LangSmith"
+            >
+              <ClipboardCheck size={15} />
+              <span>Evaluation</span>
+            </button>
+            <button
+              type="button"
+              id="nav-settings"
+              className={`${styles.utilBtn} ${activeTab === 'settings' ? styles.utilBtnActive : ''}`}
+              onClick={() => onSelectTab?.('settings')}
+              title="Environment Settings"
+            >
+              <Settings size={15} />
+              <span>Settings</span>
+            </button>
+          </div>
+
+          <div className={styles.sep} />
 
           {/* Status chip */}
           <div className={`${styles.statusChip} ${styles[backendStatus]}`}>

@@ -13,3 +13,4 @@ python-docx
 openpyxl
 python-pptx
 docling
+langsmith

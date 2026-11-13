@@ -281,3 +281,25 @@ Clears all runtime overrides and restores every environment variable to its defa
 ```bash
 curl -X POST http://localhost:8000/settings/env/reset
 ```
+
+---
+
+## 8. RAG Evaluation & LangSmith Endpoints (`v2.4.0`)
+
+All evaluation endpoints require a valid `Authorization: Bearer <token>` header.
+
+### `POST /evals/generate-dataset`
+Synthesizes a Golden Dataset of grounded Q&A test cases from the authenticated user's indexed Neon `pgvector` chunks and Neo4j Knowledge Graph triples using **Gemini 2.5 Flash**.
+
+```bash
+curl -X POST http://localhost:8000/evals/generate-dataset \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"num_questions": 5}'
+```
+
+### `POST /evals/run`
+Executes the Google ADK Agent on each test case, scores responses across 5 metrics (`faithfulness`, `context_relevance`, `answer_correctness`, `tool_routing`, `citation_compliance`) using **Gemini 2.5 Flash**, and syncs datasets/experiments to **LangSmith** when configured.
+
+### `GET /evals/runs`
+Returns LangSmith connection status (`langsmith_configured`, `tracing_enabled`, `project`) and recent evaluation runs for the authenticated user.
