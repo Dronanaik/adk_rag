@@ -108,7 +108,7 @@ jobs:
 
               notes_file = Path(f"/tmp/release_notes_{tag}.md")
               notes_file.write_text(body + "\n", encoding="utf-8")
-              release_title = f"ADK Agentic RAG {tag}"
+              release_title = f"{tag}"
 
               view_res = run(["gh", "release", "view", tag], check=False)
               if view_res.returncode != 0:
