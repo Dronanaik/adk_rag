@@ -672,21 +672,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#1-end-to-end-visual-architecture-v233" class="md-nav__link">
+  <a href="#1-end-to-end-system-architecture-v241" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. End-to-End Visual Architecture (v2.3.3)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-high-level-system-topology" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. High-Level System Topology
+        1. End-to-End System Architecture (v2.4.1)
       
     </span>
   </a>
@@ -1126,21 +1115,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#1-end-to-end-visual-architecture-v233" class="md-nav__link">
+  <a href="#1-end-to-end-system-architecture-v241" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. End-to-End Visual Architecture (v2.3.3)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-high-level-system-topology" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. High-Level System Topology
+        1. End-to-End System Architecture (v2.4.1)
       
     </span>
   </a>
@@ -1285,75 +1263,13 @@
 <li>
 <p><span class="twemoji lg middle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.5 17c-.14 0-.26 0-.39.04L17.5 13.8c.45-.45.75-1.09.75-1.8a2.5 2.5 0 0 0-2.5-2.5c-.14 0-.25 0-.4.04L13.74 6.3c.47-.46.76-1.09.76-1.8a2.5 2.5 0 0 0-5 0c0 .7.29 1.34.76 1.79L8.65 9.54c-.15-.04-.26-.04-.4-.04a2.5 2.5 0 0 0-2.5 2.5c0 .71.29 1.34.75 1.79l-1.61 3.25C4.76 17 4.64 17 4.5 17a2.5 2.5 0 0 0 0 5A2.5 2.5 0 0 0 7 19.5c0-.7-.29-1.34-.76-1.79l1.62-3.25c.14.04.26.04.39.04s.25 0 .38-.04l1.63 3.25c-.47.45-.76 1.09-.76 1.79a2.5 2.5 0 0 0 5 0A2.5 2.5 0 0 0 12 17c-.13 0-.26 0-.39.04L10 13.8c.45-.45.75-1.09.75-1.8 0-.7-.29-1.33-.75-1.79l1.61-3.25c.13.04.26.04.39.04s.26 0 .39-.04L14 10.21a2.5 2.5 0 0 0 1.75 4.29c.13 0 .25 0 .38-.04l1.63 3.25c-.47.45-.76 1.09-.76 1.79a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0-2.5-2.5m-15 3.5c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1m8.5-1c0 .55-.45 1-1 1s-1-.45-1-1 .45-1 1-1 1 .45 1 1M7.25 12c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1M11 4.5c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1m3.75 7.5c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1m4.75 8.5c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1"/></svg></span> <strong>Interactive Bioluminescent UI</strong></p>
 <hr />
-<p>React 18 + Vite single-page workspace featuring real-time per-step ingestion telemetry, tool execution badges, dual citations, and an interactive SVG Neo4j topology explorer.</p>
+<p>React 18 + Vite single-page workspace featuring client-side raw file &amp; indexed chunk previews, real-time per-step ingestion telemetry, tool execution badges, dual citations, an interactive SVG Neo4j topology explorer, and a Gemini 2.5 Flash + LangSmith evaluation console.</p>
 </li>
 </ul>
 </div>
 <hr />
-<h2 id="1-end-to-end-visual-architecture-v233">1. End-to-End Visual Architecture (<code>v2.3.3</code>)<a class="headerlink" href="#1-end-to-end-visual-architecture-v233" title="Permanent link">&para;</a></h2>
+<h2 id="1-end-to-end-system-architecture-v241">1. End-to-End System Architecture (<code>v2.4.1</code>)<a class="headerlink" href="#1-end-to-end-system-architecture-v241" title="Permanent link">&para;</a></h2>
 <p><img alt="ADK Agentic RAG End-to-End Architecture" src="../assets/e2e_architecture.svg" /></p>
-<hr />
-<h2 id="2-high-level-system-topology">2. High-Level System Topology<a class="headerlink" href="#2-high-level-system-topology" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>flowchart TB
-    subgraph Client["React 18 + Vite Frontend (Port 5173)"]
-        AuthUI["Sign In / Create Account (UserIdModal.jsx)"]
-        SettingsUI["1. Settings Tab (SettingsTab.jsx)"]
-        UploadUI["2. Upload Tab (UploadTab.jsx)"]
-        PipelineUI["3. Live 5-Step Pipeline Tab (IngestionTab.jsx)"]
-        DocsUI["4. Documents Manager Tab + Delete All Modal (DocumentsTab.jsx)"]
-        ChatUI["5. Agentic Chat Tab (ChatTab.jsx)"]
-        GraphUI["6. Interactive SVG Knowledge Graph (GraphTab.jsx)"]
-    end
-
-    subgraph Backend["FastAPI Backend (Port 8000)"]
-        API["FastAPI Router (app/api.py)"]
-        AuthSvc["Neon Auth + HS256 JWT (app/auth.py)"]
-        IngestSvc["5-Step Dual Ingestion Orchestrator (app/ingest.py)"]
-        Parsers["Lossless Docling + Format Extractors (app/parsers.py)"]
-        Chunker["Structure &amp; Table-Aware Chunker (app/chunking.py)"]
-        Embedder["Batched Gemini Embedder (app/embeddings.py)"]
-        ADKAgent["Google ADK LlmAgent (app/agent.py)"]
-        RagStore["PostgreSQL Vector &amp; Hybrid Store (app/rag_store.py)"]
-        GraphStore["Neo4j Graph Extractor &amp; Store (app/graph_store.py)"]
-    end
-
-    subgraph ExternalAI["Google Gemini API"]
-        GeminiEmbed["gemini-embedding-001 (768-dim vectors)"]
-        GeminiFlash["gemini-2.5-flash (Structured JSON Graph Extraction)"]
-        GeminiPro["gemini-2.5-pro (ADK Multi-Tool Reasoning)"]
-    end
-
-    subgraph Storage["Cloud Persistence Layer"]
-        NeonDB[("Neon Console PostgreSQL (users, documents, document_chunks)")]
-        Neo4jDB[("Neo4j Knowledge Graph (Entity, RELATES_TO, MENTIONED_IN)")]
-    end
-
-    AuthUI --&gt;|POST /auth/login, /auth/signup| API
-    UploadUI --&gt;|POST /documents/upload| API
-    PipelineUI --&gt;|GET /ingest/progress, /ingest/status| API
-    DocsUI --&gt;|GET /documents, DELETE /documents/:id| API
-    ChatUI --&gt;|POST /chat| API
-    GraphUI --&gt;|GET /graph, /graph/entity/:name| API
-
-    API --&gt; AuthSvc
-    AuthSvc --&gt; NeonDB
-
-    API --&gt; IngestSvc
-    IngestSvc --&gt; Parsers
-    IngestSvc --&gt; Chunker
-    IngestSvc --&gt; Embedder
-    Embedder --&gt; GeminiEmbed
-    IngestSvc --&gt; RagStore
-    IngestSvc --&gt; GraphStore
-    GraphStore --&gt; GeminiFlash
-
-    API --&gt; ADKAgent
-    ADKAgent --&gt; GeminiPro
-    ADKAgent --&gt;|hybrid_search / vector_search| RagStore
-    ADKAgent --&gt;|graph_search / get_entity_relationships| GraphStore
-
-    RagStore --&gt; NeonDB
-    GraphStore --&gt; Neo4jDB</code></pre>
 <hr />
 <h2 id="2-backend-module-architecture-app">2. Backend Module Architecture (<code>app/</code>)<a class="headerlink" href="#2-backend-module-architecture-app" title="Permanent link">&para;</a></h2>
 <table>
@@ -1398,7 +1314,7 @@
 <tr>
 <td><strong>Vector &amp; Hybrid Store</strong></td>
 <td><code>app/rag_store.py</code></td>
-<td>Executes Neon PostgreSQL CRUD (<code>add_document_chunks</code>, <code>delete_document_chunks</code>, <code>list_user_documents</code>) and retrieval (<code>search_documents</code> pure vector cosine search and <code>hybrid_search_documents</code> combining <code>70%</code> vector similarity + <code>30%</code> <code>ts_rank_cd</code> full-text score).</td>
+<td>Executes Neon PostgreSQL CRUD (<code>add_document_chunks</code>, <code>get_document_preview</code>, <code>delete_document_chunks</code>, <code>list_user_documents</code>) and retrieval (<code>search_documents</code> pure vector cosine search and <code>hybrid_search_documents</code> combining <code>70%</code> vector similarity + <code>30%</code> <code>ts_rank_cd</code> full-text score).</td>
 </tr>
 <tr>
 <td><strong>Knowledge Graph Store</strong></td>
@@ -1416,9 +1332,14 @@
 <td>Defines <code>root_agent</code> (<code>LlmAgent</code>) equipped with 4 tools (<code>hybrid_search</code>, <code>vector_search</code>, <code>graph_search</code>, <code>get_entity_relationships</code>) and dynamic system instructions injecting the active <code>user_id</code>.</td>
 </tr>
 <tr>
+<td><strong>RAG Evaluation &amp; LangSmith</strong></td>
+<td><code>app/evals/</code></td>
+<td>Generates synthetic Q&amp;A golden datasets from indexed chunks (<code>dataset_generator.py</code>), evaluates RAG outputs across 5 metrics using <code>gemini-2.5-flash</code> LLM-as-a-Judge (<code>judge.py</code>), orchestrates local/LangSmith runs (<code>runner.py</code>), and logs traces/feedback (<code>langsmith_tracer.py</code>).</td>
+</tr>
+<tr>
 <td><strong>REST API</strong></td>
 <td><code>app/api.py</code></td>
-<td>Exposes FastAPI endpoints for Auth, Upload, Live Ingestion Progress, Documents, Knowledge Graph, and Agentic Chat. Runs heavy ingestion in <code>asyncio.to_thread</code> using OS temp storage (<code>/tmp/adk_rag_uploads</code>) so Uvicorn <code>--reload</code> is never interrupted.</td>
+<td>Exposes FastAPI endpoints for Auth, Settings, Upload, Live Ingestion Progress, Documents &amp; Preview, Knowledge Graph, Agentic Chat, and RAG Evaluation. Runs heavy ingestion in <code>asyncio.to_thread</code> using OS temp storage (<code>/tmp/adk_rag_uploads</code>) so Uvicorn <code>--reload</code> is never interrupted.</td>
 </tr>
 </tbody>
 </table>
