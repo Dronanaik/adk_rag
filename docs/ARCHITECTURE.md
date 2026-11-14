@@ -30,82 +30,15 @@ The **ADK Agentic RAG + Knowledge Graph** platform is engineered as a modular, m
 
     ---
 
-    React 18 + Vite single-page workspace featuring real-time per-step ingestion telemetry, tool execution badges, dual citations, and an interactive SVG Neo4j topology explorer.
+    React 18 + Vite single-page workspace featuring client-side raw file & indexed chunk previews, real-time per-step ingestion telemetry, tool execution badges, dual citations, an interactive SVG Neo4j topology explorer, and a Gemini 2.5 Flash + LangSmith evaluation console.
 
 </div>
 
 ---
 
-## 1. End-to-End Visual Architecture (`v2.3.3`)
+## 1. End-to-End System Architecture (`v2.4.1`)
 
 ![ADK Agentic RAG End-to-End Architecture](assets/e2e_architecture.svg)
-
----
-
-## 2. High-Level System Topology
-
-```mermaid
-flowchart TB
-    subgraph Client["React 18 + Vite Frontend (Port 5173)"]
-        AuthUI["Sign In / Create Account (UserIdModal.jsx)"]
-        SettingsUI["1. Settings Tab (SettingsTab.jsx)"]
-        UploadUI["2. Upload Tab (UploadTab.jsx)"]
-        PipelineUI["3. Live 5-Step Pipeline Tab (IngestionTab.jsx)"]
-        DocsUI["4. Documents Manager Tab + Delete All Modal (DocumentsTab.jsx)"]
-        ChatUI["5. Agentic Chat Tab (ChatTab.jsx)"]
-        GraphUI["6. Interactive SVG Knowledge Graph (GraphTab.jsx)"]
-    end
-
-    subgraph Backend["FastAPI Backend (Port 8000)"]
-        API["FastAPI Router (app/api.py)"]
-        AuthSvc["Neon Auth + HS256 JWT (app/auth.py)"]
-        IngestSvc["5-Step Dual Ingestion Orchestrator (app/ingest.py)"]
-        Parsers["Lossless Docling + Format Extractors (app/parsers.py)"]
-        Chunker["Structure & Table-Aware Chunker (app/chunking.py)"]
-        Embedder["Batched Gemini Embedder (app/embeddings.py)"]
-        ADKAgent["Google ADK LlmAgent (app/agent.py)"]
-        RagStore["PostgreSQL Vector & Hybrid Store (app/rag_store.py)"]
-        GraphStore["Neo4j Graph Extractor & Store (app/graph_store.py)"]
-    end
-
-    subgraph ExternalAI["Google Gemini API"]
-        GeminiEmbed["gemini-embedding-001 (768-dim vectors)"]
-        GeminiFlash["gemini-2.5-flash (Structured JSON Graph Extraction)"]
-        GeminiPro["gemini-2.5-pro (ADK Multi-Tool Reasoning)"]
-    end
-
-    subgraph Storage["Cloud Persistence Layer"]
-        NeonDB[("Neon Console PostgreSQL (users, documents, document_chunks)")]
-        Neo4jDB[("Neo4j Knowledge Graph (Entity, RELATES_TO, MENTIONED_IN)")]
-    end
-
-    AuthUI -->|POST /auth/login, /auth/signup| API
-    UploadUI -->|POST /documents/upload| API
-    PipelineUI -->|GET /ingest/progress, /ingest/status| API
-    DocsUI -->|GET /documents, DELETE /documents/:id| API
-    ChatUI -->|POST /chat| API
-    GraphUI -->|GET /graph, /graph/entity/:name| API
-
-    API --> AuthSvc
-    AuthSvc --> NeonDB
-
-    API --> IngestSvc
-    IngestSvc --> Parsers
-    IngestSvc --> Chunker
-    IngestSvc --> Embedder
-    Embedder --> GeminiEmbed
-    IngestSvc --> RagStore
-    IngestSvc --> GraphStore
-    GraphStore --> GeminiFlash
-
-    API --> ADKAgent
-    ADKAgent --> GeminiPro
-    ADKAgent -->|hybrid_search / vector_search| RagStore
-    ADKAgent -->|graph_search / get_entity_relationships| GraphStore
-
-    RagStore --> NeonDB
-    GraphStore --> Neo4jDB
-```
 
 ---
 
@@ -119,11 +52,12 @@ flowchart TB
 | **Format Parsers** | `app/parsers.py` | Dispatches uploaded files by extension (`.pdf`, `.docx`, `.xlsx`, `.xls`, `.pptx`, `.txt`, `.md`, `.csv`, `.json`, `.xml`, `.html`, `.log`) to specialized text extractors. |
 | **Semantic Chunker** | `app/chunking.py` | Splits extracted document text along markdown headers, paragraphs, and sentences (`chunk_size=1200`, `overlap=200`) to preserve semantic coherence. |
 | **Embeddings** | `app/embeddings.py` | Wraps `google-genai` `gemini-embedding-001` (`768` dimensions) with batching (`50` chunks per call) for high-throughput document ingestion and single-query embedding. |
-| **Vector & Hybrid Store** | `app/rag_store.py` | Executes Neon PostgreSQL CRUD (`add_document_chunks`, `delete_document_chunks`, `list_user_documents`) and retrieval (`search_documents` pure vector cosine search and `hybrid_search_documents` combining `70%` vector similarity + `30%` `ts_rank_cd` full-text score). |
+| **Vector & Hybrid Store** | `app/rag_store.py` | Executes Neon PostgreSQL CRUD (`add_document_chunks`, `get_document_preview`, `delete_document_chunks`, `list_user_documents`) and retrieval (`search_documents` pure vector cosine search and `hybrid_search_documents` combining `70%` vector similarity + `30%` `ts_rank_cd` full-text score). |
 | **Knowledge Graph Store** | `app/graph_store.py` | Extracts structured `ExtractedEntity` and `ExtractedRelationship` objects from chunks using `gemini-2.5-flash` and persists/queries them in Neo4j via parameterized Cypher queries. |
 | **Dual Ingestion Pipeline** | `app/ingest.py` | Orchestrates the 5-step ingestion pipeline and maintains real-time per-user step telemetry (`_user_ingestion_progress`) polled by the frontend UI. |
 | **Google ADK Agent** | `app/agent.py` | Defines `root_agent` (`LlmAgent`) equipped with 4 tools (`hybrid_search`, `vector_search`, `graph_search`, `get_entity_relationships`) and dynamic system instructions injecting the active `user_id`. |
-| **REST API** | `app/api.py` | Exposes FastAPI endpoints for Auth, Upload, Live Ingestion Progress, Documents, Knowledge Graph, and Agentic Chat. Runs heavy ingestion in `asyncio.to_thread` using OS temp storage (`/tmp/adk_rag_uploads`) so Uvicorn `--reload` is never interrupted. |
+| **RAG Evaluation & LangSmith** | `app/evals/` | Generates synthetic Q&A golden datasets from indexed chunks (`dataset_generator.py`), evaluates RAG outputs across 5 metrics using `gemini-2.5-flash` LLM-as-a-Judge (`judge.py`), orchestrates local/LangSmith runs (`runner.py`), and logs traces/feedback (`langsmith_tracer.py`). |
+| **REST API** | `app/api.py` | Exposes FastAPI endpoints for Auth, Settings, Upload, Live Ingestion Progress, Documents & Preview, Knowledge Graph, Agentic Chat, and RAG Evaluation. Runs heavy ingestion in `asyncio.to_thread` using OS temp storage (`/tmp/adk_rag_uploads`) so Uvicorn `--reload` is never interrupted. |
 
 ---
 
