@@ -14,8 +14,8 @@
 
 <br/><br/>
 
-![ADK Agentic RAG End-to-End Architecture](docs/assets/e2e_architecture.svg)
+## 🗺️ End-to-End System Architecture (`v2.4.1`)
 
-<br/>
+![ADK Agentic RAG End-to-End Architecture](docs/assets/e2e_architecture.svg)
 
 </div>
