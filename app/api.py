@@ -44,6 +44,7 @@ from app.graph_store import (
     search_knowledge_graph,
 )
 from app.ingest import get_ingestion_progress, ingest_document
+from app.parsers import extract_preview_text
 from app.rag_store import (
     delete_all_user_documents,
     delete_document_chunks,
@@ -315,25 +316,10 @@ async def ingest_progress(
     return get_ingestion_progress(current_user["user_id"])
 
 
-@app.post("/documents/upload")
-async def upload_document(
-    file: UploadFile = File(...),
-    doc_index: int = Query(default=1, ge=1),
-    total_docs: int = Query(default=1, ge=1),
-    current_user: dict = Depends(get_current_user),
-):
-    """
-    Upload and ingest a document into both Neon PostgreSQL (pgvector) and Neo4j Knowledge Graph.
-    Runs the ingestion pipeline in a background worker thread so live step progress
-    (/ingest/progress) can be polled concurrently without blocking the event loop.
-    """
-    user_id = current_user["user_id"]
-
+def _save_validated_temp_upload(file: UploadFile) -> tuple[str, str, str]:
+    """Validate an uploaded file extension and persist it to a safe temp path."""
     if not file.filename:
-        raise HTTPException(
-            status_code=400,
-            detail="Filename is required.",
-        )
+        raise HTTPException(status_code=400, detail="Filename is required.")
 
     clean_filename = os.path.basename(file.filename).replace("\r", "").replace("\n", "")
     raw_extension = os.path.splitext(clean_filename)[1].lower()
@@ -353,10 +339,58 @@ async def upload_document(
     if not file_path.startswith(UPLOAD_DIRECTORY + os.sep):
         raise HTTPException(status_code=400, detail="Invalid upload file path.")
 
-    try:
-        with open(file_path, "wb") as output_file:
-            shutil.copyfileobj(file.file, output_file)
+    with open(file_path, "wb") as output_file:
+        shutil.copyfileobj(file.file, output_file)
 
+    return clean_filename, safe_extension, file_path
+
+
+@app.post("/documents/preview-raw")
+async def preview_raw_upload(
+    file: UploadFile = File(...),
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Extract fast, zero-LLM preview text for an uploaded file (such as .docx, .xlsx,
+    .pptx, or .pdf) before ingestion so users can inspect it in the Upload tab.
+    """
+    _ = current_user["user_id"]
+    clean_filename, safe_extension, file_path = _save_validated_temp_upload(file)
+    try:
+        preview_text = await asyncio.to_thread(extract_preview_text, file_path)
+        return {
+            "success": True,
+            "filename": clean_filename,
+            "ext": safe_extension.lstrip("."),
+            "text": preview_text or "",
+        }
+    except Exception as exc:
+        logger.exception("Raw preview extraction failed for '%s'", clean_filename)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Could not extract preview: {exc}",
+        ) from exc
+    finally:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+
+@app.post("/documents/upload")
+async def upload_document(
+    file: UploadFile = File(...),
+    doc_index: int = Query(default=1, ge=1),
+    total_docs: int = Query(default=1, ge=1),
+    current_user: dict = Depends(get_current_user),
+):
+    """
+    Upload and ingest a document into both Neon PostgreSQL (pgvector) and Neo4j Knowledge Graph.
+    Runs the ingestion pipeline in a background worker thread so live step progress
+    (/ingest/progress) can be polled concurrently without blocking the event loop.
+    """
+    user_id = current_user["user_id"]
+    clean_filename, _, file_path = _save_validated_temp_upload(file)
+
+    try:
         result = await asyncio.to_thread(
             ingest_document,
             file_path=file_path,

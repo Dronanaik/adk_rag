@@ -14,11 +14,17 @@ import {
   Eye,
   Copy,
   Check,
+  Loader2,
 } from 'lucide-react'
+import { previewRawFile } from '../api'
 import styles from './UploadTab.module.css'
 
 const TEXT_PREVIEW_EXTENSIONS = new Set([
   'txt', 'md', 'csv', 'json', 'xml', 'html', 'htm', 'log',
+])
+
+const OFFICE_PREVIEW_EXTENSIONS = new Set([
+  'docx', 'xlsx', 'xls', 'pptx',
 ])
 
 const SUPPORTED_TYPES = [
@@ -158,6 +164,40 @@ export default function UploadTab({ userId, onStartUpload }) {
           blobUrl: null,
           text: `Could not read file: ${err.message}`,
         })
+      }
+      return
+    }
+
+    if (OFFICE_PREVIEW_EXTENSIONS.has(ext)) {
+      setRawPreview({
+        name: file.name,
+        size: file.size,
+        ext,
+        kind: 'loading',
+        blobUrl: null,
+        text: '',
+      })
+      try {
+        const res = await previewRawFile(file, userId)
+        setRawPreview(prev =>
+          prev && prev.name === file.name
+            ? {
+                ...prev,
+                kind: 'text',
+                text: res?.text || '',
+              }
+            : prev
+        )
+      } catch (err) {
+        setRawPreview(prev =>
+          prev && prev.name === file.name
+            ? {
+                ...prev,
+                kind: 'error',
+                text: `Could not extract .${ext} preview: ${err.message}`,
+              }
+            : prev
+        )
       }
       return
     }
@@ -406,6 +446,18 @@ export default function UploadTab({ userId, onStartUpload }) {
             </div>
 
             <div className={styles.previewBody}>
+              {rawPreview.kind === 'loading' && (
+                <div className={styles.previewBinaryNotice}>
+                  <Loader2 size={30} color="#22d3ee" className="spin" />
+                  <p className={styles.previewBinaryTitle}>
+                    Extracting .{rawPreview.ext} preview...
+                  </p>
+                  <p className={styles.previewBinarySub}>
+                    Reading paragraphs, headings, and tables from <strong>{rawPreview.name}</strong>.
+                  </p>
+                </div>
+              )}
+
               {rawPreview.kind === 'text' && (
                 <pre className={styles.previewTextContent}>
                   {rawPreview.text || '(Empty file)'}
