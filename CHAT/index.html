@@ -817,15 +817,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-4-agent-tools-in-detail" class="md-nav__link">
+  <a href="#the-5-agent-tools-in-detail" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The 4 Agent Tools in Detail
+        The 5 Agent Tools in Detail
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="The 4 Agent Tools in Detail">
+    <nav class="md-nav" aria-label="The 5 Agent Tools in Detail">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -872,8 +872,30 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#5-load_memoryquery-tool_context-v250" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. load_memory(query, tool_context) (v2.5.0)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#persistent-sessions-long-term-memory-v250" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Persistent Sessions &amp; Long-Term Memory (v2.5.0)
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1095,7 +1117,7 @@
   <span class="md-ellipsis">
     
   
-    Release Notes (v2.4.1)
+    Release Notes (v2.5.0)
   
 
     
@@ -1154,15 +1176,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-4-agent-tools-in-detail" class="md-nav__link">
+  <a href="#the-5-agent-tools-in-detail" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The 4 Agent Tools in Detail
+        The 5 Agent Tools in Detail
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="The 4 Agent Tools in Detail">
+    <nav class="md-nav" aria-label="The 5 Agent Tools in Detail">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1209,8 +1231,30 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#5-load_memoryquery-tool_context-v250" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. load_memory(query, tool_context) (v2.5.0)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#persistent-sessions-long-term-memory-v250" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Persistent Sessions &amp; Long-Term Memory (v2.5.0)
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1321,19 +1365,21 @@
 <p>The chat subsystem uses <strong>Google Agent Development Kit (<code>google-adk</code>)</strong> and <strong>Gemini (<code>gemini-2.5-pro</code>)</strong> to reason across both <strong>Neon PostgreSQL (<code>pgvector</code> + Full-Text Search)</strong> and the <strong>Neo4j Knowledge Graph</strong>.</p>
 <hr />
 <h2 id="multi-tool-agent-architecture-appagentpy">Multi-Tool Agent Architecture (<code>app/agent.py</code>)<a class="headerlink" href="#multi-tool-agent-architecture-appagentpy" title="Permanent link">&para;</a></h2>
-<p>The root agent (<code>root_agent</code>) is an instance of <code>google.adk.agents.LlmAgent</code> configured with four specialized tools:</p>
+<p>The root agent (<code>root_agent</code>) is an instance of <code>google.adk.agents.LlmAgent</code> configured with five specialized tools and backed by <strong><code>NeonSessionService</code></strong> + <strong><code>NeonMemoryService</code></strong>:</p>
 <pre class="mermaid"><code>flowchart TD
     Question["User Question in Agentic Chat"] --&gt; Agent["Google ADK LlmAgent (gemini-2.5-pro)"]
     Agent --&gt;|Exact terms + semantics| T1["1. hybrid_search (70% pgvector cosine + 30% PostgreSQL FTS)"]
     Agent --&gt;|Broad conceptual similarity| T2["2. vector_search (100% pgvector cosine similarity)"]
     Agent --&gt;|Entities &amp; factual triplets| T3["3. graph_search (Neo4j Entity &amp; RELATES_TO keyword match)"]
     Agent --&gt;|1-hop / 2-hop graph neighborhood| T4["4. get_entity_relationships (Neo4j Cypher neighborhood traversal)"]
+    Agent --&gt;|User preferences &amp; past context| T5["5. load_memory (Neon pgvector user_memories hybrid search)"]
     T1 --&gt; Synthesis["Synthesized Markdown Response with Tool Badges + Citations"]
     T2 --&gt; Synthesis
     T3 --&gt; Synthesis
-    T4 --&gt; Synthesis</code></pre>
+    T4 --&gt; Synthesis
+    T5 --&gt; Synthesis</code></pre>
 <hr />
-<h2 id="the-4-agent-tools-in-detail">The 4 Agent Tools in Detail<a class="headerlink" href="#the-4-agent-tools-in-detail" title="Permanent link">&para;</a></h2>
+<h2 id="the-5-agent-tools-in-detail">The 5 Agent Tools in Detail<a class="headerlink" href="#the-5-agent-tools-in-detail" title="Permanent link">&para;</a></h2>
 <h3 id="1-hybrid_searchquery-user_id-top_k5">1. <code>hybrid_search(query, user_id, top_k=5)</code><a class="headerlink" href="#1-hybrid_searchquery-user_id-top_k5" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Backend Function</strong>: <code>app/rag_store.py -&gt; hybrid_search_documents()</code></li>
@@ -1357,6 +1403,18 @@
 <li><strong>Backend Function</strong>: <code>app/graph_store.py -&gt; get_entity_relationships_from_graph()</code></li>
 <li><strong>How It Works</strong>: Finds the matching <code>(:Entity)</code> node in Neo4j (regardless of category) and traverses all incoming and outgoing <code>[:RELATES_TO]</code> edges.</li>
 <li><strong>Best For</strong>: Deep-diving into a specific named entity's direct neighborhood, dependencies, and supporting facts.</li>
+</ul>
+<h3 id="5-load_memoryquery-tool_context-v250">5. <code>load_memory(query, tool_context)</code> (<code>v2.5.0</code>)<a class="headerlink" href="#5-load_memoryquery-tool_context-v250" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Backend Service</strong>: <code>app/memory_store.py -&gt; NeonMemoryService.search_memory()</code></li>
+<li><strong>How It Works</strong>: Embeds <code>query</code> with <code>gemini-embedding-001</code> (<code>768</code>-dim) and runs hybrid vector + full-text search over the authenticated user's <code>user_memories</code> table in Neon PostgreSQL (<code>fact</code>, <code>preference</code>, and <code>summary</code> entries distilled automatically by <code>gemini-2.5-flash</code> or added manually).</li>
+<li><strong>Best For</strong>: Recalling user formatting preferences, ongoing project context, and cross-session continuity.</li>
+</ul>
+<hr />
+<h2 id="persistent-sessions-long-term-memory-v250">Persistent Sessions &amp; Long-Term Memory (<code>v2.5.0</code>)<a class="headerlink" href="#persistent-sessions-long-term-memory-v250" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Short-Term Session Persistence (<code>NeonSessionService</code>)</strong>: Replaces <code>InMemorySessionService</code> with Neon PostgreSQL (<code>chat_sessions</code> &amp; <code>chat_events</code> tables), preserving conversation turns and tool-call badges across server restarts and browser reloads. Users can browse, resume, or delete past sessions from the <strong>History</strong> sidebar in <code>ChatTab.jsx</code>.</li>
+<li><strong>Long-Term Semantic Memory (<code>NeonMemoryService</code>)</strong>: After each chat turn, a background task distills durable user facts/preferences with <code>gemini-2.5-flash</code>, deduplicates them (<code>cosine_similarity &gt;= 0.88</code>), and stores them in <code>user_memories</code>. Users can inspect, add, or forget memories anytime via the <strong>Memory</strong> modal.</li>
 </ul>
 <hr />
 <h2 id="dynamic-user-context-injection">Dynamic User Context Injection<a class="headerlink" href="#dynamic-user-context-injection" title="Permanent link">&para;</a></h2>

@@ -672,10 +672,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#1-end-to-end-system-architecture-v241" class="md-nav__link">
+  <a href="#1-end-to-end-system-architecture-v250" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. End-to-End System Architecture (v2.4.1)
+        1. End-to-End System Architecture (v2.5.0)
       
     </span>
   </a>
@@ -1056,7 +1056,7 @@
   <span class="md-ellipsis">
     
   
-    Release Notes (v2.4.1)
+    Release Notes (v2.5.0)
   
 
     
@@ -1115,10 +1115,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#1-end-to-end-system-architecture-v241" class="md-nav__link">
+  <a href="#1-end-to-end-system-architecture-v250" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. End-to-End System Architecture (v2.4.1)
+        1. End-to-End System Architecture (v2.5.0)
       
     </span>
   </a>
@@ -1268,7 +1268,7 @@
 </ul>
 </div>
 <hr />
-<h2 id="1-end-to-end-system-architecture-v241">1. End-to-End System Architecture (<code>v2.4.1</code>)<a class="headerlink" href="#1-end-to-end-system-architecture-v241" title="Permanent link">&para;</a></h2>
+<h2 id="1-end-to-end-system-architecture-v250">1. End-to-End System Architecture (<code>v2.5.0</code>)<a class="headerlink" href="#1-end-to-end-system-architecture-v250" title="Permanent link">&para;</a></h2>
 <p><img alt="ADK Agentic RAG End-to-End Architecture" src="../assets/e2e_architecture.svg" /></p>
 <hr />
 <h2 id="2-backend-module-architecture-app">2. Backend Module Architecture (<code>app/</code>)<a class="headerlink" href="#2-backend-module-architecture-app" title="Permanent link">&para;</a></h2>
@@ -1329,7 +1329,12 @@
 <tr>
 <td><strong>Google ADK Agent</strong></td>
 <td><code>app/agent.py</code></td>
-<td>Defines <code>root_agent</code> (<code>LlmAgent</code>) equipped with 4 tools (<code>hybrid_search</code>, <code>vector_search</code>, <code>graph_search</code>, <code>get_entity_relationships</code>) and dynamic system instructions injecting the active <code>user_id</code>.</td>
+<td>Defines <code>root_agent</code> (<code>LlmAgent</code>) equipped with 5 tools (<code>hybrid_search</code>, <code>vector_search</code>, <code>graph_search</code>, <code>get_entity_relationships</code>, <code>load_memory</code>) and dynamic user-scoped instructions.</td>
+</tr>
+<tr>
+<td><strong>Session &amp; Memory Store</strong></td>
+<td><code>app/memory_store.py</code></td>
+<td>Implements <code>NeonSessionService(BaseSessionService)</code> (<code>chat_sessions</code>, <code>chat_events</code>) for persistent multi-turn conversations and <code>NeonMemoryService(BaseMemoryService)</code> (<code>user_memories</code> with <code>pgvector</code> HNSW + GIN FTS + <code>gemini-2.5-flash</code> distillation) for cross-session memory.</td>
 </tr>
 <tr>
 <td><strong>RAG Evaluation &amp; LangSmith</strong></td>
