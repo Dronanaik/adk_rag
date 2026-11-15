@@ -1,14 +1,31 @@
-# Release Notes — `v2.4.1`
+# Release Notes — `v2.5.0`
 
-**Release Title:** Document Content Preview Modal (`v2.4.1`)  
-**Tag:** `v2.4.1`  
-**Previous Tag:** `v2.4.0`
+**Release Title:** Persistent Sessions, Long-Term Semantic Memory & Office Raw Preview (`v2.5.0`)  
+**Tag:** `v2.5.0`  
+**Previous Tag:** `v2.4.1`
 
 > **Combining Agentic RAG, Knowledge Graphs, and Hybrid Vector-Graph Retrieval to transform fragmented information into connected intelligence, powered by Google ADK and Gemini 2.5.**
 
 ---
 
-## What's New in `v2.4.1`
+## What's New in `v2.5.0`
+
+### 1. Persistent Chat Sessions & History Sidebar (`NeonSessionService`)
+- **Neon PostgreSQL Session Persistence (`app/memory_store.py`, `app/database.py`)**: Replaced ADK's `InMemorySessionService` with `NeonSessionService(BaseSessionService)` backed by `chat_sessions` and `chat_events` tables, preserving conversation history, tool calls, and auto-derived titles across server restarts and reloads.
+- **Session REST API (`app/api.py`)**: Added `GET /chat/sessions`, `GET /chat/sessions/{session_id}/messages`, and `DELETE /chat/sessions/{session_id}` strictly scoped by `user_id`.
+- **Chat History Sidebar (`frontend/src/components/ChatTab.jsx`)**: Added a collapsible **History** sidebar to browse, resume, create, or delete persisted conversations.
+
+### 2. Long-Term Semantic User Memory (`NeonMemoryService` + `load_memory`)
+- **Neon `pgvector` Memory Store (`user_memories` table)**: Implemented `NeonMemoryService(BaseMemoryService)` with `gemini-embedding-001` (`768`-dim) HNSW + GIN full-text search and `gemini-2.5-flash` background distillation with cosine deduplication (`>= 0.88`).
+- **ADK `load_memory` Tool (`app/agent.py`)**: Equipped `root_agent` with ADK's `load_memory` tool alongside `hybrid_search`, `vector_search`, `graph_search`, and `get_entity_relationships`.
+- **Memory Manager UI & REST API**: Added `GET /memories`, `POST /memories`, `DELETE /memories/{memory_id}`, and `DELETE /memories` plus an interactive **Long-Term Semantic Memory Modal** in `ChatTab.jsx` to inspect, add, or forget memories.
+
+### 3. `.docx` & Office Raw File Preview in Upload Tab (`v2.5.0`)
+- **`POST /documents/preview-raw` (`app/parsers.py`, `app/api.py`)**: Added fast, zero-LLM `extract_preview_text` extraction so queued `.docx`, `.xlsx`/`.xls`, `.pptx`, and `.pdf` files render their real headings, paragraphs, tables, sheets, and slides in `UploadTab.jsx` before ingestion.
+
+---
+
+## Previous Release: `v2.4.1`
 
 ### 1. Uploaded Document Preview Endpoint (`app/rag_store.py`, `app/api.py`)
 - **`GET /documents/{document_id}/preview`**: Added a multi-tenant, JWT-authenticated endpoint backed by `get_document_preview(user_id, document_id)` in `app/rag_store.py`.

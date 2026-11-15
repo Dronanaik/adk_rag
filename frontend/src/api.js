@@ -223,6 +223,54 @@ export async function sendMessage(query, userId, sessionId = null) {
   )
 }
 
+export async function listChatSessions(userId) {
+  return apiFetch('/chat/sessions', {}, userId)
+}
+
+export async function getChatSessionMessages(sessionId, userId) {
+  return apiFetch(`/chat/sessions/${encodeURIComponent(sessionId)}/messages`, {}, userId)
+}
+
+export async function deleteChatSession(sessionId, userId) {
+  return apiFetch(
+    `/chat/sessions/${encodeURIComponent(sessionId)}`,
+    { method: 'DELETE' },
+    userId
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Long-Term Agent Memory (Neon PostgreSQL + pgvector)
+// ---------------------------------------------------------------------------
+
+export async function listMemories(userId) {
+  return apiFetch('/memories', {}, userId)
+}
+
+export async function addMemory(content, memoryType = 'preference', userId) {
+  return apiFetch(
+    '/memories',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content, memory_type: memoryType }),
+    },
+    userId
+  )
+}
+
+export async function deleteMemory(memoryId, userId) {
+  return apiFetch(
+    `/memories/${encodeURIComponent(memoryId)}`,
+    { method: 'DELETE' },
+    userId
+  )
+}
+
+export async function clearAllMemories(userId) {
+  return apiFetch('/memories', { method: 'DELETE' }, userId)
+}
+
 // ---------------------------------------------------------------------------
 // Environment & Connection Settings
 // ---------------------------------------------------------------------------

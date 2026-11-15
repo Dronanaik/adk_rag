@@ -81,6 +81,58 @@ CREATE INDEX IF NOT EXISTS idx_document_chunks_embedding_hnsw
 CREATE INDEX IF NOT EXISTS idx_document_chunks_content_fts
     ON document_chunks
     USING gin (to_tsvector('english', content));
+
+CREATE TABLE IF NOT EXISTS chat_sessions (
+    id TEXT NOT NULL,
+    app_name TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+    title TEXT NOT NULL DEFAULT 'New Conversation',
+    state JSONB NOT NULL DEFAULT '{{}}'::jsonb,
+    last_update_time DOUBLE PRECISION NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (app_name, user_id, id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_chat_sessions_user_updated
+    ON chat_sessions (user_id, last_update_time DESC);
+
+CREATE TABLE IF NOT EXISTS chat_events (
+    id TEXT PRIMARY KEY,
+    session_id TEXT NOT NULL,
+    app_name TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+    author TEXT,
+    invocation_id TEXT,
+    timestamp DOUBLE PRECISION NOT NULL,
+    event_data JSONB NOT NULL,
+    FOREIGN KEY (app_name, user_id, session_id)
+        REFERENCES chat_sessions(app_name, user_id, id)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_chat_events_session_ts
+    ON chat_events (app_name, user_id, session_id, timestamp ASC);
+
+CREATE TABLE IF NOT EXISTS user_memories (
+    id UUID PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    session_id TEXT,
+    memory_type TEXT NOT NULL DEFAULT 'fact',
+    content TEXT NOT NULL,
+    embedding VECTOR({EMBEDDING_DIMENSIONS}) NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_memories_user_created
+    ON user_memories (user_id, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_user_memories_embedding_hnsw
+    ON user_memories
+    USING hnsw (embedding vector_cosine_ops);
+
+CREATE INDEX IF NOT EXISTS idx_user_memories_content_fts
+    ON user_memories
+    USING gin (to_tsvector('english', content));
 """
 
 

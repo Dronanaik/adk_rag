@@ -12,7 +12,6 @@ from pydantic import BaseModel
 
 from google.genai import types
 from google.adk.runners import Runner
-from google.adk.sessions import InMemorySessionService
 
 from app.agent import root_agent
 from app.auth import (
@@ -44,6 +43,17 @@ from app.graph_store import (
     search_knowledge_graph,
 )
 from app.ingest import get_ingestion_progress, ingest_document
+from app.memory_store import (
+    NeonMemoryService,
+    NeonSessionService,
+    add_manual_memory,
+    delete_all_user_memories,
+    delete_user_chat_session,
+    delete_user_memory,
+    get_user_chat_messages,
+    list_user_chat_sessions,
+    list_user_memories,
+)
 from app.parsers import extract_preview_text
 from app.rag_store import (
     delete_all_user_documents,
@@ -77,7 +87,7 @@ app = FastAPI(
         "Hybrid Agentic RAG & Knowledge Graph platform powered by Google ADK, "
         "Gemini, Neon PostgreSQL (pgvector), and Neo4j."
     ),
-    version="2.4.1",
+    version="2.5.0",
     lifespan=lifespan,
 )
 
@@ -105,14 +115,16 @@ APP_NAME = "document_rag_app"
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
 # ---------------------------------------------------------------------------
-# ADK session service — shared across all requests (in-memory).
-# Each user gets their own session keyed by (user_id, session_id).
+# ADK persistent session & memory services — backed by Neon PostgreSQL.
+# Each user gets isolated sessions and semantic memories keyed by user_id.
 # ---------------------------------------------------------------------------
-_session_service = InMemorySessionService()
+_session_service = NeonSessionService()
+_memory_service = NeonMemoryService()
 _runner = Runner(
     app_name=APP_NAME,
     agent=root_agent,
     session_service=_session_service,
+    memory_service=_memory_service,
 )
 
 SUPPORTED_FILE_TYPES = [
@@ -666,11 +678,111 @@ async def chat(
     if not answer_text:
         answer_text = "I could not generate a response. Please try again."
 
+    async def _distill_memory_bg(uid: str, sid: str) -> None:
+        try:
+            updated_session = await _session_service.get_session(
+                app_name=APP_NAME, user_id=uid, session_id=sid
+            )
+            if updated_session:
+                await _memory_service.add_session_to_memory(updated_session)
+        except Exception:
+            logger.debug("Background memory distillation skipped", exc_info=True)
+
+    asyncio.create_task(_distill_memory_bg(user_id, session.id))
+
     return QueryResponse(
         answer=answer_text,
         session_id=session.id,
         tools_used=tools_used,
     )
+
+
+class ManualMemoryRequest(BaseModel):
+    content: str
+    memory_type: str = "preference"
+
+
+@app.get("/chat/sessions")
+async def get_chat_sessions(current_user: dict = Depends(get_current_user)):
+    """List persistent chat sessions belonging to the authenticated user."""
+    sessions = await asyncio.to_thread(
+        list_user_chat_sessions, current_user["user_id"], APP_NAME
+    )
+    return {"sessions": sessions}
+
+
+@app.get("/chat/sessions/{session_id}/messages")
+async def get_chat_session_messages(
+    session_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    """Return ordered user/assistant messages for a persisted chat session."""
+    messages = await asyncio.to_thread(
+        get_user_chat_messages, current_user["user_id"], session_id, APP_NAME
+    )
+    return {"session_id": session_id, "messages": messages}
+
+
+@app.delete("/chat/sessions/{session_id}")
+async def remove_chat_session(
+    session_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    """Delete a persisted chat session and all of its events."""
+    deleted = await asyncio.to_thread(
+        delete_user_chat_session, current_user["user_id"], session_id, APP_NAME
+    )
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Chat session not found.")
+    return {"success": True, "session_id": session_id}
+
+
+@app.get("/memories")
+async def get_memories(current_user: dict = Depends(get_current_user)):
+    """List all long-term semantic memories stored for the authenticated user."""
+    memories = await asyncio.to_thread(list_user_memories, current_user["user_id"])
+    return {"memories": memories}
+
+
+@app.post("/memories")
+async def create_memory(
+    request: ManualMemoryRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    """Manually add a persistent user preference, fact, or summary memory."""
+    try:
+        memory = await asyncio.to_thread(
+            add_manual_memory,
+            current_user["user_id"],
+            request.content,
+            request.memory_type,
+        )
+        return {"success": True, "memory": memory}
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.delete("/memories/{memory_id}")
+async def remove_memory(
+    memory_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    """Delete a specific long-term memory belonging to the authenticated user."""
+    deleted = await asyncio.to_thread(
+        delete_user_memory, current_user["user_id"], memory_id
+    )
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Memory not found.")
+    return {"success": True, "memory_id": memory_id}
+
+
+@app.delete("/memories")
+async def clear_memories(current_user: dict = Depends(get_current_user)):
+    """Clear all long-term semantic memories for the authenticated user."""
+    deleted_count = await asyncio.to_thread(
+        delete_all_user_memories, current_user["user_id"]
+    )
+    return {"success": True, "deleted_count": deleted_count}
 
 
 class EnvSettingsUpdateRequest(BaseModel):
