@@ -20,12 +20,118 @@
 .headerActions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
+}
+
+.chatShell {
+  display: flex;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.historySidebar {
+  width: 260px;
+  flex-shrink: 0;
+  border-radius: var(--radius-xl);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 560px;
+  background: rgba(8, 23, 18, 0.88);
+}
+
+.historyHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  padding: 2px 4px;
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.historyEmpty {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 20px 8px;
+}
+
+.sessionItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(52, 211, 153, 0.14);
+  background: rgba(15, 36, 29, 0.55);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.sessionItem:hover {
+  border-color: rgba(34, 211, 238, 0.4);
+  background: rgba(17, 48, 39, 0.75);
+}
+
+.sessionItemActive {
+  border-color: rgba(34, 211, 238, 0.65);
+  background: rgba(13, 148, 136, 0.18);
+}
+
+.sessionInfo {
+  min-width: 0;
+  flex: 1;
+}
+
+.sessionTitle {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sessionMeta {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.sessionDelBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+}
+
+.sessionDelBtn:hover {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.12);
 }
 
 /* ── Chat area ── */
 .chatArea {
+  flex: 1;
+  min-width: 0;
   min-height: 460px;
   max-height: 560px;
   overflow: hidden;
@@ -199,6 +305,136 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
+}
+
+/* ── Memory Modal ── */
+.memoryModalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(2, 9, 7, 0.78);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.memoryModal {
+  width: min(680px, 100%);
+  max-height: 82vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  background: rgba(8, 22, 18, 0.98);
+  border: 1px solid rgba(34, 211, 238, 0.35);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+  overflow: hidden;
+}
+
+.memoryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(52, 211, 153, 0.16);
+}
+
+.memoryHeaderTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.memoryHeaderSub {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.memoryBody {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+}
+
+.memoryAddForm {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.memorySelect {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  background: rgba(11, 29, 23, 0.9);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+}
+
+.memoryInput {
+  flex: 1;
+  min-width: 200px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  background: rgba(11, 29, 23, 0.9);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+}
+
+.memoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.memoryCard {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(52, 211, 153, 0.16);
+  background: rgba(12, 31, 25, 0.75);
+}
+
+.memoryCardBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.memoryTypeBadge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(34, 211, 238, 0.14);
+  color: #22d3ee;
+  border: 1px solid rgba(34, 211, 238, 0.35);
+  margin-bottom: 4px;
+}
+
+.memoryText {
+  font-size: 0.86rem;
+  color: var(--text-primary);
+  line-height: 1.45;
+}
+
+@media (max-width: 768px) {
+  .chatShell { flex-direction: column; }
+  .historySidebar { width: 100%; max-height: 200px; }
 }
 
 @media (max-width: 600px) {

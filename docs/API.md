@@ -248,17 +248,17 @@ curl "http://localhost:8000/graph/entity/PostgreSQL?depth=1" \
 
 ---
 
-## 6. Agentic Chat Endpoint
+## 6. Agentic Chat & Persistent Session Endpoints
 
 ### `POST /chat`
-Sends a question to the Google ADK `LlmAgent` equipped with `hybrid_search`, `vector_search`, `graph_search`, and `get_entity_relationships`.
+Sends a question to the Google ADK `LlmAgent` equipped with `hybrid_search`, `vector_search`, `graph_search`, `get_entity_relationships`, and `load_memory` (long-term user memory). Conversations are persisted in Neon PostgreSQL (`chat_sessions` & `chat_events`), and durable user preferences/facts are distilled asynchronously into `user_memories`.
 
 ```bash
 curl -X POST http://localhost:8000/chat \
   -H "Authorization: Bearer <TOKEN>" \
   -H "Content-Type: application/json" \
   -d '{
-    "question": "How are entities extracted and connected across my documents?",
+    "query": "How are entities extracted and connected across my documents?",
     "session_id": "session_demo_1"
   }'
 ```
@@ -266,14 +266,20 @@ curl -X POST http://localhost:8000/chat \
 **Response (`200 OK`)**:
 ```json
 {
-  "status": "success",
-  "question": "How are entities extracted and connected across my documents?",
   "answer": "Entities are extracted using Gemini Structured Outputs and stored in Neo4j...",
-  "tools_used": ["hybrid_search", "graph_search"],
   "session_id": "session_demo_1",
-  "user_id": "user_9f8e7d6c5b4a3210"
+  "tools_used": ["hybrid_search", "graph_search"]
 }
 ```
+
+### `GET /chat/sessions`
+Lists persistent chat sessions belonging to the authenticated user (`session_id`, `title`, `last_update_time`, `created_at`, `message_count`).
+
+### `GET /chat/sessions/{session_id}/messages`
+Returns ordered user and assistant turns (including `tools` used) for a persisted chat session.
+
+### `DELETE /chat/sessions/{session_id}`
+Deletes a persisted chat session and all of its stored events.
 
 ---
 
@@ -333,3 +339,29 @@ Executes the Google ADK Agent on each test case, scores responses across 5 metri
 
 ### `GET /evals/runs`
 Returns LangSmith connection status (`langsmith_configured`, `tracing_enabled`, `project`) and recent evaluation runs for the authenticated user.
+
+---
+
+## 9. Long-Term Memory & Raw Preview Endpoints (`v2.5.0`)
+
+### `GET /memories`
+Lists all long-term semantic memories (`memory_id`, `memory_type`, `content`, `session_id`, `created_at`) stored in Neon PostgreSQL (`user_memories`) for the authenticated user.
+
+### `POST /memories`
+Manually saves a persistent user preference, fact, or summary memory and embeds it with `gemini-embedding-001` (`768`-dim).
+
+```bash
+curl -X POST http://localhost:8000/memories \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "Always summarize technical metrics in concise bullet points.",
+    "memory_type": "preference"
+  }'
+```
+
+### `DELETE /memories/{memory_id}` & `DELETE /memories`
+Deletes a single memory by ID or clears all long-term memories for the authenticated user.
+
+### `POST /documents/preview-raw`
+Extracts fast, zero-LLM raw preview text (headings, paragraphs, and Markdown tables) for queued `.docx`, `.xlsx`/`.xls`, `.pptx`, or `.pdf` files before ingestion.

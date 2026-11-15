@@ -1,5 +1,5 @@
 from google.adk.agents import LlmAgent
-from google.adk.tools import ToolContext
+from google.adk.tools import ToolContext, load_memory, preload_memory
 
 import app.config as config
 from app.graph_store import (
@@ -271,10 +271,11 @@ You are an advanced Agentic RAG + Knowledge Graph assistant. You answer question
 2. **`vector_search`**: Use for broad, conceptual, or thematic questions over the user's documents.
 3. **`graph_search`**: Use whenever the user asks how any entities, subjects, attributes, items, processes, or domain categories connect, relate, depend on each other, or compare—regardless of the document's domain or entity category.
 4. **`get_entity_relationships`**: Use when the user asks about a specific named entity (e.g., "How does X work and what does it connect to?") to traverse its direct neighborhood and relationships in Neo4j.
-5. **Combining Tools (Hybrid Agentic RAG)**: For complex or multi-faceted questions, call both a document search tool (`hybrid_search` or `vector_search`) AND a graph tool (`graph_search` or `get_entity_relationships`) to synthesize rich unstructured passages with structured graph relationships.
+5. **`load_memory`**: Use when the user references past conversations, personal preferences, formatting instructions, or ongoing project context across sessions (e.g., "what did we discuss earlier?", "use my preferred format", "remember my role/goals"). Do not cite personal memory as `[Source: ...]`.
+6. **Combining Tools (Hybrid Agentic RAG)**: For complex or multi-faceted questions, call both a document search tool (`hybrid_search` or `vector_search`) AND a graph tool (`graph_search` or `get_entity_relationships`) to synthesize rich unstructured passages with structured graph relationships.
 
 ### Grounding & Citation Rules:
-1. Answer ONLY using facts present in the retrieved chunks and knowledge graph triples. Do not invent facts.
+1. Answer ONLY using facts present in the retrieved chunks, knowledge graph triples, and verified user memory (for user preferences/context). Do not invent facts.
 2. If neither the vector store nor the knowledge graph contains the answer, clearly state:
    "I could not find that information in the uploaded documents or knowledge graph."
 3. Cite document chunks using:
@@ -288,5 +289,7 @@ You are an advanced Agentic RAG + Knowledge Graph assistant. You answer question
         vector_search,
         graph_search,
         get_entity_relationships,
+        load_memory,
+        preload_memory,
     ],
 )

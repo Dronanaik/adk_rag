@@ -6,7 +6,7 @@ The chat subsystem uses **Google Agent Development Kit (`google-adk`)** and **Ge
 
 ## Multi-Tool Agent Architecture (`app/agent.py`)
 
-The root agent (`root_agent`) is an instance of `google.adk.agents.LlmAgent` configured with four specialized tools:
+The root agent (`root_agent`) is an instance of `google.adk.agents.LlmAgent` configured with five specialized tools and backed by **`NeonSessionService`** + **`NeonMemoryService`**:
 
 ```mermaid
 flowchart TD
@@ -15,15 +15,17 @@ flowchart TD
     Agent -->|Broad conceptual similarity| T2["2. vector_search (100% pgvector cosine similarity)"]
     Agent -->|Entities & factual triplets| T3["3. graph_search (Neo4j Entity & RELATES_TO keyword match)"]
     Agent -->|1-hop / 2-hop graph neighborhood| T4["4. get_entity_relationships (Neo4j Cypher neighborhood traversal)"]
+    Agent -->|User preferences & past context| T5["5. load_memory (Neon pgvector user_memories hybrid search)"]
     T1 --> Synthesis["Synthesized Markdown Response with Tool Badges + Citations"]
     T2 --> Synthesis
     T3 --> Synthesis
     T4 --> Synthesis
+    T5 --> Synthesis
 ```
 
 ---
 
-## The 4 Agent Tools in Detail
+## The 5 Agent Tools in Detail
 
 ### 1. `hybrid_search(query, user_id, top_k=5)`
 - **Backend Function**: `app/rag_store.py -> hybrid_search_documents()`
@@ -44,6 +46,18 @@ flowchart TD
 - **Backend Function**: `app/graph_store.py -> get_entity_relationships_from_graph()`
 - **How It Works**: Finds the matching `(:Entity)` node in Neo4j (regardless of category) and traverses all incoming and outgoing `[:RELATES_TO]` edges.
 - **Best For**: Deep-diving into a specific named entity's direct neighborhood, dependencies, and supporting facts.
+
+### 5. `load_memory(query, tool_context)` (`v2.5.0`)
+- **Backend Service**: `app/memory_store.py -> NeonMemoryService.search_memory()`
+- **How It Works**: Embeds `query` with `gemini-embedding-001` (`768`-dim) and runs hybrid vector + full-text search over the authenticated user's `user_memories` table in Neon PostgreSQL (`fact`, `preference`, and `summary` entries distilled automatically by `gemini-2.5-flash` or added manually).
+- **Best For**: Recalling user formatting preferences, ongoing project context, and cross-session continuity.
+
+---
+
+## Persistent Sessions & Long-Term Memory (`v2.5.0`)
+
+- **Short-Term Session Persistence (`NeonSessionService`)**: Replaces `InMemorySessionService` with Neon PostgreSQL (`chat_sessions` & `chat_events` tables), preserving conversation turns and tool-call badges across server restarts and browser reloads. Users can browse, resume, or delete past sessions from the **History** sidebar in `ChatTab.jsx`.
+- **Long-Term Semantic Memory (`NeonMemoryService`)**: After each chat turn, a background task distills durable user facts/preferences with `gemini-2.5-flash`, deduplicates them (`cosine_similarity >= 0.88`), and stores them in `user_memories`. Users can inspect, add, or forget memories anytime via the **Memory** modal.
 
 ---
 
