@@ -804,3 +804,54 @@ def extract_text(file_path: str) -> str:
         "Supported types: .pdf, .docx, .xlsx, .xls, .pptx, "
         ".txt, .md, .csv, .json, .xml, .html, .htm, .log"
     )
+
+
+def extract_preview_text(file_path: str) -> str:
+    """
+    Fast, zero-LLM raw document preview extractor for pre-ingestion inspection
+    in the Upload tab (especially .docx, .xlsx/.xls, .pptx, and .pdf).
+    """
+    extension = Path(file_path).suffix.lower()
+
+    if extension == ".docx":
+        return _extract_docx_native_lossless(file_path)
+
+    if extension in {".xlsx", ".xls"}:
+        import openpyxl
+
+        workbook = openpyxl.load_workbook(file_path, read_only=True, data_only=True)
+        sheet_texts: list[str] = []
+        for sheet_name in workbook.sheetnames:
+            sheet = workbook[sheet_name]
+            rows: list[list[str]] = []
+            for row in sheet.iter_rows(values_only=True):
+                row_values = [str(cell).strip() if cell is not None else "" for cell in row]
+                if any(row_values):
+                    rows.append(row_values)
+            if rows:
+                md_table = _rows_to_markdown_table(rows)
+                if md_table:
+                    sheet_texts.append(f"## [Sheet: {sheet_name}]\n\n{md_table}")
+        return "\n\n".join(sheet_texts)
+
+    if extension == ".pptx":
+        from pptx import Presentation
+
+        presentation = Presentation(file_path)
+        slides: list[str] = []
+        for slide_number, slide in enumerate(presentation.slides, start=1):
+            slide_parts: list[str] = []
+            for shape in slide.shapes:
+                slide_parts.extend(_extract_shape_content(shape))
+            if getattr(slide, "has_notes_slide", False) and slide.notes_slide:
+                notes_frame = getattr(slide.notes_slide, "notes_text_frame", None)
+                if notes_frame and notes_frame.text and notes_frame.text.strip():
+                    slide_parts.append(f"[Speaker Notes]\n{notes_frame.text.strip()}")
+            if slide_parts:
+                slides.append(f"## [Slide {slide_number}]\n\n" + "\n\n".join(slide_parts))
+        return "\n\n".join(slides)
+
+    if extension == ".pdf":
+        return _extract_pdf_pymupdf_lossless(file_path)
+
+    return extract_text(file_path)
