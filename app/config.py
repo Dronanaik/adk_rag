@@ -13,6 +13,8 @@ DOCS_BASE_URL = "https://dronanaik.github.io/adk_rag/INSTALLATION/"
 SYSTEM_FALLBACKS: dict[str, str] = {
     "GOOGLE_API_KEY": "",
     "AGENT_MODEL": "gemini-2.5-pro",
+    "VOICE_MODEL": "gemini-3.1-flash-live-preview",
+    "VOICE_NAME": "Aoede",
     "GRAPH_EXTRACTION_MODEL": "gemini-2.5-flash",
     "EMBEDDING_MODEL": "gemini-embedding-001",
     "EMBEDDING_DIMENSIONS": "768",
@@ -56,6 +58,24 @@ ENV_VAR_DEFINITIONS: list[dict[str, Any]] = [
         "is_secret": False,
         "placeholder": "gemini-2.5-pro",
         "description": "Primary Gemini model powering the Google ADK multi-tool reasoning agent.",
+        "doc_url": f"{DOCS_BASE_URL}#2-agent_model-adk-reasoning-model",
+    },
+    {
+        "key": "VOICE_MODEL",
+        "label": "Conversational Voice Live Model",
+        "group": "gemini",
+        "is_secret": False,
+        "placeholder": "gemini-3.1-flash-live-preview",
+        "description": "Gemini Live bidirectional audio model powering real-time conversational voice.",
+        "doc_url": f"{DOCS_BASE_URL}#2-agent_model-adk-reasoning-model",
+    },
+    {
+        "key": "VOICE_NAME",
+        "label": "Voice Agent Persona",
+        "group": "gemini",
+        "is_secret": False,
+        "placeholder": "Aoede",
+        "description": "Prebuilt Gemini Live voice (Aoede, Puck, Charon, Kore, Fenrir).",
         "doc_url": f"{DOCS_BASE_URL}#2-agent_model-adk-reasoning-model",
     },
     {
@@ -217,13 +237,15 @@ def _sync_module_globals() -> None:
     """
     Keep module-level constants synchronized with the active configuration.
     """
-    global GOOGLE_API_KEY, AGENT_MODEL, GRAPH_EXTRACTION_MODEL, EMBEDDING_MODEL
+    global GOOGLE_API_KEY, AGENT_MODEL, VOICE_MODEL, VOICE_NAME, GRAPH_EXTRACTION_MODEL, EMBEDDING_MODEL
     global EMBEDDING_DIMENSIONS, DATABASE_URL, JWT_SECRET_KEY, JWT_EXPIRE_HOURS
     global NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD, NEO4J_DATABASE, TOP_K
     global LANGSMITH_TRACING, LANGSMITH_API_KEY, LANGSMITH_PROJECT, LANGSMITH_ENDPOINT
 
     GOOGLE_API_KEY = get_config_value("GOOGLE_API_KEY")
     AGENT_MODEL = get_config_value("AGENT_MODEL") or "gemini-2.5-pro"
+    VOICE_MODEL = get_config_value("VOICE_MODEL") or "gemini-3.1-flash-live-preview"
+    VOICE_NAME = get_config_value("VOICE_NAME") or "Aoede"
     GRAPH_EXTRACTION_MODEL = get_config_value("GRAPH_EXTRACTION_MODEL") or "gemini-2.5-flash"
     EMBEDDING_MODEL = get_config_value("EMBEDDING_MODEL") or "gemini-embedding-001"
 
@@ -368,6 +390,8 @@ def reset_runtime_config() -> list[dict[str, Any]]:
 # Initialize module-level globals on import
 GOOGLE_API_KEY: str = ""
 AGENT_MODEL: str = "gemini-2.5-pro"
+VOICE_MODEL: str = "gemini-3.1-flash-live-preview"
+VOICE_NAME: str = "Aoede"
 GRAPH_EXTRACTION_MODEL: str = "gemini-2.5-flash"
 EMBEDDING_MODEL: str = "gemini-embedding-001"
 EMBEDDING_DIMENSIONS: int = 768

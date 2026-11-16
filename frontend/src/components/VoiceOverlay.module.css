@@ -1,0 +1,324 @@
+.voiceStage {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 520px;
+  padding: 20px 24px;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 38%, rgba(6, 182, 212, 0.08), transparent 65%);
+}
+
+.voiceTopBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.voiceMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: var(--text-muted, #94a3b8);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  background: rgba(15, 23, 42, 0.75);
+  color: #e2e8f0;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #64748b;
+}
+
+.statusDot_listening {
+  background: #22d3ee;
+  box-shadow: 0 0 10px #22d3ee;
+}
+
+.statusDot_thinking {
+  background: #fbbf24;
+  box-shadow: 0 0 10px #fbbf24;
+}
+
+.statusDot_speaking {
+  background: #34d399;
+  box-shadow: 0 0 12px #34d399;
+}
+
+.statusDot_connecting {
+  background: #38bdf8;
+  animation: pulseDot 1s ease-in-out infinite;
+}
+
+.statusDot_error {
+  background: #f87171;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+.orbStage {
+  flex: 1;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: 18px;
+}
+
+.orbContainer {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+/* Concentric shockwave rings that blow up with audio */
+.shockRing {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  transition: transform 65ms ease-out, opacity 90ms ease-out, border-color 220ms ease;
+}
+
+.ringOuter {
+  border: 2px solid rgba(34, 211, 238, 0.22);
+  box-shadow: 0 0 36px rgba(34, 211, 238, 0.16);
+}
+
+.ringMid {
+  inset: 16px;
+  border: 2px solid rgba(52, 211, 153, 0.32);
+  box-shadow: 0 0 28px rgba(52, 211, 153, 0.2);
+}
+
+.ringInner {
+  inset: 32px;
+  border: 2px solid rgba(167, 243, 208, 0.38);
+}
+
+/* Main Big Round Speaker Sphere */
+.bigOrb {
+  position: relative;
+  width: 176px;
+  height: 176px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  border: 2px solid rgba(103, 232, 249, 0.45);
+  background: radial-gradient(
+    circle at 32% 30%,
+    rgba(103, 232, 249, 0.42) 0%,
+    rgba(16, 185, 129, 0.26) 42%,
+    rgba(6, 78, 59, 0.88) 78%,
+    rgba(2, 6, 23, 0.96) 100%
+  );
+  box-shadow:
+    0 0 40px rgba(34, 211, 238, 0.28),
+    inset 0 0 32px rgba(103, 232, 249, 0.25);
+  transition: transform 60ms ease-out, box-shadow 120ms ease-out, border-color 220ms ease, background 250ms ease;
+  color: #ecfeff;
+}
+
+.bigOrb:hover {
+  border-color: rgba(103, 232, 249, 0.85);
+}
+
+.bigOrb_idle {
+  animation: idleBreath 3.6s ease-in-out infinite;
+}
+
+.bigOrb_thinking {
+  border-color: rgba(251, 191, 36, 0.75);
+  background: radial-gradient(
+    circle at 32% 30%,
+    rgba(253, 224, 71, 0.42) 0%,
+    rgba(245, 158, 11, 0.28) 45%,
+    rgba(120, 53, 15, 0.88) 82%,
+    rgba(2, 6, 23, 0.96) 100%
+  );
+  box-shadow:
+    0 0 54px rgba(251, 191, 36, 0.38),
+    inset 0 0 32px rgba(253, 224, 71, 0.3);
+}
+
+.bigOrb_speaking {
+  border-color: rgba(52, 211, 153, 0.9);
+  background: radial-gradient(
+    circle at 32% 30%,
+    rgba(167, 243, 208, 0.62) 0%,
+    rgba(16, 185, 129, 0.44) 42%,
+    rgba(6, 95, 70, 0.92) 80%,
+    rgba(2, 6, 23, 0.96) 100%
+  );
+}
+
+@keyframes idleBreath {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.035); }
+}
+
+.orbLabel {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(236, 254, 255, 0.9);
+}
+
+.toolRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  min-height: 26px;
+}
+
+.toolPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  color: #fde68a;
+}
+
+.controlsRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.controlBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(15, 23, 42, 0.85);
+  color: #e2e8f0;
+  transition: all 0.18s ease;
+}
+
+.controlBtn:hover:not(:disabled) {
+  border-color: rgba(56, 189, 248, 0.55);
+  transform: translateY(-1px);
+}
+
+.controlBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.startBtn {
+  background: linear-gradient(135deg, #06b6d4, #10b981);
+  border-color: transparent;
+  color: #022c22;
+}
+
+.endBtn {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(248, 113, 113, 0.45);
+  color: #fecaca;
+}
+
+.muteActive {
+  background: rgba(245, 158, 11, 0.18);
+  border-color: rgba(251, 191, 36, 0.5);
+  color: #fde68a;
+}
+
+.transcriptBox {
+  max-height: 165px;
+  overflow-y: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(2, 6, 23, 0.55);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.transcriptEmpty {
+  text-align: center;
+  font-size: 0.82rem;
+  color: #64748b;
+  padding: 10px 0;
+}
+
+.transcriptItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.transcriptRole {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.roleUser {
+  color: #38bdf8;
+}
+
+.roleAssistant {
+  color: #34d399;
+}
+
+.transcriptText {
+  color: #e2e8f0;
+}
+
+.errorBanner {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.14);
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  color: #fecaca;
+  font-size: 0.82rem;
+  text-align: center;
+}

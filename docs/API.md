@@ -365,3 +365,18 @@ Deletes a single memory by ID or clears all long-term memories for the authentic
 
 ### `POST /documents/preview-raw`
 Extracts fast, zero-LLM raw preview text (headings, paragraphs, and Markdown tables) for queued `.docx`, `.xlsx`/`.xls`, `.pptx`, or `.pdf` files before ingestion.
+
+---
+
+## 10. Conversational Voice WebSocket (`v2.6.0`)
+
+### `WS /ws/voice?token=<jwt>&session_id=<uuid>`
+Establishes a real-time bidirectional Gemini Live audio session (`gemini-3.1-flash-live-preview`) via Google ADK `Runner.run_live` (`StreamingMode.BIDI`) with full RAG, Knowledge Graph, Persistent Session, and Long-Term Memory parity.
+
+- **Authentication**: Validated via `token` query parameter (`decode_access_token`) with `user_id` scoped to the user's `email`.
+- **Client -> Server**:
+  - **Binary frames**: Raw 16 kHz mono Int16 PCM microphone audio chunks.
+  - **JSON text frames**: `{"type": "text", "text": "..."}` or `{"type": "close"}`.
+- **Server -> Client**:
+  - **Binary frames**: Raw 24 kHz mono Int16 PCM synthesized agent audio.
+  - **JSON text frames**: `ready`, `input_transcript`, `output_transcript`, `tool_call`, `interrupted` (barge-in), `turn_complete`, and `error`.

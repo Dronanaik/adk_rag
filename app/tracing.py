@@ -74,7 +74,7 @@ def ls_trace(
     try:
         from langsmith import trace
 
-        with trace(
+        ctx = trace(
             name=name,
             run_type=run_type,
             inputs=inputs or {},
@@ -82,8 +82,17 @@ def ls_trace(
             metadata=metadata or {},
             tags=tags or [],
             client=client,
-        ) as run:
-            yield run
+        )
+        run = ctx.__enter__()
     except Exception:
         logger.debug("LangSmith trace span '%s' skipped due to tracing error", name, exc_info=True)
         yield _NoOpRun()
+        return
+
+    try:
+        yield run
+    except BaseException as exc:
+        ctx.__exit__(type(exc), exc, exc.__traceback__)
+        raise
+    else:
+        ctx.__exit__(None, None, None)

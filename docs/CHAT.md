@@ -61,6 +61,15 @@ flowchart TD
 
 ---
 
+## Conversational Voice Agent (`v2.6.0`)
+
+Clicking **Voice** inside `ChatTab` switches seamlessly into real-time bidirectional voice mode powered by `gemini-3.1-flash-live-preview` (`VOICE_MODEL`) and Google ADK `Runner.run_live` (`StreamingMode.BIDI`):
+- **Full Tool & Memory Parity**: Uses the exact same async `hybrid_search`, `vector_search`, `graph_search`, `get_entity_relationships`, and `load_memory` tools, and persists turns to `NeonSessionService` + distills long-term memories into `NeonMemoryService`.
+- **Low-Latency Audio Pipeline**: Captures 16 kHz Int16 PCM mic audio and plays 24 kHz PCM agent speech via `frontend/public/pcm-processor.js` (`AudioWorklet`), with server-side VAD (`silence_duration_ms=450`) and instant **barge-in interruption**.
+- **Big Round Speaker Orb UI**: Displays an audio-reactive central sphere (`VoiceOverlay.jsx`) with concentric shockwave rings that dynamically expand and glow with live mic/speaker RMS energy, alongside live captions and active tool badges.
+
+---
+
 ## Dynamic User Context Injection
 
 To guarantee that the agent always queries only the signed-in user's data without asking the user for their ID, `build_agent_instruction(readonly_context: ReadonlyContext)` dynamically injects the authenticated `user_id` into the system prompt on every turn:

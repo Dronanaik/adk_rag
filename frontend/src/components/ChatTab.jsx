@@ -10,6 +10,7 @@ import {
   Trash2,
   Plus,
   X,
+  Mic,
 } from 'lucide-react'
 import {
   addMemory,
@@ -21,7 +22,9 @@ import {
   listMemories,
   sendMessage,
 } from '../api.js'
+import { useVoiceAgent } from '../hooks/useVoiceAgent.js'
 import ChatMessage from './ChatMessage.jsx'
+import VoiceOverlay from './VoiceOverlay.jsx'
 import styles from './ChatTab.module.css'
 
 const SUGGESTED_QUESTIONS = [
@@ -48,6 +51,9 @@ export default function ChatTab({ userId }) {
   const [memoryInput, setMemoryInput] = useState('')
   const [memoryType, setMemoryType] = useState('preference')
   const [savingMemory, setSavingMemory] = useState(false)
+
+  // Conversational Voice Mode
+  const [voiceMode, setVoiceMode] = useState(false)
 
   const bottomRef = useRef(null)
   const inputRef = useRef(null)
@@ -77,6 +83,33 @@ export default function ChatTab({ userId }) {
     refreshSessions()
     refreshMemories()
   }, [refreshSessions, refreshMemories])
+
+  const voice = useVoiceAgent({
+    sessionId,
+    onTurnComplete: () => {
+      refreshSessions()
+      setTimeout(() => refreshMemories(), 2000)
+      setTimeout(() => refreshMemories(), 5000)
+    },
+  })
+
+  function handleToggleVoiceMode() {
+    if (!voiceMode) {
+      if (!sessionId) {
+        const sid = typeof crypto !== 'undefined' && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `voice-${Date.now()}`
+        setSessionId(sid)
+      }
+      setVoiceMode(true)
+    } else {
+      voice.stopVoice()
+      setVoiceMode(false)
+      if (sessionId) {
+        handleSelectSession(sessionId)
+      }
+    }
+  }
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
@@ -118,6 +151,12 @@ export default function ChatTab({ userId }) {
   async function handleSend(queryText) {
     const query = (queryText || input).trim()
     if (!query || loading) return
+
+    if (voiceMode) {
+      voice.sendTextToVoice(query)
+      setInput('')
+      return
+    }
 
     const userMsg = {
       id: Date.now(),
@@ -241,6 +280,15 @@ export default function ChatTab({ userId }) {
             <Brain size={14} style={{ marginRight: '4px' }} />
             Memory ({memories.length})
           </button>
+          <button
+            className={`btn ${voiceMode ? 'btn-primary' : 'btn-secondary'} btn-sm`}
+            onClick={handleToggleVoiceMode}
+            id="toggle-voice-btn"
+            title="Open Conversational Voice Agent"
+          >
+            <Mic size={14} style={{ marginRight: '4px' }} />
+            {voiceMode ? 'Voice On' : 'Voice'}
+          </button>
           {sessionId && (
             <span className="badge badge-teal" title={`Session: ${sessionId}`}>
               <LinkIcon size={12} style={{ marginRight: '4px' }} /> Session active
@@ -312,7 +360,15 @@ export default function ChatTab({ userId }) {
 
         {/* Chat area */}
         <div className={`glass-card ${styles.chatArea}`}>
-          {messages.length === 0 ? (
+          {voiceMode ? (
+            <VoiceOverlay
+              voice={voice}
+              onSwitchToText={() => {
+                setVoiceMode(false)
+                if (sessionId) handleSelectSession(sessionId)
+              }}
+            />
+          ) : messages.length === 0 ? (
             <div className={styles.emptyChat}>
               <div className={styles.emptyChatIconWrap}>
                 <MessageSquare size={30} />

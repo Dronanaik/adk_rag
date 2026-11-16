@@ -6,7 +6,7 @@ import shutil
 import tempfile
 import uuid
 
-from fastapi import Depends, FastAPI, File, HTTPException, Query, UploadFile
+from fastapi import Depends, FastAPI, File, HTTPException, Query, UploadFile, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -17,10 +17,12 @@ from app.agent import root_agent
 from app.auth import (
     authenticate_user,
     create_access_token,
+    decode_access_token,
     get_current_user,
     get_user_by_id,
     register_user,
 )
+from app.voice import handle_voice_websocket
 import app.config as config
 from app.config import (
     get_env_settings_payload,
@@ -87,7 +89,7 @@ app = FastAPI(
         "Hybrid Agentic RAG & Knowledge Graph platform powered by Google ADK, "
         "Gemini, Neon PostgreSQL (pgvector), and Neo4j."
     ),
-    version="2.5.0",
+    version="2.6.0",
     lifespan=lifespan,
 )
 
@@ -783,6 +785,51 @@ async def clear_memories(current_user: dict = Depends(get_current_user)):
         delete_all_user_memories, current_user["user_id"]
     )
     return {"success": True, "deleted_count": deleted_count}
+
+
+@app.websocket("/ws/voice")
+async def voice_websocket(
+    websocket: WebSocket,
+    token: str = Query(default=""),
+    session_id: str = Query(default=""),
+):
+    """Real-time bidirectional Gemini Live voice endpoint with full RAG, Graph & Memory parity."""
+    if not token:
+        await websocket.close(code=4401, reason="Missing authentication token.")
+        return
+
+    try:
+        payload = decode_access_token(token)
+        email = payload.get("email")
+        sub = payload.get("sub")
+        if email and sub:
+            user = {
+                "id": sub,
+                "email": email,
+                "full_name": payload.get("full_name", email),
+                "user_id": email,
+            }
+        else:
+            user = None
+    except Exception as exc:
+        logger.warning("Voice WebSocket auth failed: %s", exc)
+        user = None
+
+    if not user:
+        await websocket.close(code=4401, reason="Invalid or expired token.")
+        return
+
+    await websocket.accept()
+    raw_sid = (session_id or "").strip()
+    sid = str(uuid.uuid4()) if raw_sid.lower() in {"", "null", "undefined"} else raw_sid
+    await handle_voice_websocket(
+        websocket=websocket,
+        user=user,
+        session_id=sid,
+        app_name=APP_NAME,
+        session_service=_session_service,
+        memory_service=_memory_service,
+    )
 
 
 class EnvSettingsUpdateRequest(BaseModel):
