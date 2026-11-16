@@ -36,7 +36,7 @@ The **ADK Agentic RAG + Knowledge Graph** platform is engineered as a modular, m
 
 ---
 
-## 1. End-to-End System Architecture (`v2.5.0`)
+## 1. End-to-End System Architecture (`v2.6.0`)
 
 ![ADK Agentic RAG End-to-End Architecture](assets/e2e_architecture.svg)
 
@@ -55,7 +55,8 @@ The **ADK Agentic RAG + Knowledge Graph** platform is engineered as a modular, m
 | **Vector & Hybrid Store** | `app/rag_store.py` | Executes Neon PostgreSQL CRUD (`add_document_chunks`, `get_document_preview`, `delete_document_chunks`, `list_user_documents`) and retrieval (`search_documents` pure vector cosine search and `hybrid_search_documents` combining `70%` vector similarity + `30%` `ts_rank_cd` full-text score). |
 | **Knowledge Graph Store** | `app/graph_store.py` | Extracts structured `ExtractedEntity` and `ExtractedRelationship` objects from chunks using `gemini-2.5-flash` and persists/queries them in Neo4j via parameterized Cypher queries. |
 | **Dual Ingestion Pipeline** | `app/ingest.py` | Orchestrates the 5-step ingestion pipeline and maintains real-time per-user step telemetry (`_user_ingestion_progress`) polled by the frontend UI. |
-| **Google ADK Agent** | `app/agent.py` | Defines `root_agent` (`LlmAgent`) equipped with 5 tools (`hybrid_search`, `vector_search`, `graph_search`, `get_entity_relationships`, `load_memory`) and dynamic user-scoped instructions. |
+| **Google ADK Agent** | `app/agent.py` | Defines `root_agent` (`AGENT_MODEL`) and `create_voice_agent()` (`VOICE_MODEL`) equipped with async `hybrid_search`, `vector_search`, `graph_search`, `get_entity_relationships`, and `load_memory`/`preload_memory` tools. |
+| **Conversational Voice Engine** | `app/voice.py` | Manages bidirectional Gemini Live (`gemini-3.1-flash-live-preview`) WebSocket sessions via `Runner.run_live`, `LiveRequestQueue`, and `StreamingMode.BIDI` with live transcriptions, barge-in, and background memory distillation. |
 | **Session & Memory Store** | `app/memory_store.py` | Implements `NeonSessionService(BaseSessionService)` (`chat_sessions`, `chat_events`) for persistent multi-turn conversations and `NeonMemoryService(BaseMemoryService)` (`user_memories` with `pgvector` HNSW + GIN FTS + `gemini-2.5-flash` distillation) for cross-session memory. |
 | **RAG Evaluation & LangSmith** | `app/evals/` | Generates synthetic Q&A golden datasets from indexed chunks (`dataset_generator.py`), evaluates RAG outputs across 5 metrics using `gemini-2.5-flash` LLM-as-a-Judge (`judge.py`), orchestrates local/LangSmith runs (`runner.py`), and logs traces/feedback (`langsmith_tracer.py`). |
 | **REST API** | `app/api.py` | Exposes FastAPI endpoints for Auth, Settings, Upload, Live Ingestion Progress, Documents & Preview, Knowledge Graph, Agentic Chat, and RAG Evaluation. Runs heavy ingestion in `asyncio.to_thread` using OS temp storage (`/tmp/adk_rag_uploads`) so Uvicorn `--reload` is never interrupted. |

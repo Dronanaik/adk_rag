@@ -1,3 +1,5 @@
+import asyncio
+
 from google.adk.agents import LlmAgent
 from google.adk.tools import ToolContext, load_memory, preload_memory
 
@@ -10,7 +12,7 @@ from app.rag_store import hybrid_search_documents, search_documents
 from app.tracing import ls_trace
 
 
-def vector_search(
+async def vector_search(
     query: str,
     tool_context: ToolContext,
 ) -> dict:
@@ -35,11 +37,22 @@ def vector_search(
         metadata={"user_id": user_id, "store": "neon_pgvector"},
         tags=["adk-tool", "vector_search"],
     ) as run:
-        matches = search_documents(
-            user_id=user_id,
-            query=query,
-            top_k=config.TOP_K,
-        )
+        try:
+            matches = await asyncio.to_thread(
+                search_documents,
+                user_id=user_id,
+                query=query,
+                top_k=config.TOP_K,
+            )
+        except Exception as exc:
+            result = {
+                "found": False,
+                "search_type": "vector_search",
+                "error": str(exc),
+                "sources": [],
+            }
+            run.end(outputs=result)
+            return result
 
         if not matches:
             result = {
@@ -75,7 +88,7 @@ def vector_search(
         return result
 
 
-def hybrid_search(
+async def hybrid_search(
     query: str,
     tool_context: ToolContext,
 ) -> dict:
@@ -101,11 +114,22 @@ def hybrid_search(
         metadata={"user_id": user_id, "store": "neon_pgvector_fts"},
         tags=["adk-tool", "hybrid_search"],
     ) as run:
-        matches = hybrid_search_documents(
-            user_id=user_id,
-            query=query,
-            top_k=config.TOP_K,
-        )
+        try:
+            matches = await asyncio.to_thread(
+                hybrid_search_documents,
+                user_id=user_id,
+                query=query,
+                top_k=config.TOP_K,
+            )
+        except Exception as exc:
+            result = {
+                "found": False,
+                "search_type": "hybrid_search",
+                "error": str(exc),
+                "sources": [],
+            }
+            run.end(outputs=result)
+            return result
 
         if not matches:
             result = {
@@ -142,7 +166,7 @@ def hybrid_search(
         return result
 
 
-def graph_search(
+async def graph_search(
     query: str,
     tool_context: ToolContext,
 ) -> dict:
@@ -168,11 +192,23 @@ def graph_search(
         metadata={"user_id": user_id, "store": "neo4j"},
         tags=["adk-tool", "graph_search"],
     ) as run:
-        graph_data = search_knowledge_graph(
-            user_id=user_id,
-            query=query,
-            limit=12,
-        )
+        try:
+            graph_data = await asyncio.to_thread(
+                search_knowledge_graph,
+                user_id=user_id,
+                query=query,
+                limit=12,
+            )
+        except Exception as exc:
+            result = {
+                "found": False,
+                "search_type": "graph_search",
+                "error": str(exc),
+                "entities": [],
+                "relationships": [],
+            }
+            run.end(outputs=result)
+            return result
 
         entities = graph_data.get("entities", [])
         relationships = graph_data.get("relationships", [])
@@ -198,7 +234,7 @@ def graph_search(
         return result
 
 
-def get_entity_relationships(
+async def get_entity_relationships(
     entity_name: str,
     tool_context: ToolContext,
 ) -> dict:
@@ -225,11 +261,24 @@ def get_entity_relationships(
         metadata={"user_id": user_id, "store": "neo4j"},
         tags=["adk-tool", "get_entity_relationships"],
     ) as run:
-        result_data = get_entity_relationships_from_graph(
-            user_id=user_id,
-            entity_name=entity_name,
-            limit=20,
-        )
+        try:
+            result_data = await asyncio.to_thread(
+                get_entity_relationships_from_graph,
+                user_id=user_id,
+                entity_name=entity_name,
+                limit=20,
+            )
+        except Exception as exc:
+            result = {
+                "found": False,
+                "search_type": "get_entity_relationships",
+                "entity": entity_name,
+                "error": str(exc),
+                "entities": [],
+                "relationships": [],
+            }
+            run.end(outputs=result)
+            return result
 
         if not result_data.get("found"):
             result = {
@@ -254,14 +303,7 @@ def get_entity_relationships(
         return result
 
 
-root_agent = LlmAgent(
-    name="agentic_rag_knowledge_graph_agent",
-    model=config.AGENT_MODEL,
-    description=(
-        "Hybrid Agentic RAG + Knowledge Graph assistant powered by Neon PostgreSQL "
-        "(pgvector) and Neo4j."
-    ),
-    instruction="""
+AGENT_INSTRUCTION = """
 You are an advanced Agentic RAG + Knowledge Graph assistant. You answer questions strictly using the authenticated user's uploaded documents stored across two complementary databases:
 - **Neon PostgreSQL (pgvector + Full-Text Search)** for unstructured document chunks.
 - **Neo4j Knowledge Graph** for structured domain-agnostic entities (across any category present in the document) and relationship triples.
@@ -283,13 +325,54 @@ You are an advanced Agentic RAG + Knowledge Graph assistant. You answer question
 4. When using facts from the Neo4j Knowledge Graph, also include relationship citations using:
    `[Graph: Source -> RELATION_TYPE -> Target]`
 5. Never reveal or reference data belonging to another user.
-""",
-    tools=[
-        hybrid_search,
-        vector_search,
-        graph_search,
-        get_entity_relationships,
-        load_memory,
-        preload_memory,
-    ],
+"""
+
+VOICE_INSTRUCTION_APPENDIX = """
+### Conversational Voice Mode Guidelines:
+- Speak naturally, warmly, and concisely in plain conversational sentences suited for spoken audio.
+- Mention document or graph sources naturally in speech (for example, "According to your architecture document..." or "In the knowledge graph...") instead of reading raw markdown punctuation aloud.
+- For ANY factual, document, or relationship question (such as "How does X relate to Y?"), ALWAYS call `hybrid_search` AND `graph_search` (and `get_entity_relationships` for each named entity like "X" and "Y") with concise keywords before answering. If the first query returns empty, retry with `vector_search` or shorter entity names.
+- Use `load_memory` whenever the user asks about personal preferences or past conversations.
+"""
+
+AGENT_TOOLS = [
+    hybrid_search,
+    vector_search,
+    graph_search,
+    get_entity_relationships,
+    load_memory,
+    preload_memory,
+]
+
+VOICE_TOOLS = [
+    hybrid_search,
+    vector_search,
+    graph_search,
+    get_entity_relationships,
+    load_memory,
+]
+
+root_agent = LlmAgent(
+    name="agentic_rag_knowledge_graph_agent",
+    model=config.AGENT_MODEL,
+    description=(
+        "Hybrid Agentic RAG + Knowledge Graph assistant powered by Neon PostgreSQL "
+        "(pgvector) and Neo4j."
+    ),
+    instruction=AGENT_INSTRUCTION,
+    tools=AGENT_TOOLS,
 )
+
+
+def create_voice_agent() -> LlmAgent:
+    """Create a Gemini Live-compatible voice agent sharing all RAG, Graph, and Memory tools."""
+    return LlmAgent(
+        name="agentic_rag_knowledge_graph_voice_agent",
+        model=config.VOICE_MODEL,
+        description=(
+            "Real-time Conversational Voice Agent with Hybrid Agentic RAG, "
+            "Neo4j Knowledge Graph, and Persistent Memory."
+        ),
+        instruction=AGENT_INSTRUCTION + "\n" + VOICE_INSTRUCTION_APPENDIX,
+        tools=VOICE_TOOLS,
+    )

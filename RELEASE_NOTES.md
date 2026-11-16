@@ -1,14 +1,27 @@
-# Release Notes — `v2.5.0`
+# Release Notes — `v2.6.0`
 
-**Release Title:** Persistent Sessions, Long-Term Semantic Memory & Office Raw Preview (`v2.5.0`)  
-**Tag:** `v2.5.0`  
-**Previous Tag:** `v2.4.1`
+**Release Title:** Real-Time Conversational Voice Agent & Audio-Reactive Speaker Orb (`v2.6.0`)  
+**Tag:** `v2.6.0`  
+**Previous Tag:** `v2.5.0`
 
-> **Combining Agentic RAG, Knowledge Graphs, and Hybrid Vector-Graph Retrieval to transform fragmented information into connected intelligence, powered by Google ADK and Gemini 2.5.**
+> **Combining Agentic RAG, Knowledge Graphs, Hybrid Vector-Graph Retrieval, Persistent Memory, and Real-Time Bidirectional Voice powered by Google ADK and Gemini Live.**
 
 ---
 
-## What's New in `v2.5.0`
+## What's New in `v2.6.0`
+
+### 1. Real-Time Conversational Voice Agent (`WS /ws/voice`)
+- **Google ADK Live Bidirectional Audio (`app/voice.py`, `app/api.py`)**: Added `@app.websocket("/ws/voice")` powered by `Runner.run_live`, `LiveRequestQueue`, and `StreamingMode.BIDI` using `gemini-3.1-flash-live-preview` (`VOICE_MODEL`) and `Aoede` (`VOICE_NAME`), with server-side VAD (`AutomaticActivityDetection(silence_duration_ms=450)`) and instant barge-in interruption.
+- **Full RAG, Knowledge Graph, Session & Memory Parity (`app/agent.py`)**: Converted `vector_search`, `hybrid_search`, `graph_search`, and `get_entity_relationships` to non-blocking `async def` tools (`asyncio.to_thread`) so Neon pgvector and Neo4j queries run concurrently without stalling live audio, scoped by JWT `email` `user_id` and persisted in `NeonSessionService` + `NeonMemoryService`.
+- **Exception-Safe LangSmith Tracing (`app/tracing.py`)**: Fixed `ls_trace` context-manager exception propagation so transient DB/network errors return clean tool error payloads without crashing live streams.
+
+### 2. Big Audio-Reactive Round Speaker Orb UI
+- **Low-Latency `AudioWorklet` Pipeline (`frontend/public/pcm-processor.js`, `frontend/src/hooks/useVoiceAgent.js`)**: Streams 16 kHz Int16 PCM microphone audio and plays 24 kHz PCM agent speech with instant ring-buffer flush on barge-in and whitespace-normalized live captions.
+- **Big Round Speaker Orb (`frontend/src/components/VoiceOverlay.jsx`, `ChatTab.jsx`)**: Added a **Voice** toggle inside `ChatTab` launching an audio-reactive glowing orb with concentric shockwave rings that dynamically expand with live voice energy, alongside **Mute/Unmute**, **Interrupt**, **End Call**, and **Text Chat** switching on the same persisted session.
+
+---
+
+## Previous Release: `v2.5.0`
 
 ### 1. Persistent Chat Sessions & History Sidebar (`NeonSessionService`)
 - **Neon PostgreSQL Session Persistence (`app/memory_store.py`, `app/database.py`)**: Replaced ADK's `InMemorySessionService` with `NeonSessionService(BaseSessionService)` backed by `chat_sessions` and `chat_events` tables, preserving conversation history, tool calls, and auto-derived titles across server restarts and reloads.
