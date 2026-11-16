@@ -86,7 +86,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#release-notes-v250" class="md-skip">
+        <a href="#release-notes-v260" class="md-skip">
           Skip to content
         </a>
       
@@ -1005,15 +1005,54 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#whats-new-in-v250" class="md-nav__link">
+  <a href="#whats-new-in-v260" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What's New in v2.5.0
+        What's New in v2.6.0
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="What&#39;s New in v2.5.0">
+    <nav class="md-nav" aria-label="What&#39;s New in v2.6.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-real-time-conversational-voice-agent-ws-wsvoice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Real-Time Conversational Voice Agent (WS /ws/voice)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-big-audio-reactive-round-speaker-orb-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Big Audio-Reactive Round Speaker Orb UI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#previous-release-v250" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Previous Release: v2.5.0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Previous Release: v2.5.0">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1147,15 +1186,54 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#whats-new-in-v250" class="md-nav__link">
+  <a href="#whats-new-in-v260" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What's New in v2.5.0
+        What's New in v2.6.0
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="What&#39;s New in v2.5.0">
+    <nav class="md-nav" aria-label="What&#39;s New in v2.6.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-real-time-conversational-voice-agent-ws-wsvoice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Real-Time Conversational Voice Agent (WS /ws/voice)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-big-audio-reactive-round-speaker-orb-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Big Audio-Reactive Round Speaker Orb UI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#previous-release-v250" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Previous Release: v2.5.0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Previous Release: v2.5.0">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1327,15 +1405,28 @@
   
 
 
-<h1 id="release-notes-v250">Release Notes — <code>v2.5.0</code><a class="headerlink" href="#release-notes-v250" title="Permanent link">&para;</a></h1>
-<p><strong>Release Title:</strong> Persistent Sessions, Long-Term Semantic Memory &amp; Office Raw Preview (<code>v2.5.0</code>)<br />
-<strong>Tag:</strong> <code>v2.5.0</code><br />
-<strong>Previous Tag:</strong> <code>v2.4.1</code></p>
+<h1 id="release-notes-v260">Release Notes — <code>v2.6.0</code><a class="headerlink" href="#release-notes-v260" title="Permanent link">&para;</a></h1>
+<p><strong>Release Title:</strong> Real-Time Conversational Voice Agent &amp; Audio-Reactive Speaker Orb (<code>v2.6.0</code>)<br />
+<strong>Tag:</strong> <code>v2.6.0</code><br />
+<strong>Previous Tag:</strong> <code>v2.5.0</code></p>
 <blockquote>
-<p><strong>Combining Agentic RAG, Knowledge Graphs, and Hybrid Vector-Graph Retrieval to transform fragmented information into connected intelligence, powered by Google ADK and Gemini 2.5.</strong></p>
+<p><strong>Combining Agentic RAG, Knowledge Graphs, Hybrid Vector-Graph Retrieval, Persistent Memory, and Real-Time Bidirectional Voice powered by Google ADK and Gemini Live.</strong></p>
 </blockquote>
 <hr />
-<h2 id="whats-new-in-v250">What's New in <code>v2.5.0</code><a class="headerlink" href="#whats-new-in-v250" title="Permanent link">&para;</a></h2>
+<h2 id="whats-new-in-v260">What's New in <code>v2.6.0</code><a class="headerlink" href="#whats-new-in-v260" title="Permanent link">&para;</a></h2>
+<h3 id="1-real-time-conversational-voice-agent-ws-wsvoice">1. Real-Time Conversational Voice Agent (<code>WS /ws/voice</code>)<a class="headerlink" href="#1-real-time-conversational-voice-agent-ws-wsvoice" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Google ADK Live Bidirectional Audio (<code>app/voice.py</code>, <code>app/api.py</code>)</strong>: Added <code>@app.websocket("/ws/voice")</code> powered by <code>Runner.run_live</code>, <code>LiveRequestQueue</code>, and <code>StreamingMode.BIDI</code> using <code>gemini-3.1-flash-live-preview</code> (<code>VOICE_MODEL</code>) and <code>Aoede</code> (<code>VOICE_NAME</code>), with server-side VAD (<code>AutomaticActivityDetection(silence_duration_ms=450)</code>) and instant barge-in interruption.</li>
+<li><strong>Full RAG, Knowledge Graph, Session &amp; Memory Parity (<code>app/agent.py</code>)</strong>: Converted <code>vector_search</code>, <code>hybrid_search</code>, <code>graph_search</code>, and <code>get_entity_relationships</code> to non-blocking <code>async def</code> tools (<code>asyncio.to_thread</code>) so Neon pgvector and Neo4j queries run concurrently without stalling live audio, scoped by JWT <code>email</code> <code>user_id</code> and persisted in <code>NeonSessionService</code> + <code>NeonMemoryService</code>.</li>
+<li><strong>Exception-Safe LangSmith Tracing (<code>app/tracing.py</code>)</strong>: Fixed <code>ls_trace</code> context-manager exception propagation so transient DB/network errors return clean tool error payloads without crashing live streams.</li>
+</ul>
+<h3 id="2-big-audio-reactive-round-speaker-orb-ui">2. Big Audio-Reactive Round Speaker Orb UI<a class="headerlink" href="#2-big-audio-reactive-round-speaker-orb-ui" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Low-Latency <code>AudioWorklet</code> Pipeline (<code>frontend/public/pcm-processor.js</code>, <code>frontend/src/hooks/useVoiceAgent.js</code>)</strong>: Streams 16 kHz Int16 PCM microphone audio and plays 24 kHz PCM agent speech with instant ring-buffer flush on barge-in and whitespace-normalized live captions.</li>
+<li><strong>Big Round Speaker Orb (<code>frontend/src/components/VoiceOverlay.jsx</code>, <code>ChatTab.jsx</code>)</strong>: Added a <strong>Voice</strong> toggle inside <code>ChatTab</code> launching an audio-reactive glowing orb with concentric shockwave rings that dynamically expand with live voice energy, alongside <strong>Mute/Unmute</strong>, <strong>Interrupt</strong>, <strong>End Call</strong>, and <strong>Text Chat</strong> switching on the same persisted session.</li>
+</ul>
+<hr />
+<h2 id="previous-release-v250">Previous Release: <code>v2.5.0</code><a class="headerlink" href="#previous-release-v250" title="Permanent link">&para;</a></h2>
 <h3 id="1-persistent-chat-sessions-history-sidebar-neonsessionservice">1. Persistent Chat Sessions &amp; History Sidebar (<code>NeonSessionService</code>)<a class="headerlink" href="#1-persistent-chat-sessions-history-sidebar-neonsessionservice" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Neon PostgreSQL Session Persistence (<code>app/memory_store.py</code>, <code>app/database.py</code>)</strong>: Replaced ADK's <code>InMemorySessionService</code> with <code>NeonSessionService(BaseSessionService)</code> backed by <code>chat_sessions</code> and <code>chat_events</code> tables, preserving conversation history, tool calls, and auto-derived titles across server restarts and reloads.</li>

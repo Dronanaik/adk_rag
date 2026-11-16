@@ -672,10 +672,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#1-end-to-end-system-architecture-v250" class="md-nav__link">
+  <a href="#1-end-to-end-system-architecture-v260" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. End-to-End System Architecture (v2.5.0)
+        1. End-to-End System Architecture (v2.6.0)
       
     </span>
   </a>
@@ -1115,10 +1115,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#1-end-to-end-system-architecture-v250" class="md-nav__link">
+  <a href="#1-end-to-end-system-architecture-v260" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. End-to-End System Architecture (v2.5.0)
+        1. End-to-End System Architecture (v2.6.0)
       
     </span>
   </a>
@@ -1268,7 +1268,7 @@
 </ul>
 </div>
 <hr />
-<h2 id="1-end-to-end-system-architecture-v250">1. End-to-End System Architecture (<code>v2.5.0</code>)<a class="headerlink" href="#1-end-to-end-system-architecture-v250" title="Permanent link">&para;</a></h2>
+<h2 id="1-end-to-end-system-architecture-v260">1. End-to-End System Architecture (<code>v2.6.0</code>)<a class="headerlink" href="#1-end-to-end-system-architecture-v260" title="Permanent link">&para;</a></h2>
 <p><img alt="ADK Agentic RAG End-to-End Architecture" src="../assets/e2e_architecture.svg" /></p>
 <hr />
 <h2 id="2-backend-module-architecture-app">2. Backend Module Architecture (<code>app/</code>)<a class="headerlink" href="#2-backend-module-architecture-app" title="Permanent link">&para;</a></h2>
@@ -1329,7 +1329,12 @@
 <tr>
 <td><strong>Google ADK Agent</strong></td>
 <td><code>app/agent.py</code></td>
-<td>Defines <code>root_agent</code> (<code>LlmAgent</code>) equipped with 5 tools (<code>hybrid_search</code>, <code>vector_search</code>, <code>graph_search</code>, <code>get_entity_relationships</code>, <code>load_memory</code>) and dynamic user-scoped instructions.</td>
+<td>Defines <code>root_agent</code> (<code>AGENT_MODEL</code>) and <code>create_voice_agent()</code> (<code>VOICE_MODEL</code>) equipped with async <code>hybrid_search</code>, <code>vector_search</code>, <code>graph_search</code>, <code>get_entity_relationships</code>, and <code>load_memory</code>/<code>preload_memory</code> tools.</td>
+</tr>
+<tr>
+<td><strong>Conversational Voice Engine</strong></td>
+<td><code>app/voice.py</code></td>
+<td>Manages bidirectional Gemini Live (<code>gemini-3.1-flash-live-preview</code>) WebSocket sessions via <code>Runner.run_live</code>, <code>LiveRequestQueue</code>, and <code>StreamingMode.BIDI</code> with live transcriptions, barge-in, and background memory distillation.</td>
 </tr>
 <tr>
 <td><strong>Session &amp; Memory Store</strong></td>

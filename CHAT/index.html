@@ -900,6 +900,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#conversational-voice-agent-v260" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conversational Voice Agent (v2.6.0)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#dynamic-user-context-injection" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1259,6 +1270,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#conversational-voice-agent-v260" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conversational Voice Agent (v2.6.0)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#dynamic-user-context-injection" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1416,6 +1438,12 @@
 <li><strong>Short-Term Session Persistence (<code>NeonSessionService</code>)</strong>: Replaces <code>InMemorySessionService</code> with Neon PostgreSQL (<code>chat_sessions</code> &amp; <code>chat_events</code> tables), preserving conversation turns and tool-call badges across server restarts and browser reloads. Users can browse, resume, or delete past sessions from the <strong>History</strong> sidebar in <code>ChatTab.jsx</code>.</li>
 <li><strong>Long-Term Semantic Memory (<code>NeonMemoryService</code>)</strong>: After each chat turn, a background task distills durable user facts/preferences with <code>gemini-2.5-flash</code>, deduplicates them (<code>cosine_similarity &gt;= 0.88</code>), and stores them in <code>user_memories</code>. Users can inspect, add, or forget memories anytime via the <strong>Memory</strong> modal.</li>
 </ul>
+<hr />
+<h2 id="conversational-voice-agent-v260">Conversational Voice Agent (<code>v2.6.0</code>)<a class="headerlink" href="#conversational-voice-agent-v260" title="Permanent link">&para;</a></h2>
+<p>Clicking <strong>Voice</strong> inside <code>ChatTab</code> switches seamlessly into real-time bidirectional voice mode powered by <code>gemini-3.1-flash-live-preview</code> (<code>VOICE_MODEL</code>) and Google ADK <code>Runner.run_live</code> (<code>StreamingMode.BIDI</code>):
+- <strong>Full Tool &amp; Memory Parity</strong>: Uses the exact same async <code>hybrid_search</code>, <code>vector_search</code>, <code>graph_search</code>, <code>get_entity_relationships</code>, and <code>load_memory</code> tools, and persists turns to <code>NeonSessionService</code> + distills long-term memories into <code>NeonMemoryService</code>.
+- <strong>Low-Latency Audio Pipeline</strong>: Captures 16 kHz Int16 PCM mic audio and plays 24 kHz PCM agent speech via <code>frontend/public/pcm-processor.js</code> (<code>AudioWorklet</code>), with server-side VAD (<code>silence_duration_ms=450</code>) and instant <strong>barge-in interruption</strong>.
+- <strong>Big Round Speaker Orb UI</strong>: Displays an audio-reactive central sphere (<code>VoiceOverlay.jsx</code>) with concentric shockwave rings that dynamically expand and glow with live mic/speaker RMS energy, alongside live captions and active tool badges.</p>
 <hr />
 <h2 id="dynamic-user-context-injection">Dynamic User Context Injection<a class="headerlink" href="#dynamic-user-context-injection" title="Permanent link">&para;</a></h2>
 <p>To guarantee that the agent always queries only the signed-in user's data without asking the user for their ID, <code>build_agent_instruction(readonly_context: ReadonlyContext)</code> dynamically injects the authenticated <code>user_id</code> into the system prompt on every turn:</p>
