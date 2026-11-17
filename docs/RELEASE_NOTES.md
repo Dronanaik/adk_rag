@@ -1,10 +1,30 @@
+---
+tags:
+  - Release Notes
+  - v2.6.0
+  - v2.5.0
+  - Voice Agent
+  - Changelog
+---
+
 # Release Notes — `v2.6.0`
 
 **Release Title:** Real-Time Conversational Voice Agent & Audio-Reactive Speaker Orb (`v2.6.0`)  
 **Tag:** `v2.6.0`  
 **Previous Tag:** `v2.5.0`
 
-> **Combining Agentic RAG, Knowledge Graphs, Hybrid Vector-Graph Retrieval, Persistent Memory, and Real-Time Bidirectional Voice powered by Google ADK and Gemini Live.**
+!!! info "Release Summary"
+    Combining Agentic RAG, Knowledge Graphs, Hybrid Vector-Graph Retrieval, Persistent Memory, and Real-Time Bidirectional Voice powered by **Google ADK** and **Gemini Live**.
+
+## Release History Overview
+
+| Version | Release Focus | Key Capabilities |
+|---------|--------------|------------------|
+| **`v2.6.0`** | **Conversational Voice Agent** | `WS /ws/voice`, `gemini-3.1-flash-live-preview` (`Aoede`), Big Speaker Orb, async RAG/Graph tools |
+| **`v2.5.0`** | **Persistent History & Memory** | `NeonSessionService`, `NeonMemoryService`, History & Memory drawer, raw pre-upload preview |
+| **`v2.4.0`** | **RAG Eval & LangSmith** | Synthetic golden dataset generator & 5-metric Gemini 2.5 Flash LLM-as-a-Judge |
+| **`v2.3.0`** | **In-App Settings & Bulk Delete** | Minimalist runtime `.env` editor with `ⓘ` docs links & type-to-confirm bulk deletion |
+| **`v2.0.0`** | **Bioluminescent Platform Launch** | Neon `pgvector` HNSW + GIN hybrid search, Neo4j Knowledge Graph, 5-step dual ingestion |
 
 ---
 

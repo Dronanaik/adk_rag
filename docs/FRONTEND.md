@@ -1,6 +1,21 @@
+---
+tags:
+  - React
+  - Vite
+  - Voice UI
+  - AudioWorklet
+  - Knowledge Graph
+---
+
 # Frontend Application Guide
 
-The frontend (`frontend/`) is a **React 18 + Vite** single-page application styled with a **Bioluminescent Neural Forest Theme** (`#06120f` deep twilight pine canvas, `bg-neural-tree.jpg` Tree of Knowledge backdrop, translucent emerald glass cards, Bioluminescent Cyan `#22d3ee` and Firefly Root Gold `#fbbf24` accents) and an interactive SVG **Knowledge Graph Explorer**.
+The frontend (`frontend/`) is a **React 18 + Vite** single-page application styled with a **Bioluminescent Neural Forest Theme** (`#06120f` deep twilight pine canvas, `bg-neural-tree.jpg` Tree of Knowledge backdrop, translucent emerald glass cards, Bioluminescent Cyan `#22d3ee` and Firefly Root Gold `#fbbf24` accents), an interactive SVG **Knowledge Graph Explorer**, and a real-time **Big Round Speaker Orb** (`VoiceOverlay.jsx`).
+
+!!! note "WebAudio AudioWorklet Architecture"
+    Microphone capture (`16kHz` Int16 PCM) runs on a dedicated audio thread inside `frontend/public/pcm-processor.js`, keeping the React UI and 60fps concentric orb animations completely jank-free during live voice streaming.
+
+!!! tip "Vite Dev Proxy"
+    In local development, `frontend/vite.config.js` proxies REST endpoints and `/ws/voice` WebSocket traffic directly to FastAPI on `127.0.0.1:8000` with zero CORS configuration needed.
 
 ---
 

@@ -1,10 +1,28 @@
-# Deployment Guide
+---
+tags:
+  - Deployment
+  - Render
+  - Netlify
+  - Neon PostgreSQL
+  - Neo4j AuraDB
+---
+
+# Cloud Deployment Guide
 
 This guide explains how to deploy the **ADK Agentic RAG + Knowledge Graph** platform to production using cloud services:
-- **Vector & Auth Database**: [Neon Console Serverless PostgreSQL](https://console.neon.tech)
-- **Knowledge Graph Database**: [Neo4j AuraDB](https://console.neo4j.io)
-- **FastAPI Backend**: [Render](https://render.com) (configured via `render.yaml`)
-- **React Frontend**: [Netlify](https://www.netlify.com) (configured via `frontend/netlify.toml`)
+
+| Component | Cloud Provider | Configuration File | Notes |
+|-----------|---------------|--------------------|-------|
+| **Vector, Auth, Session & Memory DB** | [Neon Console Serverless PostgreSQL](https://console.neon.tech) | `sql/schema.sql` | Auto-creates `vector` extension & HNSW/GIN indexes |
+| **Knowledge Graph DB** | [Neo4j AuraDB](https://console.neo4j.io) | `app/database.py` | Uniqueness constraints & `user_id` indexes auto-applied |
+| **FastAPI + WebSocket Backend** | [Render](https://render.com) | `render.yaml` | Supports REST API & `WS /ws/voice` bidirectional audio |
+| **React 18 + Vite Frontend** | [Netlify](https://www.netlify.com) | `frontend/netlify.toml` | Set `VITE_API_BASE_URL` to your Render service URL |
+
+!!! warning "WebSocket & SSL Requirements in Production"
+    Conversational Voice (`WS /ws/voice`) requires `wss://` over HTTPS in production browsers. Both **Render** and **Netlify** provision TLS certificates automatically; ensure `VITE_API_BASE_URL` uses `https://`.
+
+!!! tip "Neon Serverless Keepalives"
+    `app/database.py` configures `psycopg2.pool.ThreadedConnectionPool` with TCP keepalives (`keepalives_idle=30`) so Neon serverless compute wake-ups recover smoothly without stale-socket errors.
 
 ---
 

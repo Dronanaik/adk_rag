@@ -1,8 +1,20 @@
-# :material-book-open-page-variant: Interactive User Guide
+---
+tags:
+  - Walkthrough
+  - User Guide
+  - Voice Agent
+  - Knowledge Graph
+  - RAG Evaluation
+---
 
-This step-by-step visual guide walks you through every view and interaction in the **ADK Agentic RAG + Knowledge Graph** platform—from signing in with **Neon PostgreSQL Authentication** to configuring environment variables, uploading documents, monitoring the live 5-step hybrid ingestion pipeline, managing indexed documents, querying the **Google ADK Agent**, inspecting your **Neo4j Knowledge Graph**, and evaluating RAG quality with **LangSmith & Gemini 2.5 Flash**.
+# :material-book-open-page-variant: Interactive Walkthrough
 
-<video src="../adk_rag.mp4" width="100%" controls autoplay loop muted style="border-radius: 12px; border: 1px solid rgba(52, 211, 153, 0.3); margin-top: 12px;"></video>
+This step-by-step visual guide walks you through every view and interaction in the **ADK Agentic RAG + Knowledge Graph (`v2.6.0`)** platform—from signing in with **Neon PostgreSQL Authentication** to configuring environment variables, uploading documents with pre-upload raw preview, monitoring the live 5-step hybrid ingestion pipeline, managing indexed documents, conversing via **Persistent Agentic Chat & Long-Term Memory (`v2.5.0`)** or the **Gemini Live Conversational Voice Agent (`v2.6.0`)**, inspecting your **Neo4j Knowledge Graph**, and evaluating RAG quality with **LangSmith & Gemini 2.5 Flash**.
+
+<video src="../adk_rag.mp4" width="100%" controls autoplay loop muted style="border-radius: 12px; border: 1px solid rgba(14, 165, 233, 0.35); margin-top: 12px;"></video>
+
+!!! tip "Full-Flow Video & Interactive Orb"
+    The walkthrough video above covers the complete `v2.6.0` flow—including persistent session history, long-term memory, and the real-time **Conversational Voice Agent**.
 
 ---
 

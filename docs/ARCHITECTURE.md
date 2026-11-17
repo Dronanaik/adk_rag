@@ -1,6 +1,18 @@
+---
+tags:
+  - Architecture
+  - Google ADK
+  - Neon PostgreSQL
+  - Neo4j
+  - WebSocket
+---
+
 # :material-sitemap: System Architecture
 
-The **ADK Agentic RAG + Knowledge Graph** platform is engineered as a modular, multi-tenant **Hybrid Document Intelligence** system combining **Google Agent Development Kit (`google-adk`)**, **Gemini 2.5**, **Neon Console Serverless PostgreSQL (`pgvector` + Full-Text Search)**, and **Neo4j**.
+The **ADK Agentic RAG + Knowledge Graph** platform is engineered as a modular, multi-tenant **Hybrid Document Intelligence** system combining **Google Agent Development Kit (`google-adk`)**, **Gemini 2.5**, **Gemini Live (`gemini-3.1-flash-live-preview`)**, **Neon Console Serverless PostgreSQL (`pgvector` + Full-Text Search)**, and **Neo4j**.
+
+!!! info "Unified Multi-Tenant Isolation"
+    Every authenticated request (REST or `WS /ws/voice`) resolves the user's `email` from the `HS256` JWT and enforces strict `user_id` partitioning across Neon `document_chunks`, `chat_sessions`, `user_memories`, and Neo4j `Entity` / `Document` namespaces.
 
 ---
 

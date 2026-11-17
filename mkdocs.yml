@@ -1,5 +1,5 @@
 site_name: ADK Agentic RAG
-site_description: Combining Agentic RAG, Knowledge Graphs and Hybrid Vector-Graph Retrieval to transform fragmented information into connected intelligence and Gemini 2.5.
+site_description: Enterprise Hybrid Document Intelligence combining Google ADK, Neon pgvector, Neo4j Knowledge Graphs, Long-Term Memory, and Gemini Live Conversational Voice.
 site_url: https://dronanaik.github.io/adk_rag/
 repo_url: https://github.com/Dronanaik/adk_rag
 repo_name: Dronanaik/adk_rag
@@ -10,22 +10,23 @@ docs_dir: docs
 theme:
   name: material
   custom_dir: overrides
+  logo: assets/logo.png
+  favicon: assets/logo.png
   font:
     text: Roboto
     code: Roboto Mono
   icon:
-    logo: material/hub
     repo: fontawesome/brands/github
   palette:
     - scheme: default
-      primary: white
-      accent: white
+      primary: custom
+      accent: light blue
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - scheme: slate
-      primary: grey
-      accent: grey
+      primary: custom
+      accent: light blue
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
@@ -43,7 +44,6 @@ theme:
     - navigation.sections
     - navigation.expand
     - navigation.top
-    - navigation.tabs
     - navigation.footer
     - toc.follow
     - search.suggest
@@ -75,23 +75,26 @@ extra:
       link: https://www.instagram.com/drona1133/
       name: Instagram
 
+plugins:
+  - search
+  - tags
+
 nav:
-  - Home: index.md
-  - Build & Get Started:
+  - Overview: index.md
+  - Getting Started:
       - Quickstart & Installation: INSTALLATION.md
-      - Interactive User Guide: USER_GUIDE.md
-  - Architecture & Specs:
+      - Interactive Walkthrough: USER_GUIDE.md
+  - Architecture & Core Engine:
       - System Architecture: ARCHITECTURE.md
-      - Technical Specifications: TECHNICAL_SPECIFICATIONS.md
-  - Core Platform:
       - 5-Step Dual Ingestion: INGESTION.md
-      - Agentic Chat & Graph Tools: CHAT.md
+      - Agentic Chat, Memory & Voice: CHAT.md
       - Bioluminescent React UI: FRONTEND.md
-  - API & Operations:
-      - REST API Reference: API.md
+  - Reference & Operations:
+      - REST & WebSocket API: API.md
+      - Technical Specifications: TECHNICAL_SPECIFICATIONS.md
       - Cloud Deployment: DEPLOYMENT.md
       - Troubleshooting: TROUBLESHOOTING.md
-      - Release Notes (v2.5.0): RELEASE_NOTES.md
+      - Release Notes (v2.6.0): RELEASE_NOTES.md
 
 markdown_extensions:
   - admonition

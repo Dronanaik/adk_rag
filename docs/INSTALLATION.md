@@ -1,6 +1,21 @@
+---
+tags:
+  - Setup
+  - Quickstart
+  - Neon PostgreSQL
+  - Neo4j
+  - Gemini
+---
+
 # Installation & Local Setup Guide
 
 This guide walks you through setting up the **ADK Agentic RAG + Knowledge Graph** platform locally.
+
+!!! info "Zero-Friction Environment Setup"
+    You can configure credentials either in a root `.env` file or directly inside the **Settings** tab after signing in—leaving any optional field blank automatically falls back to built-in defaults.
+
+!!! warning "Required Cloud Credentials"
+    Before uploading documents or starting Voice/Chat sessions, make sure you have a valid `GOOGLE_API_KEY`, a Neon PostgreSQL `DATABASE_URL` with `?sslmode=require`, and active Neo4j credentials (`NEO4J_URI`, `NEO4J_PASSWORD`).
 
 ---
 
