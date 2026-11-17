@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Combining Agentic RAG, Knowledge Graphs and Hybrid Vector-Graph Retrieval to transform fragmented information into connected intelligence and Gemini 2.5.">
+        <meta name="description" content="Enterprise Hybrid Document Intelligence combining Google ADK, Neon pgvector, Neo4j Knowledge Graphs, Long-Term Memory, and Gemini Live Conversational Voice.">
       
       
       
@@ -22,12 +22,12 @@
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../assets/logo.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
     
     
       
-        <title>Agentic Chat & Graph Tools - ADK Agentic RAG</title>
+        <title>Agentic Chat, Memory & Voice - ADK Agentic RAG</title>
       
     
     
@@ -66,8 +66,8 @@
     
     
   <meta property="og:type" content="website">
-  <meta property="og:title" content="ADK Agentic RAG">
-  <meta property="og:description" content="Combining Agentic RAG, Knowledge Graphs and Hybrid Vector-Graph Retrieval to transform fragmented information into connected intelligence.">
+  <meta property="og:title" content="ADK Agentic RAG + Knowledge Graph (v2.6.0)">
+  <meta property="og:description" content="Enterprise Hybrid Document Intelligence with Google ADK, Neon pgvector, Neo4j Knowledge Graphs, Persistent Memory, and Gemini Live Conversational Voice.">
 
   </head>
   
@@ -79,7 +79,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="white">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="light-blue">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -88,37 +88,25 @@
     <div data-md-component="skip">
       
         
-        <a href="#agentic-chat-graph-tools" class="md-skip">
+        <a href="#agentic-chat-memory-voice" class="md-skip">
           Skip to content
         </a>
       
     </div>
     <div data-md-component="announce">
       
-        <aside class="md-banner">
-          <div class="md-banner__inner md-grid md-typeset">
-            
-            
-<span class="announce-item">
-  Combining <strong>Agentic RAG</strong>, <strong>Knowledge Graphs</strong> and <strong>Hybrid Vector-Graph Retrieval</strong> to transform fragmented information into connected intelligence.
-  <a href="../INSTALLATION/">Start building →</a>
-</span>
-
-          </div>
-          
-        </aside>
-      
     </div>
     
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href=".." title="ADK Agentic RAG" class="md-header__button md-logo" aria-label="ADK Agentic RAG" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.4 18.2q.6.75.6 1.8c0 1.7-1.3 3-3 3s-3-1.3-3-3 1.3-3 3-3q.6 0 1.2.3l1.4-1.8c-.9-1-1.3-2.4-1.1-3.7l-2-.7c-.5.8-1.4 1.4-2.5 1.4-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3v.2l2 .7c.6-1.2 1.8-2.1 3.2-2.3V5.9C10 5.6 9 4.4 9 3c0-1.7 1.3-3 3-3s3 1.3 3 3c0 1.4-1 2.6-2.2 2.9v2.2c1.4.2 2.6 1.1 3.2 2.3l2-.7v-.2c0-1.7 1.3-3 3-3s3 1.3 3 3-1.3 3-3 3c-1.1 0-2-.6-2.5-1.4l-2 .7c.2 1.3-.2 2.7-1.1 3.7l1.4 1.8q.6-.3 1.2-.3c1.7 0 3 1.3 3 3s-1.3 3-3 3-3-1.3-3-3q0-1.05.6-1.8l-1.4-1.8c-1.4.8-3 .8-4.4 0z"/></svg>
+  <img src="../assets/logo.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -135,7 +123,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Agentic Chat & Graph Tools
+              Agentic Chat, Memory & Voice
             
           </span>
         </div>
@@ -148,7 +136,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="white"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
     
       <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
@@ -158,7 +146,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="grey" data-md-color-accent="grey"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
@@ -242,116 +230,6 @@
       
         
           
-            
-<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
-  <div class="md-grid">
-    <ul class="md-tabs__list">
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href=".." class="md-tabs__link">
-        
-  
-  
-    
-  
-  Home
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../INSTALLATION/" class="md-tabs__link">
-          
-  
-  
-  Build & Get Started
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../ARCHITECTURE/" class="md-tabs__link">
-          
-  
-  
-  Architecture & Specs
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-    
-  
-  
-    
-    
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../INGESTION/" class="md-tabs__link">
-          
-  
-  
-  Core Platform
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../API/" class="md-tabs__link">
-          
-  
-  
-  API & Operations
-
-        </a>
-      </li>
-    
-  
-
-      
-    </ul>
-  </div>
-</nav>
-          
         
       
       <main class="md-main" data-md-component="main">
@@ -365,15 +243,12 @@
                     
 
 
-  
 
-
-<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href=".." title="ADK Agentic RAG" class="md-nav__button md-logo" aria-label="ADK Agentic RAG" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.4 18.2q.6.75.6 1.8c0 1.7-1.3 3-3 3s-3-1.3-3-3 1.3-3 3-3q.6 0 1.2.3l1.4-1.8c-.9-1-1.3-2.4-1.1-3.7l-2-.7c-.5.8-1.4 1.4-2.5 1.4-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3v.2l2 .7c.6-1.2 1.8-2.1 3.2-2.3V5.9C10 5.6 9 4.4 9 3c0-1.7 1.3-3 3-3s3 1.3 3 3c0 1.4-1 2.6-2.2 2.9v2.2c1.4.2 2.6 1.1 3.2 2.3l2-.7v-.2c0-1.7 1.3-3 3-3s3 1.3 3 3-1.3 3-3 3c-1.1 0-2-.6-2.5-1.4l-2 .7c.2 1.3-.2 2.7-1.1 3.7l1.4 1.8q.6-.3 1.2-.3c1.7 0 3 1.3 3 3s-1.3 3-3 3-3-1.3-3-3q0-1.05.6-1.8l-1.4-1.8c-1.4.8-3 .8-4.4 0z"/></svg>
+  <img src="../assets/logo.png" alt="logo">
 
     </a>
     ADK Agentic RAG
@@ -407,7 +282,7 @@
   <span class="md-ellipsis">
     
   
-    Home
+    Overview
   
 
     
@@ -431,12 +306,12 @@
     
     
       
-      
+        
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
@@ -445,14 +320,14 @@
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    Build & Get Started
+    Getting Started
   
 
     
@@ -468,7 +343,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Build & Get Started
+    Getting Started
   
 
           </label>
@@ -516,7 +391,7 @@
   <span class="md-ellipsis">
     
   
-    Interactive User Guide
+    Interactive Walkthrough
   
 
     
@@ -541,35 +416,35 @@
       
   
   
+    
   
   
+  
     
     
     
     
       
-      
+        
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
-        
-          
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    Architecture & Specs
+    Architecture & Core Engine
   
 
     
@@ -580,12 +455,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Architecture & Specs
+    Architecture & Core Engine
   
 
           </label>
@@ -618,98 +493,6 @@
   
 
               
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../TECHNICAL_SPECIFICATIONS/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Technical Specifications
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-    
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
-        
-          
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Core Platform
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Core Platform
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
             
               
                 
@@ -762,7 +545,7 @@
   <span class="md-ellipsis">
     
   
-    Agentic Chat & Graph Tools
+    Agentic Chat, Memory & Voice
   
 
     
@@ -780,7 +563,7 @@
   <span class="md-ellipsis">
     
   
-    Agentic Chat & Graph Tools
+    Agentic Chat, Memory & Voice
   
 
     
@@ -804,6 +587,17 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tool-routing-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tool Routing Matrix
+      
+    </span>
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#multi-tool-agent-architecture-appagentpy" class="md-nav__link">
@@ -987,28 +781,28 @@
     
     
       
-      
+        
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    API & Operations
+    Reference & Operations
   
 
     
@@ -1019,12 +813,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
-    API & Operations
+    Reference & Operations
   
 
           </label>
@@ -1044,7 +838,35 @@
   <span class="md-ellipsis">
     
   
-    REST API Reference
+    REST & WebSocket API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TECHNICAL_SPECIFICATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Specifications
   
 
     
@@ -1128,7 +950,7 @@
   <span class="md-ellipsis">
     
   
-    Release Notes (v2.5.0)
+    Release Notes (v2.6.0)
   
 
     
@@ -1174,6 +996,17 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tool-routing-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tool Routing Matrix
+      
+    </span>
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#multi-tool-agent-architecture-appagentpy" class="md-nav__link">
@@ -1330,7 +1163,7 @@
       <a href=".." class="md-path__link">
         
   <span class="md-ellipsis">
-    Home
+    Overview
   </span>
 
       </a>
@@ -1345,10 +1178,10 @@
     
     
       <li class="md-path__item">
-        <a href="../INGESTION/" class="md-path__link">
+        <a href="../ARCHITECTURE/" class="md-path__link">
           
   <span class="md-ellipsis">
-    Core Platform
+    Architecture & Core Engine
   </span>
 
         </a>
@@ -1364,6 +1197,45 @@
               <article class="md-content__inner md-typeset">
                 
                   
+
+  <nav class="md-tags" >
+    
+      
+      
+      
+      
+        <span class="md-tag">Agentic Chat</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">Google ADK</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">Long-Term Memory</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">Neo4j</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">Voice Agent</span>
+      
+    
+  </nav>
 
 
   
@@ -1383,8 +1255,60 @@
   
 
 
-<h1 id="agentic-chat-graph-tools">Agentic Chat &amp; Graph Tools<a class="headerlink" href="#agentic-chat-graph-tools" title="Permanent link">&para;</a></h1>
-<p>The chat subsystem uses <strong>Google Agent Development Kit (<code>google-adk</code>)</strong> and <strong>Gemini (<code>gemini-2.5-pro</code>)</strong> to reason across both <strong>Neon PostgreSQL (<code>pgvector</code> + Full-Text Search)</strong> and the <strong>Neo4j Knowledge Graph</strong>.</p>
+<h1 id="agentic-chat-memory-voice">Agentic Chat, Memory &amp; Voice<a class="headerlink" href="#agentic-chat-memory-voice" title="Permanent link">&para;</a></h1>
+<p>The chat and voice subsystems use <strong>Google Agent Development Kit (<code>google-adk</code>)</strong>, <strong>Gemini (<code>gemini-2.5-pro</code>)</strong>, and <strong>Gemini Live (<code>gemini-3.1-flash-live-preview</code>)</strong> to reason across <strong>Neon PostgreSQL (<code>pgvector</code> + Full-Text Search)</strong>, the <strong>Neo4j Knowledge Graph</strong>, and <strong>Long-Term User Memories</strong>.</p>
+<div class="admonition info">
+<p class="admonition-title">Text &amp; Voice Tool Parity</p>
+<p>Both <strong>Text Chat</strong> (<code>POST /chat</code>) and <strong>Conversational Voice</strong> (<code>WS /ws/voice</code>) share the exact same 5 async retrieval tools (<code>hybrid_search</code>, <code>vector_search</code>, <code>graph_search</code>, <code>get_entity_relationships</code>, <code>load_memory</code>) and write into the same persisted <strong>Neon PostgreSQL</strong> session.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Microphone Permissions for Voice Mode</p>
+<p>Live Voice streaming requires browser microphone permission over <code>https://</code> or <code>http://localhost</code> (<code>127.0.0.1</code>). If audio playback or capture stalls, verify that your microphone is not muted at the OS level.</p>
+</div>
+<hr />
+<h2 id="tool-routing-matrix">Tool Routing Matrix<a class="headerlink" href="#tool-routing-matrix" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Tool Name</th>
+<th>Store / Engine</th>
+<th>Retrieval Strategy</th>
+<th>Best Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>hybrid_search</code></td>
+<td>Neon PostgreSQL (<code>pgvector</code> + GIN)</td>
+<td><code>70%</code> cosine similarity + <code>30%</code> <code>ts_rank_cd</code></td>
+<td>Factual queries, exact names, metrics, dates</td>
+</tr>
+<tr>
+<td><code>vector_search</code></td>
+<td>Neon PostgreSQL (<code>pgvector</code>)</td>
+<td><code>100%</code> <code>768</code>-dim cosine similarity</td>
+<td>Broad conceptual or paraphrased questions</td>
+</tr>
+<tr>
+<td><code>graph_search</code></td>
+<td>Neo4j AuraDB</td>
+<td>Keyword match on <code>(:Entity)</code> &amp; <code>[:RELATES_TO]</code></td>
+<td>Cross-document entity links &amp; relationship facts</td>
+</tr>
+<tr>
+<td><code>get_entity_relationships</code></td>
+<td>Neo4j AuraDB</td>
+<td><code>1-hop</code> incoming &amp; outgoing Cypher traversal</td>
+<td>Deep neighborhood inspection around a hub entity</td>
+</tr>
+<tr>
+<td><code>load_memory</code></td>
+<td>Neon PostgreSQL (<code>user_memories</code>)</td>
+<td>Hybrid semantic + FTS over saved user facts</td>
+<td>Recalling user preferences &amp; prior session context</td>
+</tr>
+</tbody>
+</table>
 <hr />
 <h2 id="multi-tool-agent-architecture-appagentpy">Multi-Tool Agent Architecture (<code>app/agent.py</code>)<a class="headerlink" href="#multi-tool-agent-architecture-appagentpy" title="Permanent link">&para;</a></h2>
 <p>The root agent (<code>root_agent</code>) is an instance of <code>google.adk.agents.LlmAgent</code> configured with five specialized tools and backed by <strong><code>NeonSessionService</code></strong> + <strong><code>NeonMemoryService</code></strong>:</p>
@@ -1479,6 +1403,9 @@
 
 
 
+  
+  
+
 
 
 
@@ -1505,60 +1432,48 @@
         <footer class="md-footer">
   
     
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
-      <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
-          
-          <a href="../INGESTION/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 5-Step Dual Ingestion">
-            <div class="md-footer__button md-icon">
-              
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
-            </div>
-            <div class="md-footer__title">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              <div class="md-ellipsis">
-                5-Step Dual Ingestion
-              </div>
-            </div>
-          </a>
+        <a href="../INGESTION/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 5-Step Dual Ingestion">
+          <div class="md-footer__button md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <span class="md-footer__direction">Previous</span>
+            <div class="md-ellipsis">5-Step Dual Ingestion</div>
+          </div>
+        </a>
+      
+      
         
-        
-          
-          <a href="../FRONTEND/" class="md-footer__link md-footer__link--next" aria-label="Next: Bioluminescent React UI">
-            <div class="md-footer__title">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              <div class="md-ellipsis">
-                Bioluminescent React UI
-              </div>
-            </div>
-            <div class="md-footer__button md-icon">
-              
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
-            </div>
-          </a>
-        
-      </nav>
-    
+        <a href="../FRONTEND/" class="md-footer__link md-footer__link--next" aria-label="Next: Bioluminescent React UI">
+          <div class="md-footer__title">
+            <span class="md-footer__direction">Next</span>
+            <div class="md-ellipsis">Bioluminescent React UI</div>
+          </div>
+          <div class="md-footer__button md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
-      <div class="md-copyright">
-  
-    <div class="md-copyright__highlight">
-      Where Knowledge Connects, Agents Reason, and Intelligence Emerges.
-    </div>
-  
-  
-    Made with
-    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-      Material for MkDocs
-    </a>
-  
-</div>
+      <div class="adk-footer-brand">
+        <a href=".." class="adk-footer-logo" aria-label="ADK Agentic RAG">
+          <img src="../assets/logo.png" alt="ADK Agentic RAG Logo">
+        </a>
+        <div class="md-copyright">
+          <div class="adk-footer-site-title">ADK Agentic RAG</div>
+          
+            <div class="md-copyright__highlight">Where Knowledge Connects, Agents Reason, and Intelligence Emerges.</div>
+          
+        </div>
+      </div>
       
         
 <div class="md-social">
@@ -1612,7 +1527,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.action.edit", "content.action.view", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "navigation.instant", "navigation.instant.progress", "navigation.tracking", "navigation.path", "navigation.sections", "navigation.expand", "navigation.top", "navigation.tabs", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.action.edit", "content.action.view", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "navigation.instant", "navigation.instant.progress", "navigation.tracking", "navigation.path", "navigation.sections", "navigation.expand", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>

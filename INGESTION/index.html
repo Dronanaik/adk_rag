@@ -6,14 +6,14 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Combining Agentic RAG, Knowledge Graphs and Hybrid Vector-Graph Retrieval to transform fragmented information into connected intelligence and Gemini 2.5.">
+        <meta name="description" content="Enterprise Hybrid Document Intelligence combining Google ADK, Neon pgvector, Neo4j Knowledge Graphs, Long-Term Memory, and Gemini Live Conversational Voice.">
       
       
       
         <link rel="canonical" href="https://dronanaik.github.io/adk_rag/INGESTION/">
       
       
-        <link rel="prev" href="../TECHNICAL_SPECIFICATIONS/">
+        <link rel="prev" href="../ARCHITECTURE/">
       
       
         <link rel="next" href="../CHAT/">
@@ -22,7 +22,7 @@
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../assets/logo.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
     
     
@@ -66,8 +66,8 @@
     
     
   <meta property="og:type" content="website">
-  <meta property="og:title" content="ADK Agentic RAG">
-  <meta property="og:description" content="Combining Agentic RAG, Knowledge Graphs and Hybrid Vector-Graph Retrieval to transform fragmented information into connected intelligence.">
+  <meta property="og:title" content="ADK Agentic RAG + Knowledge Graph (v2.6.0)">
+  <meta property="og:description" content="Enterprise Hybrid Document Intelligence with Google ADK, Neon pgvector, Neo4j Knowledge Graphs, Persistent Memory, and Gemini Live Conversational Voice.">
 
   </head>
   
@@ -79,7 +79,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="white">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="light-blue">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -95,30 +95,18 @@
     </div>
     <div data-md-component="announce">
       
-        <aside class="md-banner">
-          <div class="md-banner__inner md-grid md-typeset">
-            
-            
-<span class="announce-item">
-  Combining <strong>Agentic RAG</strong>, <strong>Knowledge Graphs</strong> and <strong>Hybrid Vector-Graph Retrieval</strong> to transform fragmented information into connected intelligence.
-  <a href="../INSTALLATION/">Start building →</a>
-</span>
-
-          </div>
-          
-        </aside>
-      
     </div>
     
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href=".." title="ADK Agentic RAG" class="md-header__button md-logo" aria-label="ADK Agentic RAG" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.4 18.2q.6.75.6 1.8c0 1.7-1.3 3-3 3s-3-1.3-3-3 1.3-3 3-3q.6 0 1.2.3l1.4-1.8c-.9-1-1.3-2.4-1.1-3.7l-2-.7c-.5.8-1.4 1.4-2.5 1.4-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3v.2l2 .7c.6-1.2 1.8-2.1 3.2-2.3V5.9C10 5.6 9 4.4 9 3c0-1.7 1.3-3 3-3s3 1.3 3 3c0 1.4-1 2.6-2.2 2.9v2.2c1.4.2 2.6 1.1 3.2 2.3l2-.7v-.2c0-1.7 1.3-3 3-3s3 1.3 3 3-1.3 3-3 3c-1.1 0-2-.6-2.5-1.4l-2 .7c.2 1.3-.2 2.7-1.1 3.7l1.4 1.8q.6-.3 1.2-.3c1.7 0 3 1.3 3 3s-1.3 3-3 3-3-1.3-3-3q0-1.05.6-1.8l-1.4-1.8c-1.4.8-3 .8-4.4 0z"/></svg>
+  <img src="../assets/logo.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -148,7 +136,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="white"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
     
       <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
@@ -158,7 +146,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="grey" data-md-color-accent="grey"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
@@ -242,116 +230,6 @@
       
         
           
-            
-<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
-  <div class="md-grid">
-    <ul class="md-tabs__list">
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href=".." class="md-tabs__link">
-        
-  
-  
-    
-  
-  Home
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../INSTALLATION/" class="md-tabs__link">
-          
-  
-  
-  Build & Get Started
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../ARCHITECTURE/" class="md-tabs__link">
-          
-  
-  
-  Architecture & Specs
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-    
-  
-  
-    
-    
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
-          
-  
-  
-  Core Platform
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../API/" class="md-tabs__link">
-          
-  
-  
-  API & Operations
-
-        </a>
-      </li>
-    
-  
-
-      
-    </ul>
-  </div>
-</nav>
-          
         
       
       <main class="md-main" data-md-component="main">
@@ -365,15 +243,12 @@
                     
 
 
-  
 
-
-<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href=".." title="ADK Agentic RAG" class="md-nav__button md-logo" aria-label="ADK Agentic RAG" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.4 18.2q.6.75.6 1.8c0 1.7-1.3 3-3 3s-3-1.3-3-3 1.3-3 3-3q.6 0 1.2.3l1.4-1.8c-.9-1-1.3-2.4-1.1-3.7l-2-.7c-.5.8-1.4 1.4-2.5 1.4-1.7 0-3-1.3-3-3s1.3-3 3-3 3 1.3 3 3v.2l2 .7c.6-1.2 1.8-2.1 3.2-2.3V5.9C10 5.6 9 4.4 9 3c0-1.7 1.3-3 3-3s3 1.3 3 3c0 1.4-1 2.6-2.2 2.9v2.2c1.4.2 2.6 1.1 3.2 2.3l2-.7v-.2c0-1.7 1.3-3 3-3s3 1.3 3 3-1.3 3-3 3c-1.1 0-2-.6-2.5-1.4l-2 .7c.2 1.3-.2 2.7-1.1 3.7l1.4 1.8q.6-.3 1.2-.3c1.7 0 3 1.3 3 3s-1.3 3-3 3-3-1.3-3-3q0-1.05.6-1.8l-1.4-1.8c-1.4.8-3 .8-4.4 0z"/></svg>
+  <img src="../assets/logo.png" alt="logo">
 
     </a>
     ADK Agentic RAG
@@ -407,7 +282,7 @@
   <span class="md-ellipsis">
     
   
-    Home
+    Overview
   
 
     
@@ -431,12 +306,12 @@
     
     
       
-      
+        
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
@@ -445,14 +320,14 @@
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    Build & Get Started
+    Getting Started
   
 
     
@@ -468,7 +343,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Build & Get Started
+    Getting Started
   
 
           </label>
@@ -516,7 +391,7 @@
   <span class="md-ellipsis">
     
   
-    Interactive User Guide
+    Interactive Walkthrough
   
 
     
@@ -541,35 +416,35 @@
       
   
   
+    
   
   
+  
     
     
     
     
       
-      
+        
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
-        
-          
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    Architecture & Specs
+    Architecture & Core Engine
   
 
     
@@ -580,12 +455,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Architecture & Specs
+    Architecture & Core Engine
   
 
           </label>
@@ -618,98 +493,6 @@
   
 
               
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../TECHNICAL_SPECIFICATIONS/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Technical Specifications
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-    
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
-        
-          
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Core Platform
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Core Platform
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
             
               
                 
@@ -888,7 +671,7 @@
   <span class="md-ellipsis">
     
   
-    Agentic Chat & Graph Tools
+    Agentic Chat, Memory & Voice
   
 
     
@@ -948,28 +731,28 @@
     
     
       
-      
+        
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    API & Operations
+    Reference & Operations
   
 
     
@@ -980,12 +763,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
-    API & Operations
+    Reference & Operations
   
 
           </label>
@@ -1005,7 +788,35 @@
   <span class="md-ellipsis">
     
   
-    REST API Reference
+    REST & WebSocket API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TECHNICAL_SPECIFICATIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical Specifications
   
 
     
@@ -1089,7 +900,7 @@
   <span class="md-ellipsis">
     
   
-    Release Notes (v2.5.0)
+    Release Notes (v2.6.0)
   
 
     
@@ -1252,7 +1063,7 @@
       <a href=".." class="md-path__link">
         
   <span class="md-ellipsis">
-    Home
+    Overview
   </span>
 
       </a>
@@ -1267,10 +1078,10 @@
     
     
       <li class="md-path__item">
-        <a href="./" class="md-path__link">
+        <a href="../ARCHITECTURE/" class="md-path__link">
           
   <span class="md-ellipsis">
-    Core Platform
+    Architecture & Core Engine
   </span>
 
         </a>
@@ -1286,6 +1097,45 @@
               <article class="md-content__inner md-typeset">
                 
                   
+
+  <nav class="md-tags" >
+    
+      
+      
+      
+      
+        <span class="md-tag">Docling</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">Ingestion</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">Neo4j</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">Pipeline</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">pgvector</span>
+      
+    
+  </nav>
 
 
   
@@ -1307,19 +1157,17 @@
 
 <h1 id="ingestion-pipeline">Ingestion Pipeline<a class="headerlink" href="#ingestion-pipeline" title="Permanent link">&para;</a></h1>
 <p>The 5-step dual ingestion pipeline converts raw uploaded files into both <strong>searchable <code>768</code>-dimensional vector chunks in Neon PostgreSQL (<code>pgvector</code>)</strong> and <strong>structured entities and relationships in the Neo4j Knowledge Graph</strong>, while streaming real-time step progress to the UI.</p>
+<div class="admonition tip">
+<p class="admonition-title">Lossless Layout &amp; Multimodal Extraction</p>
+<p>PDF, Office, HTML, and image files are processed through <strong>IBM Docling</strong> and <strong>Gemini Vision</strong> (<code>gemini-2.5-flash</code>) so tables, headings, and visual diagrams remain intact during semantic chunking.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Large Batch Rate Limits</p>
+<p>Uploading many large PDFs simultaneously triggers batched <code>gemini-embedding-001</code> and <code>gemini-2.5-flash</code> graph extraction calls—if you hit free-tier RPM limits, split batches into 3–5 files at a time.</p>
+</div>
 <hr />
 <h2 id="5-step-dual-ingestion-overview">5-Step Dual Ingestion Overview<a class="headerlink" href="#5-step-dual-ingestion-overview" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>flowchart TD
-    Upload["Uploaded File (app/api.py -&gt; /tmp/adk_rag_uploads)"] --&gt; Step1["Step 1: Format-Specific Text Extraction (app/parsers.py)"]
-    Step1 --&gt; Step2["Step 2: Structure-Aware Semantic Chunking (app/chunking.py — 1200 chars, 200 overlap)"]
-    Step2 --&gt; Dedup{"SHA-256 Content-Hash &amp; Filename Check (app/rag_store.py)"}
-    Dedup --&gt;|"Same Filename + Same Hash (unchanged)"| FastSkip["Skip Redundant Indexing &amp; Return Existing Metrics"]
-    Dedup --&gt;|"Different Filename + Same Hash (duplicate_content)"| FastSkip
-    Dedup --&gt;|"Same Filename + Modified Hash (updated)"| PurgeOld["Atomically Purge Previous Chunks (Postgres) &amp; Triples (Neo4j)"]
-    PurgeOld --&gt; Step3["Step 3: Batched Gemini Embeddings (app/embeddings.py — gemini-embedding-001, 768-dim)"]
-    Dedup --&gt;|"New Document (created)"| Step3
-    Step3 --&gt; Step4["Step 4: Neon PostgreSQL Indexing (app/rag_store.py — pgvector HNSW + FTS GIN)"]
-    Step4 --&gt; Step5["Step 5: Neo4j Knowledge Graph Extraction (app/graph_store.py — gemini-2.5-flash Structured JSON)"]</code></pre>
+<p><img alt="5-Step Dual Ingestion Architecture" src="../assets/ingestion_pipeline_architecture.svg" /></p>
 <hr />
 <h2 id="redundant-updated-file-upload-handling-v211">Redundant &amp; Updated File Upload Handling (<code>v2.1.1</code>)<a class="headerlink" href="#redundant-updated-file-upload-handling-v211" title="Permanent link">&para;</a></h2>
 <p>After Step 2, <code>ingest_document</code> computes a normalized <strong>SHA-256 content fingerprint</strong> (<code>hashlib.sha256(re.sub(r"\s+", " ", text.strip()).encode("utf-8")).hexdigest()</code>) and calls <code>find_existing_user_document(...)</code> in <code>app/rag_store.py</code> to handle all three redundant/updated upload scenarios automatically:</p>
@@ -1487,6 +1335,9 @@
 
 
 
+  
+  
+
 
 
 
@@ -1513,60 +1364,48 @@
         <footer class="md-footer">
   
     
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
-      <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
-          
-          <a href="../TECHNICAL_SPECIFICATIONS/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Technical Specifications">
-            <div class="md-footer__button md-icon">
-              
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
-            </div>
-            <div class="md-footer__title">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              <div class="md-ellipsis">
-                Technical Specifications
-              </div>
-            </div>
-          </a>
+        <a href="../ARCHITECTURE/" class="md-footer__link md-footer__link--prev" aria-label="Previous: System Architecture">
+          <div class="md-footer__button md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <span class="md-footer__direction">Previous</span>
+            <div class="md-ellipsis">System Architecture</div>
+          </div>
+        </a>
+      
+      
         
-        
-          
-          <a href="../CHAT/" class="md-footer__link md-footer__link--next" aria-label="Next: Agentic Chat &amp; Graph Tools">
-            <div class="md-footer__title">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              <div class="md-ellipsis">
-                Agentic Chat & Graph Tools
-              </div>
-            </div>
-            <div class="md-footer__button md-icon">
-              
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
-            </div>
-          </a>
-        
-      </nav>
-    
+        <a href="../CHAT/" class="md-footer__link md-footer__link--next" aria-label="Next: Agentic Chat, Memory &amp; Voice">
+          <div class="md-footer__title">
+            <span class="md-footer__direction">Next</span>
+            <div class="md-ellipsis">Agentic Chat, Memory & Voice</div>
+          </div>
+          <div class="md-footer__button md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
-      <div class="md-copyright">
-  
-    <div class="md-copyright__highlight">
-      Where Knowledge Connects, Agents Reason, and Intelligence Emerges.
-    </div>
-  
-  
-    Made with
-    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-      Material for MkDocs
-    </a>
-  
-</div>
+      <div class="adk-footer-brand">
+        <a href=".." class="adk-footer-logo" aria-label="ADK Agentic RAG">
+          <img src="../assets/logo.png" alt="ADK Agentic RAG Logo">
+        </a>
+        <div class="md-copyright">
+          <div class="adk-footer-site-title">ADK Agentic RAG</div>
+          
+            <div class="md-copyright__highlight">Where Knowledge Connects, Agents Reason, and Intelligence Emerges.</div>
+          
+        </div>
+      </div>
       
         
 <div class="md-social">
@@ -1620,7 +1459,7 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.action.edit", "content.action.view", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "navigation.instant", "navigation.instant.progress", "navigation.tracking", "navigation.path", "navigation.sections", "navigation.expand", "navigation.top", "navigation.tabs", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.action.edit", "content.action.view", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "navigation.instant", "navigation.instant.progress", "navigation.tracking", "navigation.path", "navigation.sections", "navigation.expand", "navigation.top", "navigation.footer", "toc.follow", "search.suggest", "search.highlight", "search.share"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>

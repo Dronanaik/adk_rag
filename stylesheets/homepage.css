@@ -108,8 +108,31 @@ body[data-md-color-scheme="slate"] .adk-landing .glow {
 }
 
 /* ========================
-   HERO SECTION
+   CLEAN HERO SECTION
    ======================== */
+.md-typeset .adk-landing .hero-clean {
+  padding: clamp(28px, 4vw, 52px) 0 clamp(24px, 3vw, 40px);
+  max-width: 880px;
+  position: relative;
+  z-index: 1;
+}
+
+.md-typeset .adk-landing .hero-clean h1 {
+  font-size: clamp(2rem, 4.2vw, 3.1rem);
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 18px;
+}
+
+.md-typeset .adk-landing .hero-clean > p {
+  font-size: clamp(1rem, 1.35vw, 1.14rem);
+  color: var(--landing-muted);
+  margin-bottom: 28px;
+  max-width: 780px;
+  line-height: 1.7;
+}
+
 .md-typeset .adk-landing .hero-grid {
   padding: clamp(48px, 8vw, 96px) 0;
   display: grid !important;
@@ -264,8 +287,12 @@ body[data-md-color-scheme="slate"] .adk-landing .mac-window {
   text-align: center;
   color: var(--landing-muted);
   font-family: var(--font-mono);
-  font-size: 0.85rem;
-  margin-left: -44px;
+  font-size: 0.82rem;
+  margin-left: 12px;
+  padding-right: 40px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* --- iTerm-style tabs --- */
@@ -278,16 +305,16 @@ body[data-md-color-scheme="slate"] .adk-landing .mac-window {
 }
 
 .md-typeset .adk-landing .iterm-tab {
-  padding: 10px 18px;
+  padding: 10px 13px;
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   color: var(--landing-fg-muted);
   cursor: pointer;
   transition: all 0.15s;
   border-right: 1px solid var(--landing-border);
   display: flex !important;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   user-select: none;
   position: relative;
   white-space: nowrap;
