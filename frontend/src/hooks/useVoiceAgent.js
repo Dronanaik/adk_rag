@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getStoredAuth } from '../api.js'
+import { reportClientError } from '../utils/logger'
 
 function buildVoiceWsUrl(token, sessionId) {
   const apiBase = import.meta.env.VITE_API_URL
@@ -230,7 +231,9 @@ export function useVoiceAgent({ sessionId, onTurnComplete } = {}) {
             setTranscripts(prev => prev.map(t => ({ ...t, finished: true })))
             onTurnCompleteRef.current?.()
           } else if (data.type === 'error') {
-            setError(data.detail || 'Voice stream error')
+            const errMsg = data.detail || 'Voice stream error'
+            reportClientError('useVoiceAgent.stream', errMsg, { sessionId: sid })
+            setError(errMsg)
             setStatus('error')
           }
         } catch {
@@ -239,16 +242,29 @@ export function useVoiceAgent({ sessionId, onTurnComplete } = {}) {
       }
 
       ws.onerror = () => {
+        reportClientError('useVoiceAgent.ws', 'Voice WebSocket connection error.', { sessionId: sid })
         setError('Voice WebSocket connection error.')
         setStatus('error')
       }
 
-      ws.onclose = () => {
+      ws.onclose = (event) => {
+        if (event && !event.wasClean && event.code !== 1000 && event.code !== 1005) {
+          reportClientError(
+            'useVoiceAgent.wsClose',
+            `Voice WebSocket closed abnormally (code=${event.code}, reason=${event.reason || 'none'})`,
+            { sessionId: sid, extra: { code: event.code, reason: event.reason } }
+          )
+        }
         setStatus(prev => (prev === 'error' ? 'error' : 'idle'))
       }
     } catch (err) {
       cleanupAudioAndSocket()
-      setError(err?.message || 'Microphone permission denied or audio setup failed.')
+      const errMsg = err?.message || 'Microphone permission denied or audio setup failed.'
+      reportClientError('useVoiceAgent.setup', errMsg, {
+        stack: err?.stack,
+        sessionId: sid,
+      })
+      setError(errMsg)
       setStatus('error')
     }
   }, [cleanupAudioAndSocket, sessionId, upsertTranscript])
