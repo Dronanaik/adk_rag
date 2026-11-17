@@ -1,6 +1,18 @@
+---
+tags:
+  - Technical Specs
+  - PostgreSQL Schema
+  - Neo4j Cypher
+  - Security
+  - Gemini Live
+---
+
 # :material-file-cog-outline: Technical Specifications
 
 Complete engineering specifications for the **ADK Agentic RAG + Knowledge Graph** platform—covering runtime versions, database DDL and Cypher schemas, cryptographic authentication parameters, hybrid retrieval formulas, structured extraction models, and API contracts.
+
+!!! warning "Production Secret Management"
+    Always override the default `JWT_SECRET_KEY` with a cryptographically random `32+` byte secret in production environments (`setup.sh` generates one automatically for local `.env` files).
 
 ---
 

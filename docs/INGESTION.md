@@ -1,24 +1,27 @@
+---
+tags:
+  - Ingestion
+  - Docling
+  - pgvector
+  - Neo4j
+  - Pipeline
+---
+
 # Ingestion Pipeline
 
 The 5-step dual ingestion pipeline converts raw uploaded files into both **searchable `768`-dimensional vector chunks in Neon PostgreSQL (`pgvector`)** and **structured entities and relationships in the Neo4j Knowledge Graph**, while streaming real-time step progress to the UI.
+
+!!! tip "Lossless Layout & Multimodal Extraction"
+    PDF, Office, HTML, and image files are processed through **IBM Docling** and **Gemini Vision** (`gemini-2.5-flash`) so tables, headings, and visual diagrams remain intact during semantic chunking.
+
+!!! warning "Large Batch Rate Limits"
+    Uploading many large PDFs simultaneously triggers batched `gemini-embedding-001` and `gemini-2.5-flash` graph extraction calls—if you hit free-tier RPM limits, split batches into 3–5 files at a time.
 
 ---
 
 ## 5-Step Dual Ingestion Overview
 
-```mermaid
-flowchart TD
-    Upload["Uploaded File (app/api.py -> /tmp/adk_rag_uploads)"] --> Step1["Step 1: Format-Specific Text Extraction (app/parsers.py)"]
-    Step1 --> Step2["Step 2: Structure-Aware Semantic Chunking (app/chunking.py — 1200 chars, 200 overlap)"]
-    Step2 --> Dedup{"SHA-256 Content-Hash & Filename Check (app/rag_store.py)"}
-    Dedup -->|"Same Filename + Same Hash (unchanged)"| FastSkip["Skip Redundant Indexing & Return Existing Metrics"]
-    Dedup -->|"Different Filename + Same Hash (duplicate_content)"| FastSkip
-    Dedup -->|"Same Filename + Modified Hash (updated)"| PurgeOld["Atomically Purge Previous Chunks (Postgres) & Triples (Neo4j)"]
-    PurgeOld --> Step3["Step 3: Batched Gemini Embeddings (app/embeddings.py — gemini-embedding-001, 768-dim)"]
-    Dedup -->|"New Document (created)"| Step3
-    Step3 --> Step4["Step 4: Neon PostgreSQL Indexing (app/rag_store.py — pgvector HNSW + FTS GIN)"]
-    Step4 --> Step5["Step 5: Neo4j Knowledge Graph Extraction (app/graph_store.py — gemini-2.5-flash Structured JSON)"]
-```
+![5-Step Dual Ingestion Architecture](assets/ingestion_pipeline_architecture.svg)
 
 ---
 

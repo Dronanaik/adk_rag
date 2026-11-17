@@ -1,6 +1,33 @@
+---
+tags:
+  - Troubleshooting
+  - Neon PostgreSQL
+  - Neo4j
+  - Vite Proxy
+  - Voice WebSocket
+---
+
 # Troubleshooting Guide
 
 Solutions for common issues encountered when running the **ADK Agentic RAG + Knowledge Graph** platform.
+
+!!! tip "Quick Health Check"
+    Before debugging individual layers, run `curl http://localhost:8000/health` and inspect the **API Online** pill in the top header of the React UI to confirm backend + Neon + Neo4j connectivity.
+
+!!! warning "Transient Neon Cold-Start DNS / Pool Errors"
+    If your Neon compute suspended after inactivity, the very first query may take 1–3 seconds to wake up. `app/database.py` uses TCP keepalives, and retrying once immediately resolves cold-start connection errors.
+
+---
+
+## Common Issues Matrix
+
+| Symptom | Likely Cause | Quick Fix |
+|---------|--------------|-----------|
+| `sslmode=require does not exist` | Missing `?` before `sslmode=require` in `DATABASE_URL` | Add `?sslmode=require` to your Neon URI |
+| `ECONNREFUSED 127.0.0.1:8000` | FastAPI backend not running | Start `uvicorn app.api:app --reload` |
+| `HTTP 401: Invalid or expired token` | Stale JWT or changed `JWT_SECRET_KEY` | Sign out and sign back in |
+| `WS /ws/voice` rejected (`403`) | Missing/expired `?token=` or session owned by another user | Refresh session or start a new voice session |
+| `Unsupported file type` | Extension outside the 13 supported formats | Convert to `.pdf`, `.docx`, `.md`, `.txt`, etc. |
 
 ---
 

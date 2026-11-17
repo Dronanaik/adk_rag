@@ -1,8 +1,36 @@
-# API Reference
+---
+tags:
+  - REST API
+  - WebSocket
+  - FastAPI
+  - JWT Auth
+  - Endpoints
+---
 
-The FastAPI backend (`app/api.py`) exposes REST endpoints on `http://localhost:8000` (interactive Swagger UI available at `http://localhost:8000/docs`).
+# REST & WebSocket API Reference
 
-All protected endpoints require an `Authorization: Bearer <jwt_token>` header obtained from `/auth/login` or `/auth/signup`.
+The FastAPI backend (`app/api.py`) exposes REST and WebSocket endpoints on `http://localhost:8000` (interactive Swagger UI available at `http://localhost:8000/docs`).
+
+!!! info "Bearer & WebSocket Authentication"
+    All protected REST endpoints require an `Authorization: Bearer <jwt_token>` header obtained from `/auth/login` or `/auth/signup`. The live voice WebSocket (`WS /ws/voice`) authenticates via `?token=<jwt_token>`.
+
+!!! warning "Cascade Deletion Permanence"
+    `DELETE /documents/{document_id}` and `DELETE /documents` atomically purge records from both **Neon PostgreSQL** and **Neo4j AuraDB**. Deleted chunks and orphaned graph entities cannot be recovered without re-ingesting.
+
+---
+
+## Endpoint Quick Reference
+
+| Group | Method & Path | Auth | Purpose |
+|-------|---------------|------|---------|
+| **Health** | `GET /health` | Public | Server liveness & version check |
+| **Auth** | `POST /auth/signup`, `POST /auth/login`, `GET /auth/me` | Public / JWT | Neon user registration & `HS256` JWT issuance |
+| **Ingestion** | `GET /ingest/status`, `GET /ingest/progress`, `POST /documents/upload` | JWT | 5-step dual ingestion & 450ms telemetry |
+| **Documents** | `GET /documents`, `GET /documents/{id}/preview`, `DELETE /documents/{id}` | JWT | Workspace document listing, preview & cascade delete |
+| **Graph** | `GET /graph`, `GET /graph/entity/{entity_name}` | JWT | Neo4j entity topology & 1-hop neighborhood |
+| **Chat & Memory** | `POST /chat`, `GET /chat/sessions`, `GET /memories`, `POST /memories` | JWT | 5-tool ADK chat, persistent sessions & memories |
+| **Voice Live** | `WS /ws/voice?token=<jwt>&session_id=<uuid>` | JWT Query | Bidirectional `16kHz`→`24kHz` Gemini Live audio |
+| **Settings & Evals** | `GET/POST /settings/env`, `POST /evals/generate-dataset`, `POST /evals/run` | JWT | Runtime `.env` overrides & 5-metric RAG evaluation |
 
 ---
 

@@ -1,6 +1,33 @@
-# Agentic Chat & Graph Tools
+---
+tags:
+  - Google ADK
+  - Agentic Chat
+  - Long-Term Memory
+  - Voice Agent
+  - Neo4j
+---
 
-The chat subsystem uses **Google Agent Development Kit (`google-adk`)** and **Gemini (`gemini-2.5-pro`)** to reason across both **Neon PostgreSQL (`pgvector` + Full-Text Search)** and the **Neo4j Knowledge Graph**.
+# Agentic Chat, Memory & Voice
+
+The chat and voice subsystems use **Google Agent Development Kit (`google-adk`)**, **Gemini (`gemini-2.5-pro`)**, and **Gemini Live (`gemini-3.1-flash-live-preview`)** to reason across **Neon PostgreSQL (`pgvector` + Full-Text Search)**, the **Neo4j Knowledge Graph**, and **Long-Term User Memories**.
+
+!!! info "Text & Voice Tool Parity"
+    Both **Text Chat** (`POST /chat`) and **Conversational Voice** (`WS /ws/voice`) share the exact same 5 async retrieval tools (`hybrid_search`, `vector_search`, `graph_search`, `get_entity_relationships`, `load_memory`) and write into the same persisted **Neon PostgreSQL** session.
+
+!!! warning "Microphone Permissions for Voice Mode"
+    Live Voice streaming requires browser microphone permission over `https://` or `http://localhost` (`127.0.0.1`). If audio playback or capture stalls, verify that your microphone is not muted at the OS level.
+
+---
+
+## Tool Routing Matrix
+
+| Tool Name | Store / Engine | Retrieval Strategy | Best Use Case |
+|-----------|----------------|--------------------|---------------|
+| `hybrid_search` | Neon PostgreSQL (`pgvector` + GIN) | `70%` cosine similarity + `30%` `ts_rank_cd` | Factual queries, exact names, metrics, dates |
+| `vector_search` | Neon PostgreSQL (`pgvector`) | `100%` `768`-dim cosine similarity | Broad conceptual or paraphrased questions |
+| `graph_search` | Neo4j AuraDB | Keyword match on `(:Entity)` & `[:RELATES_TO]` | Cross-document entity links & relationship facts |
+| `get_entity_relationships` | Neo4j AuraDB | `1-hop` incoming & outgoing Cypher traversal | Deep neighborhood inspection around a hub entity |
+| `load_memory` | Neon PostgreSQL (`user_memories`) | Hybrid semantic + FTS over saved user facts | Recalling user preferences & prior session context |
 
 ---
 

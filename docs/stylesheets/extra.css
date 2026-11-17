@@ -1,21 +1,106 @@
 /* ==========================================================================
-   ADK Agentic RAG — Inner Page Grid Cards, Tables & Callout Polish
-   Harmonized with adk.dev/stylesheets/custom.css and homepage.css
+   ADK Agentic RAG — Inner Page Typography, Colorful Text, Tables, Tags & Admonitions
    ========================================================================== */
 
 :root,
 [data-md-color-scheme="default"] {
   --adk-card-bg: #ffffff;
   --adk-card-border: #e2e8f0;
-  --adk-card-hover-border: #3b82f6;
+  --adk-card-hover-border: #0ea5e9;
   --adk-card-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  --adk-h1-color: #0369a1;
+  --adk-h2-color: #0284c7;
+  --adk-h3-color: #0f766e;
+  --adk-code-bg: #e0f2fe;
+  --adk-code-fg: #0369a1;
+  --adk-table-stripe: #f8fafc;
+  --adk-table-hover: #e0f2fe;
+  --adk-table-border: #cbd5e1;
 }
 
 [data-md-color-scheme="slate"] {
   --adk-card-bg: var(--md-code-bg-color);
   --adk-card-border: var(--md-default-fg-color--lightest);
-  --adk-card-hover-border: #60a5fa;
+  --adk-card-hover-border: #38bdf8;
   --adk-card-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  --adk-h1-color: #38bdf8;
+  --adk-h2-color: #7dd3fc;
+  --adk-h3-color: #2dd4bf;
+  --adk-code-bg: rgba(14, 165, 233, 0.16);
+  --adk-code-fg: #7dd3fc;
+  --adk-table-stripe: rgba(255, 255, 255, 0.025);
+  --adk-table-hover: rgba(14, 165, 233, 0.12);
+  --adk-table-border: rgba(148, 163, 184, 0.35);
+}
+
+/* ── Colorful Headings on Inner Documentation Pages ── */
+.md-content__inner:not(:has(.adk-landing)) h1 {
+  color: var(--adk-h1-color);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  padding-bottom: 0.45rem;
+  border-bottom: 2px solid rgba(14, 165, 233, 0.25);
+}
+
+.md-content__inner:not(:has(.adk-landing)) h2 {
+  color: var(--adk-h2-color);
+  font-weight: 700;
+  padding-left: 0.65rem;
+  border-left: 4px solid #0ea5e9;
+  margin-top: 2rem;
+}
+
+.md-content__inner:not(:has(.adk-landing)) h3 {
+  color: var(--adk-h3-color);
+  font-weight: 700;
+}
+
+/* Colorful inline code badges & links (outside pre blocks) */
+.md-typeset :not(pre) > code {
+  background-color: var(--adk-code-bg);
+  color: var(--adk-code-fg);
+  border-radius: 5px;
+  padding: 0.12em 0.42em;
+  font-weight: 500;
+}
+
+.md-typeset a:not(.btn):not(.carousel-card):not(.md-tag) {
+  color: #0284c7;
+}
+
+[data-md-color-scheme="slate"] .md-typeset a:not(.btn):not(.carousel-card):not(.md-tag) {
+  color: #38bdf8;
+}
+
+/* ── MkDocs Material Tags Pills ── */
+.md-typeset .md-tags {
+  margin-bottom: 1.1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.md-typeset .md-tag {
+  background: rgba(14, 165, 233, 0.1);
+  color: #0284c7 !important;
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.72rem;
+  padding: 0.2rem 0.7rem;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.md-typeset .md-tag:hover {
+  background: #0ea5e9;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .md-tag {
+  background: rgba(56, 189, 248, 0.14);
+  color: #7dd3fc !important;
+  border-color: rgba(56, 189, 248, 0.32);
 }
 
 /* ── Grid Cards on Inner Documentation Pages ── */
@@ -35,18 +120,89 @@
 .md-typeset .grid > .card:hover {
   border-color: var(--adk-card-hover-border);
   transform: translateY(-3px);
-  box-shadow: 0 10px 28px rgba(59, 130, 246, 0.14);
+  box-shadow: 0 10px 28px rgba(14, 165, 233, 0.14);
 }
 
-/* ── Tables & Admonitions Polish ── */
+/* ── Properly Structured Full-Width Tables ── */
+.md-typeset__scrollwrap {
+  margin: 1.4rem 0;
+}
+
+.md-typeset__table {
+  width: 100%;
+  display: block;
+  overflow-x: auto;
+}
+
 .md-typeset table:not([class]) {
+  width: 100%;
+  display: table;
+  border-collapse: separate;
+  border-spacing: 0;
   border-radius: 10px;
   overflow: hidden;
-  border: 1px solid var(--adk-card-border);
+  border: 1.5px solid var(--adk-table-border);
+  box-shadow: var(--adk-card-shadow);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  margin: 0;
 }
 
+.md-typeset table:not([class]) th {
+  background: linear-gradient(90deg, #0284c7 0%, #0ea5e9 100%);
+  color: #ffffff;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  padding: 0.7rem 0.85rem;
+  text-align: left;
+  border-bottom: 1.5px solid #0369a1;
+  border-right: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.md-typeset table:not([class]) th:last-child {
+  border-right: none;
+}
+
+.md-typeset table:not([class]) td {
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--adk-table-border);
+  border-right: 1px solid var(--adk-table-border);
+  vertical-align: top;
+  overflow-wrap: break-word;
+}
+
+.md-typeset table:not([class]) td code {
+  word-break: break-word;
+}
+
+.md-typeset table:not([class]) td:last-child {
+  border-right: none;
+}
+
+.md-typeset table:not([class]) td:first-child {
+  font-weight: 600;
+}
+
+.md-typeset table:not([class]) tbody tr:nth-child(even) {
+  background-color: var(--adk-table-stripe);
+}
+
+.md-typeset table:not([class]) tbody tr:hover {
+  background-color: var(--adk-table-hover);
+}
+
+.md-typeset table:not([class]) tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ── Native MkDocs Admonitions (warning, info, tip, note, danger) ── */
 .md-typeset .admonition,
 .md-typeset details:not(.faq-item-arrow) {
   border-radius: 10px;
   border-width: 1px;
+  border-left-width: 5px;
+  box-shadow: var(--adk-card-shadow);
+  margin: 1.35rem 0;
 }
