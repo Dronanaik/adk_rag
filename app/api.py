@@ -4,11 +4,13 @@ import logging
 import os
 import shutil
 import tempfile
+import time
 import uuid
 
-from fastapi import Depends, FastAPI, File, HTTPException, Query, UploadFile, WebSocket
+from fastapi import Depends, FastAPI, File, HTTPException, Query, Request, UploadFile, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 
 from google.genai import types
 from google.adk.runners import Runner
@@ -66,8 +68,20 @@ from app.rag_store import (
 )
 from app.evals.dataset import generate_synthetic_dataset
 from app.evals.runner import get_eval_runs, run_evaluation
+from app.logging_config import (
+    bind_log_context,
+    read_recent_logs,
+    request_id_var,
+    setup_logging,
+    user_id_var,
+)
 from app.tracing import is_langsmith_configured, is_tracing_enabled, ls_trace
 
+setup_logging(
+    log_level=config.get_config_value("LOG_LEVEL") or "INFO",
+    log_dir=config.get_config_value("LOG_DIR") or "logs",
+    log_to_file=(config.get_config_value("LOG_TO_FILE") or "true").lower() == "true",
+)
 logger = logging.getLogger(__name__)
 
 
@@ -78,9 +92,18 @@ def _sanitize_log_value(value: str) -> str:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_all_databases()
+    t0 = time.perf_counter()
+    with bind_log_context(channel="startup"):
+        logger.info("Initializing Neon PostgreSQL & Neo4j databases...")
+        init_all_databases()
+        logger.info(
+            "Startup database initialization complete",
+            extra={"duration_ms": (time.perf_counter() - t0) * 1000},
+        )
     yield
-    close_all_databases()
+    with bind_log_context(channel="shutdown"):
+        logger.info("Closing database connections...")
+        close_all_databases()
 
 
 app = FastAPI(
@@ -110,6 +133,88 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def request_logging_middleware(request: Request, call_next):
+    req_id = (request.headers.get("X-Request-ID") or "").strip()[:32] or uuid.uuid4().hex[:12]
+    uid = "-"
+    auth_header = request.headers.get("Authorization") or ""
+    if auth_header.startswith("Bearer "):
+        try:
+            payload = decode_access_token(auth_header[7:].strip())
+            uid = payload.get("email") or payload.get("sub") or "-"
+        except Exception:
+            uid = "-"
+
+    t0 = time.perf_counter()
+    with bind_log_context(request_id=req_id, user_id=uid, channel="http"):
+        try:
+            response = await call_next(request)
+        except Exception:
+            duration_ms = (time.perf_counter() - t0) * 1000
+            logger.exception(
+                "Unhandled exception in %s %s",
+                request.method,
+                _sanitize_log_value(request.url.path),
+                extra={"duration_ms": duration_ms},
+            )
+            raise
+
+        duration_ms = (time.perf_counter() - t0) * 1000
+        response.headers["X-Request-ID"] = req_id
+        path = _sanitize_log_value(request.url.path)
+        if response.status_code >= 500:
+            logger.error(
+                "%s %s -> %d",
+                request.method,
+                path,
+                response.status_code,
+                extra={"duration_ms": duration_ms},
+            )
+        elif response.status_code >= 400:
+            logger.warning(
+                "%s %s -> %d",
+                request.method,
+                path,
+                response.status_code,
+                extra={"duration_ms": duration_ms},
+            )
+        elif path == "/ingest/progress":
+            logger.debug(
+                "%s %s -> %d",
+                request.method,
+                path,
+                response.status_code,
+                extra={"duration_ms": duration_ms},
+            )
+        else:
+            logger.info(
+                "%s %s -> %d",
+                request.method,
+                path,
+                response.status_code,
+                extra={"duration_ms": duration_ms},
+            )
+        return response
+
+
+@app.exception_handler(Exception)
+async def global_unhandled_exception_handler(request: Request, exc: Exception):
+    req_id = request_id_var.get()
+    logger.exception(
+        "Global unhandled error on %s %s",
+        request.method,
+        _sanitize_log_value(request.url.path),
+    )
+    return JSONResponse(
+        status_code=500,
+        content={
+            "detail": "Internal server error",
+            "request_id": req_id,
+        },
+        headers={"X-Request-ID": req_id},
+    )
 
 UPLOAD_DIRECTORY = os.path.realpath(os.path.join(tempfile.gettempdir(), "adk_rag_uploads"))
 APP_NAME = "document_rag_app"
@@ -1030,6 +1135,70 @@ async def list_eval_runs(current_user: dict = Depends(get_current_user)):
         "project": config.LANGSMITH_PROJECT,
         "judge_model": (config.GRAPH_EXTRACTION_MODEL or "").strip() or "gemini-2.5-flash",
         "runs": get_eval_runs(user_id),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Diagnostics & Client Error Logging
+# ---------------------------------------------------------------------------
+
+
+class ClientLogRequest(BaseModel):
+    level: str = Field(default="ERROR", max_length=16)
+    source: str = Field(default="frontend", max_length=64)
+    message: str = Field(..., min_length=1, max_length=2000)
+    stack: str | None = Field(default=None, max_length=8000)
+    route: str | None = Field(default=None, max_length=256)
+    session_id: str | None = Field(default=None, max_length=128)
+    request_id: str | None = Field(default=None, max_length=64)
+    extra: dict | None = None
+
+
+@app.post("/logs/client")
+async def ingest_client_log(payload: ClientLogRequest, request: Request):
+    """Persist structured frontend browser/UI/AudioWorklet error reports."""
+    client_logger = logging.getLogger(f"frontend.{_sanitize_log_value(payload.source)}")
+    lvl_name = (payload.level or "ERROR").upper()
+    lvl = getattr(logging, lvl_name, logging.ERROR)
+    if lvl < logging.INFO:
+        lvl = logging.INFO
+
+    req_id = payload.request_id or request_id_var.get()
+    sid = payload.session_id or "-"
+    uid = user_id_var.get()
+
+    with bind_log_context(request_id=req_id, user_id=uid, session_id=sid, channel="frontend"):
+        msg = _sanitize_log_value(payload.message)
+        if payload.route:
+            msg = f"[{_sanitize_log_value(payload.route)}] {msg}"
+        if payload.stack:
+            msg = f"{msg}\n{_sanitize_log_value(payload.stack)}"
+        client_logger.log(lvl, msg, extra={"extra_data": payload.extra or {}})
+
+    return {"success": True, "request_id": req_id}
+
+
+@app.get("/logs/recent")
+async def get_recent_logs(
+    level: str | None = Query(default=None, description="Filter by log level (INFO, WARNING, ERROR)"),
+    request_id: str | None = Query(default=None, description="Filter by X-Request-ID"),
+    channel: str | None = Query(default=None, description="Filter by channel (http, ws_voice, frontend, ingest)"),
+    errors_only: bool = Query(default=False, description="Read from errors.jsonl only"),
+    limit: int = Query(default=100, ge=1, le=500),
+    current_user: dict = Depends(get_current_user),
+):
+    """Return recent structured JSONL logs for debugging and failure tracing."""
+    entries = read_recent_logs(
+        level=level,
+        request_id=request_id,
+        channel=channel,
+        limit=limit,
+        errors_only=errors_only,
+    )
+    return {
+        "success": True,
+        "count": len(entries),
+        "logs": entries,
     }
 
 

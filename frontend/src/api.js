@@ -3,6 +3,8 @@
    Base URL is proxied through Vite (/api → http://localhost:8000)
    ============================================================ */
 
+import { reportClientError } from './utils/logger'
+
 const BASE_URL = import.meta.env.VITE_API_URL || '/api'
 const TOKEN_STORAGE_KEY = 'adk_rag_auth_token'
 const USER_STORAGE_KEY = 'adk_rag_user'
@@ -59,10 +61,23 @@ async function apiFetch(path, options = {}, userId = null) {
     headers['x-user-id'] = userId
   }
 
-  const response = await fetch(`${BASE_URL}${path}`, {
-    ...options,
-    headers,
-  })
+  let response
+  try {
+    response = await fetch(`${BASE_URL}${path}`, {
+      ...options,
+      headers,
+    })
+  } catch (err) {
+    if (!path.startsWith('/logs/client')) {
+      reportClientError('apiFetch.network', err?.message || `Network failure on ${path}`, {
+        stack: err?.stack,
+        extra: { path, method: options.method || 'GET' },
+      })
+    }
+    throw err
+  }
+
+  const requestId = response.headers.get('X-Request-ID') || undefined
 
   if (!response.ok) {
     let detail = `HTTP ${response.status}`
@@ -72,6 +87,12 @@ async function apiFetch(path, options = {}, userId = null) {
     } catch (err) {
       // Fallback to HTTP status code when response body is not JSON
       void err
+    }
+    if (!path.startsWith('/logs/client')) {
+      reportClientError('apiFetch.http', `${options.method || 'GET'} ${path} -> ${response.status}: ${detail}`, {
+        requestId,
+        extra: { path, method: options.method || 'GET', status: response.status },
+      })
     }
     throw new Error(detail)
   }

@@ -1,4 +1,6 @@
 import asyncio
+import logging
+import time
 
 from google.adk.agents import LlmAgent
 from google.adk.tools import ToolContext, load_memory, preload_memory
@@ -10,6 +12,8 @@ from app.graph_store import (
 )
 from app.rag_store import hybrid_search_documents, search_documents
 from app.tracing import ls_trace
+
+logger = logging.getLogger(__name__)
 
 
 async def vector_search(
@@ -37,6 +41,7 @@ async def vector_search(
         metadata={"user_id": user_id, "store": "neon_pgvector"},
         tags=["adk-tool", "vector_search"],
     ) as run:
+        t0 = time.perf_counter()
         try:
             matches = await asyncio.to_thread(
                 search_documents,
@@ -45,6 +50,7 @@ async def vector_search(
                 top_k=config.TOP_K,
             )
         except Exception as exc:
+            logger.exception("Tool vector_search failed for user=%s", user_id)
             result = {
                 "found": False,
                 "search_type": "vector_search",
@@ -53,6 +59,12 @@ async def vector_search(
             }
             run.end(outputs=result)
             return result
+
+        logger.info(
+            "Tool vector_search returned %d matches",
+            len(matches),
+            extra={"duration_ms": (time.perf_counter() - t0) * 1000},
+        )
 
         if not matches:
             result = {
@@ -114,6 +126,7 @@ async def hybrid_search(
         metadata={"user_id": user_id, "store": "neon_pgvector_fts"},
         tags=["adk-tool", "hybrid_search"],
     ) as run:
+        t0 = time.perf_counter()
         try:
             matches = await asyncio.to_thread(
                 hybrid_search_documents,
@@ -122,6 +135,7 @@ async def hybrid_search(
                 top_k=config.TOP_K,
             )
         except Exception as exc:
+            logger.exception("Tool hybrid_search failed for user=%s", user_id)
             result = {
                 "found": False,
                 "search_type": "hybrid_search",
@@ -130,6 +144,12 @@ async def hybrid_search(
             }
             run.end(outputs=result)
             return result
+
+        logger.info(
+            "Tool hybrid_search returned %d matches",
+            len(matches),
+            extra={"duration_ms": (time.perf_counter() - t0) * 1000},
+        )
 
         if not matches:
             result = {
@@ -192,6 +212,7 @@ async def graph_search(
         metadata={"user_id": user_id, "store": "neo4j"},
         tags=["adk-tool", "graph_search"],
     ) as run:
+        t0 = time.perf_counter()
         try:
             graph_data = await asyncio.to_thread(
                 search_knowledge_graph,
@@ -200,6 +221,7 @@ async def graph_search(
                 limit=12,
             )
         except Exception as exc:
+            logger.exception("Tool graph_search failed for user=%s", user_id)
             result = {
                 "found": False,
                 "search_type": "graph_search",
@@ -209,6 +231,13 @@ async def graph_search(
             }
             run.end(outputs=result)
             return result
+
+        logger.info(
+            "Tool graph_search returned %d entities, %d relationships",
+            len(graph_data.get("entities", [])),
+            len(graph_data.get("relationships", [])),
+            extra={"duration_ms": (time.perf_counter() - t0) * 1000},
+        )
 
         entities = graph_data.get("entities", [])
         relationships = graph_data.get("relationships", [])
@@ -261,6 +290,7 @@ async def get_entity_relationships(
         metadata={"user_id": user_id, "store": "neo4j"},
         tags=["adk-tool", "get_entity_relationships"],
     ) as run:
+        t0 = time.perf_counter()
         try:
             result_data = await asyncio.to_thread(
                 get_entity_relationships_from_graph,
@@ -269,6 +299,7 @@ async def get_entity_relationships(
                 limit=20,
             )
         except Exception as exc:
+            logger.exception("Tool get_entity_relationships failed for user=%s", user_id)
             result = {
                 "found": False,
                 "search_type": "get_entity_relationships",
@@ -279,6 +310,13 @@ async def get_entity_relationships(
             }
             run.end(outputs=result)
             return result
+
+        logger.info(
+            "Tool get_entity_relationships returned %d entities, %d relationships",
+            len(result_data.get("entities", [])),
+            len(result_data.get("relationships", [])),
+            extra={"duration_ms": (time.perf_counter() - t0) * 1000},
+        )
 
         if not result_data.get("found"):
             result = {

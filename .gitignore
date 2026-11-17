@@ -37,6 +37,7 @@ data/chroma/
 # Temporary upload directory (files are deleted after ingestion)
 uploads/
 linkedin/
+logs/
 # ============================================================
 # Node.js / React frontend
 # ============================================================

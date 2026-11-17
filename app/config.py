@@ -30,6 +30,9 @@ SYSTEM_FALLBACKS: dict[str, str] = {
     "LANGSMITH_API_KEY": "",
     "LANGSMITH_PROJECT": "adk-agentic-rag",
     "LANGSMITH_ENDPOINT": "https://api.smith.langchain.com",
+    "LOG_LEVEL": "INFO",
+    "LOG_DIR": "logs",
+    "LOG_TO_FILE": "true",
 }
 
 # Snapshot of the initial default environment (.env + system fallbacks)

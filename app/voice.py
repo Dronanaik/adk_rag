@@ -15,6 +15,7 @@ from google.genai import types
 
 from app import config
 from app.agent import create_voice_agent
+from app.logging_config import bind_log_context
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +48,29 @@ async def handle_voice_websocket(
 ) -> None:
     """Manage a bidirectional Gemini Live audio session over WebSocket."""
     user_id = user.get("user_id") or user["id"]
+
+    with bind_log_context(user_id=user_id, session_id=session_id, channel="ws_voice"):
+        logger.info("Voice WebSocket session started (model=%s, voice=%s)", config.VOICE_MODEL, config.VOICE_NAME)
+        await _run_voice_session(
+            websocket=websocket,
+            user_id=user_id,
+            session_id=session_id,
+            app_name=app_name,
+            session_service=session_service,
+            memory_service=memory_service,
+        )
+        logger.info("Voice WebSocket session ended")
+
+
+async def _run_voice_session(
+    *,
+    websocket: WebSocket,
+    user_id: str,
+    session_id: str,
+    app_name: str,
+    session_service: Any,
+    memory_service: Any,
+) -> None:
 
     # Ensure session exists in NeonSessionService
     existing = await session_service.get_session(
@@ -167,6 +191,7 @@ async def handle_voice_websocket(
 
                 # Barge-in / interruption signal
                 if getattr(event, "interrupted", False):
+                    logger.info("Voice agent barge-in / interruption detected")
                     await websocket.send_json({"type": "interrupted"})
 
                 # Audio chunks & tool calls inside event.content
@@ -181,11 +206,13 @@ async def handle_voice_websocket(
 
                         fc = getattr(part, "function_call", None)
                         if fc and getattr(fc, "name", None):
+                            logger.info("Voice agent invoked tool: %s", fc.name)
                             await websocket.send_json(
                                 {"type": "tool_call", "name": fc.name}
                             )
 
                 if getattr(event, "turn_complete", False):
+                    logger.debug("Voice agent turn_complete")
                     await websocket.send_json({"type": "turn_complete"})
                     asyncio.create_task(
                         _distill_voice_memory(
